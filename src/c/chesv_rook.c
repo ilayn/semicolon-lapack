@@ -144,7 +144,7 @@ void chesv_rook(
     }
 
     if (*info != 0) {
-        xerbla("CHESV_ROOK", -(*info));
+        xerbla("CHESV_ROOK ", -(*info));
         return;
     } else if (lquery) {
         return;

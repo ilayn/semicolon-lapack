@@ -33,7 +33,7 @@ static void test_serrec(void** state)
 /*  SLALN2 — small quasi-triangular system solver                     */
 /* ------------------------------------------------------------------ */
 
-static void test_dget31_dlaln2(void** state)
+static void test_sget31_slaln2(void** state)
 {
     (void)state;
     f32 rmax;
@@ -49,7 +49,7 @@ static void test_dget31_dlaln2(void** state)
 /*  SLASY2 — Sylvester-like equation solver                           */
 /* ------------------------------------------------------------------ */
 
-static void test_dget32_dlasy2(void** state)
+static void test_sget32_slasy2(void** state)
 {
     (void)state;
     f32 rmax;
@@ -64,7 +64,7 @@ static void test_dget32_dlasy2(void** state)
 /*  SLANV2 — 2x2 real Schur form standardization                     */
 /* ------------------------------------------------------------------ */
 
-static void test_dget33_dlanv2(void** state)
+static void test_sget33_slanv2(void** state)
 {
     (void)state;
     f32 rmax;
@@ -80,7 +80,7 @@ static void test_dget33_dlanv2(void** state)
 /*  SLAEXC — swap adjacent diagonal blocks in Schur form              */
 /* ------------------------------------------------------------------ */
 
-static void test_dget34_dlaexc(void** state)
+static void test_sget34_slaexc(void** state)
 {
     (void)state;
     f32 rmax;
@@ -96,7 +96,7 @@ static void test_dget34_dlaexc(void** state)
 /*  STRSYL — Sylvester equation solver                                */
 /* ------------------------------------------------------------------ */
 
-static void test_dget35_dtrsyl(void** state)
+static void test_sget35_strsyl(void** state)
 {
     (void)state;
     f32 rmax;
@@ -111,7 +111,7 @@ static void test_dget35_dtrsyl(void** state)
 /*  STRSYL3 — Sylvester equation solver (level 3)                     */
 /* ------------------------------------------------------------------ */
 
-static void test_dsyl01_dtrsyl3(void** state)
+static void test_ssyl01_strsyl3(void** state)
 {
     (void)state;
     INT ftrsyl[3];
@@ -131,7 +131,7 @@ static void test_dsyl01_dtrsyl3(void** state)
 /*  STREXC — reorder Schur form                                       */
 /* ------------------------------------------------------------------ */
 
-static void test_dget36_dtrexc(void** state)
+static void test_sget36_strexc(void** state)
 {
     (void)state;
     f32 rmax;
@@ -147,7 +147,7 @@ static void test_dget36_dtrexc(void** state)
 /*  STRSNA — condition numbers for eigenvalues/eigenvectors            */
 /* ------------------------------------------------------------------ */
 
-static void test_dget37_dtrsna(void** state)
+static void test_sget37_strsna(void** state)
 {
     (void)state;
     f32 rmax[3];
@@ -166,7 +166,7 @@ static void test_dget37_dtrsna(void** state)
 /*  STRSEN — reorder and condition estimate for Schur clusters         */
 /* ------------------------------------------------------------------ */
 
-static void test_dget38_dtrsen(void** state)
+static void test_sget38_strsen(void** state)
 {
     (void)state;
     f32 rmax[3];
@@ -185,7 +185,7 @@ static void test_dget38_dtrsen(void** state)
 /*  SLAQTR — quasi-triangular solve for condition estimation           */
 /* ------------------------------------------------------------------ */
 
-static void test_dget39_dlaqtr(void** state)
+static void test_sget39_slaqtr(void** state)
 {
     (void)state;
     f32 rmax;
@@ -200,7 +200,7 @@ static void test_dget39_dlaqtr(void** state)
 /*  STGEXC — generalized Schur block swap                             */
 /* ------------------------------------------------------------------ */
 
-static void test_dget40_dtgexc(void** state)
+static void test_sget40_stgexc(void** state)
 {
     (void)state;
     f32 rmax;
@@ -219,19 +219,19 @@ int main(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_serrec),
-        cmocka_unit_test(test_dget31_dlaln2),
-        cmocka_unit_test(test_dget32_dlasy2),
-        cmocka_unit_test(test_dget33_dlanv2),
-        cmocka_unit_test(test_dget34_dlaexc),
-        cmocka_unit_test(test_dget35_dtrsyl),
-        cmocka_unit_test(test_dsyl01_dtrsyl3),
-        cmocka_unit_test(test_dget36_dtrexc),
-        cmocka_unit_test(test_dget37_dtrsna),
-        cmocka_unit_test(test_dget38_dtrsen),
-        cmocka_unit_test(test_dget39_dlaqtr),
-        cmocka_unit_test(test_dget40_dtgexc),
+        cmocka_unit_test(test_sget31_slaln2),
+        cmocka_unit_test(test_sget32_slasy2),
+        cmocka_unit_test(test_sget33_slanv2),
+        cmocka_unit_test(test_sget34_slaexc),
+        cmocka_unit_test(test_sget35_strsyl),
+        cmocka_unit_test(test_ssyl01_strsyl3),
+        cmocka_unit_test(test_sget36_strexc),
+        cmocka_unit_test(test_sget37_strsna),
+        cmocka_unit_test(test_sget38_strsen),
+        cmocka_unit_test(test_sget39_slaqtr),
+        cmocka_unit_test(test_sget40_stgexc),
     };
-    /* Threshold from dec.in; ISPECs 1 and 12-16 as DCHKEE sets them for SEC */
+    /* Threshold from sec.in; ISPECs 1 and 12-16 as SCHKEE sets them for SEC */
     xlaenv(1, 1);
     xlaenv(12, 11);
     xlaenv(13, 2);

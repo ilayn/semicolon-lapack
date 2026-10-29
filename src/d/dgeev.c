@@ -159,7 +159,7 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("DGEEV", -(*info));
+        xerbla("DGEEV ", -(*info));
         return;
     } else if (lquery) {
         return;
@@ -186,7 +186,7 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
         cscale = bignum;
     } else if (isnan(anrm)) {
         *info = -4;
-        xerbla("DGEEV", -(*info));
+        xerbla("DGEEV ", -(*info));
         return;
     }
     if (scalea)

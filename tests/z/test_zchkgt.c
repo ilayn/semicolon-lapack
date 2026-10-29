@@ -169,22 +169,18 @@ static void generate_zgt_matrix(INT n, INT imat, c128* DL, c128* D, c128* DU,
         zlatms(n, n, &dist, &type, d_sing, mode, cndnum, anorm,
                kl, ku, "Z", AB + koff, lda_band, g_workspace->WORK, &info, rng_state);
 
-        if (info == 0) {
-            for (INT i = 0; i < n; i++) {
-                D[i] = AB[1 + i * lda_band];
-            }
-            for (INT i = 0; i < m; i++) {
-                DU[i] = AB[0 + (i + 1) * lda_band];
-                DL[i] = AB[2 + i * lda_band];
-            }
-        } else {
-            for (INT i = 0; i < n; i++) {
-                D[i] = 2.0 * anorm;
-            }
-            for (INT i = 0; i < m; i++) {
-                DL[i] = -anorm * 0.5;
-                DU[i] = -anorm * 0.5;
-            }
+        if (info != 0) {
+            free(AB);
+            free(d_sing);
+            fail_msg("ZLATMS info=%d (n=%d imat=%d)", info, n, imat);
+        }
+
+        for (INT i = 0; i < m; i++) {
+            DL[i] = AB[0 + (i + 1) * lda_band];
+            DU[i] = AB[2 + i * lda_band];
+        }
+        for (INT i = 0; i < n; i++) {
+            D[i] = AB[1 + i * lda_band];
         }
 
         free(AB);

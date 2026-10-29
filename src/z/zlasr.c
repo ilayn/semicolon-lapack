@@ -42,9 +42,33 @@ void zlasr(const char* side, const char* pivot, const char* direct,
            const f64* restrict C_rot, const f64* restrict S_rot,
            c128* restrict A, const INT lda)
 {
-    INT i, j;
+    INT i, j, info;
     f64 ctemp, stemp;
     c128 temp;
+
+    /* Test the input parameters */
+    info = 0;
+    if (!(side[0] == 'L' || side[0] == 'l' ||
+          side[0] == 'R' || side[0] == 'r')) {
+        info = 1;
+    } else if (!(pivot[0] == 'V' || pivot[0] == 'v' ||
+                 pivot[0] == 'T' || pivot[0] == 't' ||
+                 pivot[0] == 'B' || pivot[0] == 'b')) {
+        info = 2;
+    } else if (!(direct[0] == 'F' || direct[0] == 'f' ||
+                 direct[0] == 'B' || direct[0] == 'b')) {
+        info = 3;
+    } else if (m < 0) {
+        info = 4;
+    } else if (n < 0) {
+        info = 5;
+    } else if (lda < (1 > m ? 1 : m)) {
+        info = 9;
+    }
+    if (info != 0) {
+        xerbla("ZLASR ", info);
+        return;
+    }
 
     /* Quick return if possible */
     if (m == 0 || n == 0) return;

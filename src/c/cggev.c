@@ -150,7 +150,7 @@ void cggev(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("CGGEV", -(*info));
+        xerbla("CGGEV ", -(*info));
         return;
     } else if (lquery) {
         return;

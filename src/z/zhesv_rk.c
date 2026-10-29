@@ -140,7 +140,7 @@ void zhesv_rk(
     }
 
     if (*info != 0) {
-        xerbla("ZHESV_RK", -(*info));
+        xerbla("ZHESV_RK ", -(*info));
         return;
     } else if (lquery) {
         return;

@@ -117,7 +117,7 @@ void ssysv_aa(
     }
 
     if (*info != 0) {
-        xerbla("SSYSV_AA ", -(*info));
+        xerbla("SSYSV_AA", -(*info));
         return;
     } else if (lquery) {
         return;

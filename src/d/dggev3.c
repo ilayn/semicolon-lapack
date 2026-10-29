@@ -158,7 +158,7 @@ void dggev3(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("DGGEV3", -(*info));
+        xerbla("DGGEV3 ", -(*info));
         return;
     } else if (lquery) {
         return;

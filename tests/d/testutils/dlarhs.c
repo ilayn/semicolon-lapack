@@ -5,7 +5,6 @@
  * Port of LAPACK TESTING/LIN/dlarhs.f
  */
 
-#include <string.h>
 #include <math.h>
 #include "test_rng.h"
 #include "semicolon_cblas.h"
@@ -56,8 +55,6 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
     INT tran, notran, gen, sym, tri, qrs, band;
     char c2[3];
     INT j, mb, nx;
-
-    (void)uplo;  /* Not used for general matrices yet */
 
     /* Extract matrix type from path */
     c2[0] = path[1];
@@ -110,10 +107,11 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
     }
 
     if (*info != 0) {
+        xerbla("DLARHS", -(*info));
         return;
     }
 
-    /* Initialize X to NRHS random vectors unless XTYPE = 'C' */
+    /* Initialize X to NRHS random vectors unless XTYPE = 'C'. */
     if (tran) {
         nx = m;
         mb = n;
@@ -121,103 +119,92 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
         nx = n;
         mb = m;
     }
-
     if (!(xtype[0] == 'C' || xtype[0] == 'c')) {
         for (j = 0; j < nrhs; j++) {
             dlarhs_dlarnv(2, n, &X[j * ldx], state);
         }
     }
 
-    /* Multiply X by op(A) using appropriate matrix multiply routine */
+    /* Multiply X by op(A) using an appropriate
+     * matrix multiply routine. */
+    CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
+    CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
+    CBLAS_DIAG diagC = (ku == 2) ? CblasUnit : CblasNonUnit;
 
-    /* General matrix (GE, QR, LQ, QL, RQ) */
-    if ((c2[0] == 'G' || c2[0] == 'g') && (c2[1] == 'E' || c2[1] == 'e')) {
-        /* B = op(A) * X using DGEMM */
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
+    if (((c2[0] == 'G' || c2[0] == 'g') && (c2[1] == 'E' || c2[1] == 'e')) ||
+        ((c2[0] == 'Q' || c2[0] == 'q') && (c2[1] == 'R' || c2[1] == 'r')) ||
+        ((c2[0] == 'L' || c2[0] == 'l') && (c2[1] == 'Q' || c2[1] == 'q')) ||
+        ((c2[0] == 'Q' || c2[0] == 'q') && (c2[1] == 'L' || c2[1] == 'l')) ||
+        ((c2[0] == 'R' || c2[0] == 'r') && (c2[1] == 'Q' || c2[1] == 'q'))) {
+
+        /* General matrix */
         cblas_dgemm(CblasColMajor, transA, CblasNoTrans,
                     mb, nrhs, nx, ONE, A, lda, X, ldx, ZERO, B, ldb);
+
+    } else if (((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'O' || c2[1] == 'o')) ||
+               ((c2[0] == 'S' || c2[0] == 's') && (c2[1] == 'Y' || c2[1] == 'y'))) {
+
+        /* Symmetric matrix, 2-D storage */
+        cblas_dsymm(CblasColMajor, CblasLeft, uploC,
+                    n, nrhs, ONE, A, lda, X, ldx, ZERO, B, ldb);
+
     } else if ((c2[0] == 'G' || c2[0] == 'g') && (c2[1] == 'B' || c2[1] == 'b')) {
-        /* General matrix, band storage - use DGBMV */
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
+
+        /* General matrix, band storage */
         for (j = 0; j < nrhs; j++) {
             cblas_dgbmv(CblasColMajor, transA, mb, nx, kl, ku, ONE,
                         A, lda, &X[j * ldx], 1, ZERO, &B[j * ldb], 1);
         }
-    } else if ((c2[0] == 'Q' || c2[0] == 'q') ||
-               ((c2[1] == 'Q' || c2[1] == 'q'))) {
-        /* QR, LQ, QL, RQ - treat same as general */
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
-        cblas_dgemm(CblasColMajor, transA, CblasNoTrans,
-                    mb, nrhs, nx, ONE, A, lda, X, ldx, ZERO, B, ldb);
-    } else if ((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'O' || c2[1] == 'o')) {
-        /* Symmetric positive definite - use DSYMM */
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        cblas_dsymm(CblasColMajor, CblasLeft, uploC,
-                    n, nrhs, ONE, A, lda, X, ldx, ZERO, B, ldb);
-    } else if (((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'P' || c2[1] == 'p')) ||
-               ((c2[0] == 'S' || c2[0] == 's') && (c2[1] == 'P' || c2[1] == 'p'))) {
-        /* Symmetric packed (positive definite or indefinite) - use DSPMV */
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        for (j = 0; j < nrhs; j++) {
-            cblas_dspmv(CblasColMajor, uploC, n, ONE, A,
-                        &X[j * ldx], 1, ZERO, &B[j * ldb], 1);
-        }
-    } else if ((c2[0] == 'S' || c2[0] == 's') && (c2[1] == 'Y' || c2[1] == 'y')) {
-        /* Symmetric indefinite - use DSYMM */
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        cblas_dsymm(CblasColMajor, CblasLeft, uploC,
-                    n, nrhs, ONE, A, lda, X, ldx, ZERO, B, ldb);
-    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'R' || c2[1] == 'r')) {
-        /* Triangular - use DTRMM (multiply in place)
-         * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
-        /* First copy X to B, then multiply */
-        for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
-        }
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
-        CBLAS_DIAG diagC = (ku == 2) ? CblasUnit : CblasNonUnit;
-        cblas_dtrmm(CblasColMajor, CblasLeft, uploC, transA, diagC,
-                    n, nrhs, ONE, A, lda, B, ldb);
-    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'P' || c2[1] == 'p')) {
-        /* Triangular packed - use DTPMV (one column at a time)
-         * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
-        /* First copy X to B, then multiply each column */
-        for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
-        }
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
-        CBLAS_DIAG diagC = (ku == 2) ? CblasUnit : CblasNonUnit;
-        for (j = 0; j < nrhs; j++) {
-            cblas_dtpmv(CblasColMajor, uploC, transA, diagC,
-                        n, A, &B[j * ldb], 1);
-        }
-    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'B' || c2[1] == 'b')) {
-        /* Triangular banded - use DTBMV (one column at a time)
-         * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
-        for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
-        }
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
-        CBLAS_DIAG diagC = (ku == 2) ? CblasUnit : CblasNonUnit;
-        for (j = 0; j < nrhs; j++) {
-            cblas_dtbmv(CblasColMajor, uploC, transA, diagC,
-                        n, kl, A, lda, &B[j * ldb], 1);
-        }
+
     } else if ((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'B' || c2[1] == 'b')) {
-        /* Symmetric positive definite band - use DSBMV */
-        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
+
+        /* Symmetric matrix, band storage */
         for (j = 0; j < nrhs; j++) {
             cblas_dsbmv(CblasColMajor, uploC, n, kl, ONE, A, lda,
                         &X[j * ldx], 1, ZERO, &B[j * ldb], 1);
         }
+
+    } else if (((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'P' || c2[1] == 'p')) ||
+               ((c2[0] == 'S' || c2[0] == 's') && (c2[1] == 'P' || c2[1] == 'p'))) {
+
+        /* Symmetric matrix, packed storage */
+        for (j = 0; j < nrhs; j++) {
+            cblas_dspmv(CblasColMajor, uploC, n, ONE, A,
+                        &X[j * ldx], 1, ZERO, &B[j * ldb], 1);
+        }
+
+    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'R' || c2[1] == 'r')) {
+
+        /* Triangular matrix.  Note that for triangular matrices,
+         *    KU = 1 => non-unit triangular
+         *    KU = 2 => unit triangular */
+        dlacpy("Full", n, nrhs, X, ldx, B, ldb);
+        cblas_dtrmm(CblasColMajor, CblasLeft, uploC, transA, diagC,
+                    n, nrhs, ONE, A, lda, B, ldb);
+
+    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'P' || c2[1] == 'p')) {
+
+        /* Triangular matrix, packed storage */
+        dlacpy("Full", n, nrhs, X, ldx, B, ldb);
+        for (j = 0; j < nrhs; j++) {
+            cblas_dtpmv(CblasColMajor, uploC, transA, diagC,
+                        n, A, &B[j * ldb], 1);
+        }
+
+    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'B' || c2[1] == 'b')) {
+
+        /* Triangular matrix, banded storage */
+        dlacpy("Full", n, nrhs, X, ldx, B, ldb);
+        for (j = 0; j < nrhs; j++) {
+            cblas_dtbmv(CblasColMajor, uploC, transA, diagC,
+                        n, kl, A, lda, &B[j * ldb], 1);
+        }
+
     } else {
-        /* Default: treat as general matrix */
-        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
-        cblas_dgemm(CblasColMajor, transA, CblasNoTrans,
-                    mb, nrhs, nx, ONE, A, lda, X, ldx, ZERO, B, ldb);
+
+        /* If PATH is none of the above, return with an error code. */
+        *info = -1;
+        xerbla("DLARHS", -(*info));
     }
 }
 

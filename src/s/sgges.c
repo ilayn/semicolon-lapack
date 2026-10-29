@@ -150,7 +150,7 @@ void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
     if (*info != 0) {
-        xerbla("SGGES", -(*info));
+        xerbla("SGGES ", -(*info));
         return;
     } else if (lquery) {
         return;

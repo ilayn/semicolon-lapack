@@ -68,10 +68,10 @@ static void generate_gt_matrix(INT n, INT imat, f32 *DL, f32 *D, f32 *DU,
     slatb4("SGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     if (imat >= 1 && imat <= 6) {
-        /* Types 1-6: Use slatms to generate matrix with controlled condition */
-        /* Generate in band storage: 3 rows (sub, diag, super) */
-        INT lda = 3;
-        f32 *AB = calloc(lda * n, sizeof(f32));
+        /* Types 1-6:  generate matrices of known condition number. */
+        INT max1n = (1 > n) ? 1 : n;
+        INT koff = ((2 - ku > 3 - max1n) ? 2 - ku : 3 - max1n) - 1;
+        f32 *AB = calloc(koff + 3 * n, sizeof(f32));
         f32 *d_sing = malloc(n * sizeof(f32));
         f32 *work = malloc(3 * n * sizeof(f32));
 
@@ -79,29 +79,16 @@ static void generate_gt_matrix(INT n, INT imat, f32 *DL, f32 *D, f32 *DU,
         assert_non_null(d_sing);
         assert_non_null(work);
 
-        /* Generate band matrix with KL=1, KU=1 */
         slatms(n, n, &dist, &type, d_sing, mode, cndnum, anorm,
-               kl, ku, "N", AB, lda, work, &info, state);
+               kl, ku, "Z", AB + koff, 3, work, &info, state);
+        assert_int_equal(info, 0);
 
-        if (info != 0) {
-            /* Fall back to simple generation */
-            for (i = 0; i < n; i++) {
-                D[i] = 2.0f * anorm;
-            }
-            for (i = 0; i < n - 1; i++) {
-                DL[i] = -anorm * 0.5f;
-                DU[i] = -anorm * 0.5f;
-            }
-        } else {
-            /* Extract tridiagonal from band storage */
-            /* Band storage: row 0 = super-diagonal, row 1 = diagonal, row 2 = sub-diagonal */
-            for (i = 0; i < n; i++) {
-                D[i] = AB[1 + i * lda];  /* Diagonal */
-            }
-            for (i = 0; i < n - 1; i++) {
-                DU[i] = AB[0 + (i + 1) * lda];  /* Super-diagonal */
-                DL[i] = AB[2 + i * lda];        /* Sub-diagonal */
-            }
+        for (i = 0; i < n - 1; i++) {
+            DL[i] = AB[3 + 3 * i];
+            DU[i] = AB[2 + 3 * i];
+        }
+        for (i = 0; i < n; i++) {
+            D[i] = AB[1 + 3 * i];
         }
 
         free(AB);

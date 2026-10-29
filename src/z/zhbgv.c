@@ -90,7 +90,7 @@ void zhbgv(
         *info = -12;
     }
     if (*info != 0) {
-        xerbla("ZHBGV ", -(*info));
+        xerbla("ZHBGV", -(*info));
         return;
     }
 

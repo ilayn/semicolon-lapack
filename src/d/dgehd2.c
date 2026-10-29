@@ -62,10 +62,6 @@ void dgehd2(const INT n, const INT ilo, const INT ihi,
         return;
     }
 
-    /* Quick return if possible */
-    if (n <= 1)
-        return;
-
     for (i = ilo; i <= ihi - 1; i++) {
         /* Compute elementary reflector H(i) to annihilate A(i+2:ihi,i) */
         INT len = ihi - i;  /* length of reflector vector */

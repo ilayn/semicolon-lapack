@@ -198,25 +198,19 @@ static void generate_gt_matrix(INT n, INT imat, f32* DL, f32* D, f32* DU,
                &type, d_sing, mode, cndnum, anorm,
                kl, ku, "Z", AB + koff, lda_band, work, &info, rng_state);
 
-        if (info == 0) {
-            /* Extract tridiagonal from band storage */
-            /* Band storage with 'Z': row 0 = super-diagonal, row 1 = diagonal, row 2 = sub-diagonal */
-            for (INT i = 0; i < n; i++) {
-                D[i] = AB[1 + i * lda_band];
-            }
-            for (INT i = 0; i < m; i++) {
-                DU[i] = AB[0 + (i + 1) * lda_band];
-                DL[i] = AB[2 + i * lda_band];
-            }
-        } else {
-            /* Fall back to simple generation */
-            for (INT i = 0; i < n; i++) {
-                D[i] = 2.0f * anorm;
-            }
-            for (INT i = 0; i < m; i++) {
-                DL[i] = -anorm * 0.5f;
-                DU[i] = -anorm * 0.5f;
-            }
+        if (info != 0) {
+            free(AB);
+            free(d_sing);
+            free(work);
+            fail_msg("SLATMS info=%d (n=%d imat=%d)", info, n, imat);
+        }
+
+        for (INT i = 0; i < m; i++) {
+            DL[i] = AB[0 + (i + 1) * lda_band];
+            DU[i] = AB[2 + i * lda_band];
+        }
+        for (INT i = 0; i < n; i++) {
+            D[i] = AB[1 + i * lda_band];
         }
 
         free(AB);

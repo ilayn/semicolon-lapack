@@ -145,7 +145,7 @@ void zsysv_rook(
     }
 
     if (*info != 0) {
-        xerbla("ZSYSV_ROOK", -(*info));
+        xerbla("ZSYSV_ROOK ", -(*info));
         return;
     } else if (lquery) {
         return;

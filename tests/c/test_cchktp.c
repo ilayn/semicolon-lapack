@@ -170,7 +170,7 @@ static void test_standard(void** state)
     const f32 ZERO = 0.0f;
 
     lda = (n > 1) ? n : 1;
-    lap = (n * (n + 1)) / 2;
+    lap = (lda * (lda + 1)) / 2;
 
     for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;

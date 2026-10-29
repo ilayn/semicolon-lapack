@@ -144,7 +144,7 @@ void zhesv_rook(
     }
 
     if (*info != 0) {
-        xerbla("ZHESV_ROOK", -(*info));
+        xerbla("ZHESV_ROOK ", -(*info));
         return;
     } else if (lquery) {
         return;

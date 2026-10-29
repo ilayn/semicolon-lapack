@@ -159,7 +159,7 @@ void sgeev(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("SGEEV", -(*info));
+        xerbla("SGEEV ", -(*info));
         return;
     } else if (lquery) {
         return;
@@ -186,7 +186,7 @@ void sgeev(const char* jobvl, const char* jobvr, const INT n,
         cscale = bignum;
     } else if (isnan(anrm)) {
         *info = -4;
-        xerbla("SGEEV", -(*info));
+        xerbla("SGEEV ", -(*info));
         return;
     }
     if (scalea)

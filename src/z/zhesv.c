@@ -117,7 +117,7 @@ void zhesv(const char* uplo, const INT n, const INT nrhs,
     }
 
     if (*info != 0) {
-        xerbla("ZHESV", -(*info));
+        xerbla("ZHESV ", -(*info));
         return;
     } else if (lquery) {
         return;
