@@ -46,7 +46,7 @@ void sgeql2(const INT m, const INT n,
     INT i, k;
     f32 aii;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -63,11 +63,6 @@ void sgeql2(const INT m, const INT n,
     k = m < n ? m : n;
 
     for (i = k - 1; i >= 0; i--) {
-        /* Indices into the matrix for this reflector:
-         * Column: n-k+i
-         * Diagonal element: row m-k+i, col n-k+i
-         * Reflector annihilates: rows 0:m-k+i-1 */
-
         /* Generate elementary reflector H(i) to annihilate A(0:m-k+i-1, n-k+i) */
         slarfg(m - k + i + 1, &A[(m - k + i) + (n - k + i) * lda],
                &A[0 + (n - k + i) * lda], 1, &tau[i]);

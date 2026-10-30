@@ -52,7 +52,7 @@ void zungrq(const INT m, const INT n, const INT k,
     INT lquery;
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     lquery = (lwork == -1);
 
@@ -96,7 +96,7 @@ void zungrq(const INT m, const INT n, const INT k,
     nx = 0;
     iws = m;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("UNGRQ");
         if (nx < 0) nx = 0;
         if (nx < k) {
@@ -141,7 +141,7 @@ void zungrq(const INT m, const INT n, const INT k,
                        &A[ii + 0 * lda], lda,
                        &tau[i], work, ldwork);
 
-                /* Apply H**H to A(0:ii-1, 0:n-k+i+ib-1) from the right */
+                /* Apply H**H to A(0:m-k+i-1,0:n-k+i+ib-1) from the right */
                 zlarfb("R", "C", "B", "R",
                        ii, n - k + i + ib, ib,
                        &A[ii + 0 * lda], lda,

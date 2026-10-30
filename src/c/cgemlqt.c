@@ -67,7 +67,6 @@ void cgemlqt(const char* side, const char* trans,
     INT left, right, tran, notran;
     INT i, ib, ldwork, kf, q;
 
-    /* Decode arguments */
     left   = (side[0] == 'L' || side[0] == 'l');
     right  = (side[0] == 'R' || side[0] == 'r');
     tran   = (trans[0] == 'C' || trans[0] == 'c');
@@ -82,7 +81,6 @@ void cgemlqt(const char* side, const char* trans,
         q = n;
     }
 
-    /* Parameter validation */
     if (!left && !right) {
         *info = -1;
     } else if (!tran && !notran) {
@@ -108,13 +106,11 @@ void cgemlqt(const char* side, const char* trans,
         return;
     }
 
-    /* Quick return if possible */
     if (m == 0 || n == 0 || k == 0) {
         return;
     }
 
     if (left && notran) {
-        /* Case: Q * C -- forward loop */
         for (i = 0; i < k; i += mb) {
             ib = mb < k - i ? mb : k - i;
             clarfb("L", "C", "F", "R", m - i, n, ib,
@@ -125,7 +121,6 @@ void cgemlqt(const char* side, const char* trans,
         }
 
     } else if (right && tran) {
-        /* Case: C * Q^H -- forward loop */
         for (i = 0; i < k; i += mb) {
             ib = mb < k - i ? mb : k - i;
             clarfb("R", "N", "F", "R", m, n - i, ib,
@@ -136,7 +131,6 @@ void cgemlqt(const char* side, const char* trans,
         }
 
     } else if (left && tran) {
-        /* Case: Q^H * C -- backward loop */
         kf = ((k - 1) / mb) * mb;
         for (i = kf; i >= 0; i -= mb) {
             ib = mb < k - i ? mb : k - i;
@@ -148,7 +142,6 @@ void cgemlqt(const char* side, const char* trans,
         }
 
     } else if (right && notran) {
-        /* Case: C * Q -- backward loop */
         kf = ((k - 1) / mb) * mb;
         for (i = kf; i >= 0; i -= mb) {
             ib = mb < k - i ? mb : k - i;

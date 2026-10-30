@@ -32,28 +32,25 @@ void dlapmt(const INT forwrd, const INT m, const INT n,
 
     if (n <= 1) return;
 
-    /* Initialize markers for permutation tracking */
     for (i = 0; i < n; i++) {
-        K[i] = -K[i] - 1;  /* Mark as negative (not yet processed), adjust for 0-based */
+        K[i] = -K[i] - 1;
     }
 
     if (forwrd) {
         /* Forward permutation */
         for (i = 0; i < n; i++) {
             if (K[i] >= 0) {
-                /* Already in place */
                 continue;
             }
 
             j = i;
-            K[j] = -K[j] - 1;  /* Restore original value */
+            K[j] = -K[j] - 1;
             in = K[j];
 
             while (K[in] < 0) {
-                /* Swap columns j and in */
                 cblas_dswap(m, &X[j * ldx], 1, &X[in * ldx], 1);
 
-                K[in] = -K[in] - 1;  /* Restore original value */
+                K[in] = -K[in] - 1;
                 j = in;
                 in = K[in];
             }
@@ -62,22 +59,18 @@ void dlapmt(const INT forwrd, const INT m, const INT n,
         /* Backward permutation */
         for (i = 0; i < n; i++) {
             if (K[i] >= 0) {
-                /* Already in place */
                 continue;
             }
 
-            K[i] = -K[i] - 1;  /* Restore original value */
+            K[i] = -K[i] - 1;
             j = K[i];
 
             while (j != i) {
-                /* Swap columns i and j */
                 cblas_dswap(m, &X[i * ldx], 1, &X[j * ldx], 1);
 
-                K[j] = -K[j] - 1;  /* Restore original value */
+                K[j] = -K[j] - 1;
                 j = K[j];
             }
         }
     }
-
-    /* Restore K to original permutation (convert back from internal format) */
 }

@@ -44,7 +44,7 @@ void dorgl2(const INT m, const INT n, const INT k,
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -78,7 +78,7 @@ void dorgl2(const INT m, const INT n, const INT k,
     }
 
     for (i = k - 1; i >= 0; i--) {
-        /* Apply H(i) to A(i+1:m-1, i:n-1) from the right */
+        /* Apply H(i) to A(i:m-1, i:n-1) from the right */
         if (i < n - 1) {
             if (i < m - 1) {
                 dlarf1f("R", m - i - 1, n - i, &A[i + i * lda], lda,

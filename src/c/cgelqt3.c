@@ -81,16 +81,16 @@ void cgelqt3(const INT m, const INT n,
 
     } else {
 
-        /* Otherwise, split A into blocks */
+        /* Otherwise, split A into blocks... */
         m1 = m / 2;
         m2 = m - m1;
-        i1 = m1;       /* 0-based: Fortran I1 = MIN(M1+1, M) maps to m1 */
-        j1 = m;        /* 0-based: Fortran J1 = MIN(M+1, N) maps to m */
+        i1 = m1;
+        j1 = m;
 
-        /* Compute A(0:m1-1, 0:n-1) <- (Y1, R1, T1), where Q1 = I - Y1 T1 Y1^H */
+        /* Compute A(0:m1-1, 0:n-1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H */
         cgelqt3(m1, n, A, lda, T, ldt, &iinfo);
 
-        /* T(m1:m-1, 0:m1-1) = A(m1:m-1, 0:m1-1) */
+        /* Compute A(i1:m-1, 0:n-1) = A(i1:m-1, 0:n-1) Q1^H [workspace: T(i1:m-1, 0:m1-1)] */
         for (i = 0; i < m2; i++) {
             for (j = 0; j < m1; j++) {
                 T[(i + m1) + j * ldt] = A[(i + m1) + j * lda];
@@ -123,11 +123,11 @@ void cgelqt3(const INT m, const INT n,
             }
         }
 
-        /* Compute A(m1:m-1, m1:n-1) <- (Y2, R2, T2) where Q2 = I - Y2 T2 Y2^H */
+        /* Compute A(i1:m-1, i1:n-1) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H */
         cgelqt3(m2, n - m1, &A[i1 + i1 * lda], lda,
                 &T[i1 + i1 * ldt], ldt, &iinfo);
 
-        /* T(0:m1-1, m1:m-1) = A(0:m1-1, m1:m-1) */
+        /* Compute T3 = T(0:m1-1, i1:m-1) = -T1 Y1^H Y2 T2 */
         for (i = 0; i < m2; i++) {
             for (j = 0; j < m1; j++) {
                 T[j + (i + m1) * ldt] = A[j + (i + m1) * lda];

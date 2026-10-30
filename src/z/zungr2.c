@@ -45,7 +45,7 @@ void zungr2(const INT m, const INT n, const INT k,
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -81,7 +81,7 @@ void zungr2(const INT m, const INT n, const INT k,
     for (i = 0; i < k; i++) {
         ii = m - k + i;
 
-        /* Apply H(i)**H to A(0:ii-1, 0:n-m+ii) from the right */
+        /* Apply H(i)**H to A(0:m-k+i,0:n-k+i) from the right */
         zlacgv(n - m + ii, &A[ii + 0 * lda], lda);
         c128 conjtau = conj(tau[i]);
         zlarf1l("R", ii, n - m + ii + 1, &A[ii + 0 * lda], lda,
@@ -91,7 +91,7 @@ void zungr2(const INT m, const INT n, const INT k,
         zlacgv(n - m + ii, &A[ii + 0 * lda], lda);
         A[ii + (n - m + ii) * lda] = ONE - conj(tau[i]);
 
-        /* Set A(ii, n-m+ii+1:n-1) to zero */
+        /* Set A(m-k+i,n-k+i+1:n-1) to zero */
         for (l = n - m + ii + 1; l < n; l++) {
             A[ii + l * lda] = ZERO;
         }

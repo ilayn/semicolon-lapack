@@ -64,14 +64,13 @@ void dormr3(const char* side, const char* trans,
     INT mi = 0, ni = 0, nq;
     INT left, notran;
 
-    /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
 
     /* NQ is the order of Q */
     nq = left ? m : n;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -100,9 +99,6 @@ void dormr3(const char* side, const char* trans,
         return;
     }
 
-    /* Determine loop direction:
-     * (Left && Trans) or (Right && NoTrans): i = 0, 1, ..., k-1 (forward)
-     * (Left && NoTrans) or (Right && Trans): i = k-1, k-2, ..., 0 (backward) */
     INT i_start, i_end, i_step;
     if ((left && !notran) || (!left && notran)) {
         i_start = 0;
@@ -116,28 +112,24 @@ void dormr3(const char* side, const char* trans,
 
     if (left) {
         ni = n;
-        /* ja = m - l: 0-based column index into A for the reflector vectors */
     } else {
         mi = m;
-        /* ja = n - l: 0-based column index into A for the reflector vectors */
     }
 
     for (INT i = i_start; i != i_end; i += i_step) {
         if (left) {
-            /* H(i) or H(i)^T is applied to C(i:m-1, 0:n-1) */
+            /* H(i) or H(i)**T is applied to C(i:m-1,0:n-1) */
             mi = m - i;
-            /* dlarz("L", mi, ni, l, &A[i + (m-l)*lda], lda, tau[i],
-             *        &C[i + 0*ldc], ldc, work) */
+            /* Apply H(i) or H(i)**T */
             dlarz("L", mi, ni, l,
                   &A[i + (m - l) * lda], lda,
                   tau[i],
                   &C[i + 0 * ldc], ldc,
                   work);
         } else {
-            /* H(i) or H(i)^T is applied to C(0:m-1, i:n-1) */
+            /* H(i) or H(i)**T is applied to C(0:m-1,i:n-1) */
             ni = n - i;
-            /* dlarz("R", mi, ni, l, &A[i + (n-l)*lda], lda, tau[i],
-             *        &C[0 + i*ldc], ldc, work) */
+            /* Apply H(i) or H(i)**T */
             dlarz("R", mi, ni, l,
                   &A[i + (n - l) * lda], lda,
                   tau[i],

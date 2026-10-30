@@ -71,7 +71,7 @@ void sormlq(const char* side, const char* trans,
     INT i1, i2, i3;
     char transt;
 
-    /* Decode arguments */
+    /* Test the input arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
     lquery = (lwork == -1);
@@ -85,7 +85,6 @@ void sormlq(const char* side, const char* trans,
         nw = m > 1 ? m : 1;
     }
 
-    /* Parameter validation */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -106,7 +105,7 @@ void sormlq(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        /* Compute optimal workspace */
+        /* Compute the workspace requirements */
         nb = lapack_get_nb("ORMLQ");
         if (nb > NBMAX) {
             nb = NBMAX;
@@ -143,12 +142,8 @@ void sormlq(const char* side, const char* trans,
         sorml2(side, trans, m, n, k, A, lda, tau, C, ldc, work, &iinfo);
     } else {
         /* Use blocked code */
-        iwt = nw * nb;  /* offset into work for the T array */
+        iwt = nw * nb;
 
-        /* Determine loop direction:
-         * For LQ: Q = H(k-1)...H(1)H(0), so:
-         * Left+NoTrans or Right+Trans: i = 0, nb, ... (forward)
-         * Left+Trans or Right+NoTrans: i = ..., nb, 0 (backward) */
         if ((left && notran) || (!left && !notran)) {
             i1 = 0;
             i2 = k - 1;
@@ -167,9 +162,6 @@ void sormlq(const char* side, const char* trans,
             ic = 0;
         }
 
-        /* For LQ reflectors stored row-wise:
-         * Applying Q requires transposing the block reflector,
-         * applying Q^T does not */
         transt = notran ? 'T' : 'N';
 
         for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i += i3) {
@@ -182,16 +174,16 @@ void sormlq(const char* side, const char* trans,
                    &tau[i], &work[iwt], LDT);
 
             if (left) {
-                /* H or H^T is applied to C(i:m-1, 0:n-1) */
+                /* H or H**T is applied to C(i:m-1, 0:n-1) */
                 mi = m - i;
                 ic = i;
             } else {
-                /* H or H^T is applied to C(0:m-1, i:n-1) */
+                /* H or H**T is applied to C(0:m-1, i:n-1) */
                 ni = n - i;
                 jc = i;
             }
 
-            /* Apply H or H^T */
+            /* Apply H or H**T */
             slarfb(side, &transt, "F", "R", mi, ni, ib,
                    &A[i + i * lda], lda,
                    &work[iwt], LDT,

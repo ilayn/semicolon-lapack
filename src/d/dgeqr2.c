@@ -44,7 +44,7 @@ void dgeqr2(const INT m, const INT n,
     INT i, k;
     f64 aii;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;

@@ -45,7 +45,7 @@ void zgelq2(const INT m, const INT n,
     INT i, k;
     c128 aii;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;

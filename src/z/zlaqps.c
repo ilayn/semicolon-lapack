@@ -83,8 +83,7 @@ void zlaqps(const INT m, const INT n, const INT offset, const INT nb,
         rk = offset + k;
 
         /*
-         * Determine ith pivot column and swap if necessary.
-         * pvt is 0-based column index.
+         * Determine ith pivot column and swap if necessary
          */
         pvt = (k - 1) + (INT)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
         if (pvt != k - 1) {
@@ -205,8 +204,6 @@ void zlaqps(const INT m, const INT n, const INT offset, const INT nb,
         }
 
         A[(rk - 1) + (k - 1) * lda] = akk;
-
-    /* End of while loop. */
     }
     *kb = k;
     rk = offset + *kb;

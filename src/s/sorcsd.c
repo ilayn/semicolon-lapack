@@ -261,7 +261,7 @@ void sorcsd(
                NULL, ldx21, NULL, ldx22, NULL, NULL, NULL, NULL, NULL, NULL,
                work, -1, &childinfo);
         lorbdbworkopt = (INT)work[0];
-        (void)lorbdbworkopt;  /* lorbdbworkmin = lorbdbworkopt; unused */
+        (void)lorbdbworkopt;
 
         ib11d = itauq2 + (1 > (m - q) ? 1 : (m - q));
         ib11e = ib11d + (1 > q ? 1 : q);

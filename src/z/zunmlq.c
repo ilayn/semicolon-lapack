@@ -69,7 +69,7 @@ void zunmlq(const char* side, const char* trans,
     INT i1, i2, i3;
     char transt;
 
-    /* Decode arguments */
+    /* Test the input arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
     lquery = (lwork == -1);
@@ -83,7 +83,6 @@ void zunmlq(const char* side, const char* trans,
         nw = m > 1 ? m : 1;
     }
 
-    /* Parameter validation */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -104,7 +103,7 @@ void zunmlq(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        /* Compute optimal workspace */
+        /* Compute the workspace requirements */
         nb = lapack_get_nb("UNMLQ");
         if (nb > NBMAX) {
             nb = NBMAX;
@@ -141,7 +140,7 @@ void zunmlq(const char* side, const char* trans,
         zunml2(side, trans, m, n, k, A, lda, tau, C, ldc, work, &iinfo);
     } else {
         /* Use blocked code */
-        iwt = nw * nb;  /* offset into work for the T array */
+        iwt = nw * nb;
 
         if ((left && notran) || (!left && !notran)) {
             i1 = 0;
@@ -173,16 +172,16 @@ void zunmlq(const char* side, const char* trans,
                    &tau[i], &work[iwt], LDT);
 
             if (left) {
-                /* H or H^H is applied to C(i:m-1, 0:n-1) */
+                /* H or H**H is applied to C(i:m-1, 0:n-1) */
                 mi = m - i;
                 ic = i;
             } else {
-                /* H or H^H is applied to C(0:m-1, i:n-1) */
+                /* H or H**H is applied to C(0:m-1, i:n-1) */
                 ni = n - i;
                 jc = i;
             }
 
-            /* Apply H or H^H */
+            /* Apply H or H**H */
             zlarfb(side, &transt, "F", "R", mi, ni, ib,
                    &A[i + i * lda], lda,
                    &work[iwt], LDT,

@@ -65,13 +65,14 @@ void clarf1f(const char* side, const INT m, const INT n,
         }
 
         if (incv > 0) {
-            i = (lastv - 1) * incv;  /* 0-based: last element index */
+            i = (lastv - 1) * incv;
         } else {
             i = 0;
         }
 
         /* Look for the last non-zero row in V.
-         * Since v(0) = 1 implicitly, don't access it. */
+         * Since we are assuming that V(0) = 1, and it is not stored, so we
+         * shouldn't access it. */
         while (lastv > 1 && v[i] == ZERO) {
             lastv--;
             i -= incv;
@@ -86,7 +87,7 @@ void clarf1f(const char* side, const INT m, const INT n,
         }
 
         /* Set index for V. If INCV < 0, then I points to the end of V.
-         * For INCV > 0, set I to point to V(2) */
+         * For INCV > 0, set I to point to V(1) */
         if (incv > 0) {
             i = incv;
         }
@@ -101,12 +102,13 @@ void clarf1f(const char* side, const INT m, const INT n,
          * Form  H * C
          */
         if (lastv == 1) {
-            /* v = [1], so H*C = (1 - tau)*C(0, 0:lastc-1) */
+            /* Check if m = 1. This means v = 1, So we just need to compute
+             * C := HC = (1-\tau)C. */
             one_minus_tau = ONE - tau;
             cblas_cscal(lastc, &one_minus_tau, C, ldc);
         } else {
             /*
-             * w(0:lastc-1) := C(1:lastv-1, 0:lastc-1)**H * v(i:)
+             * w(0:lastc-1,0) := C(0:lastv-1,0:lastc-1)**H * v(0:lastv-1,0)
              */
             cblas_cgemv(CblasColMajor, CblasConjTrans,
                         lastv - 1, lastc, &ONE,
@@ -115,21 +117,23 @@ void clarf1f(const char* side, const INT m, const INT n,
                         &ZERO, work, 1);
 
             /*
-             * w(0:lastc-1) += conj(C(0, 0:lastc-1))
+             * w(0:lastc-1,0) += v(0,0) * C(0,0:lastc-1)**H
              */
             for (j = 0; j < lastc; j++) {
                 work[j] = work[j] + conjf(C[j * ldc]);
             }
 
             /*
-             * C(0, 0:lastc-1) -= tau * conj(w)
+             * C(0, 0:lastc-1)   := C(...) - tau * v(0,0) * w(0:lastc-1,0)**H
+             *                   = C(...) - tau * Conj(w(0:lastc-1,0))
+             * This is essentially a zaxpyc
              */
             for (j = 0; j < lastc; j++) {
                 C[j * ldc] = C[j * ldc] - tau * conjf(work[j]);
             }
 
             /*
-             * C(1:lastv-1, 0:lastc-1) -= tau * v(i:) * w(0:lastc-1)**H
+             * C(1:lastv-1,0:lastc-1) += - tau * v(1:lastv-1,0) * w(0:lastc-1,0)**H
              */
             neg_tau = -tau;
             cblas_cgerc(CblasColMajor, lastv - 1, lastc,
@@ -141,12 +145,13 @@ void clarf1f(const char* side, const INT m, const INT n,
          * Form  C * H
          */
         if (lastv == 1) {
-            /* v = [1], so C*H = (1 - tau)*C(0:lastc-1, 0) */
+            /* Check if n = 1. This means v = 1, so we just need to compute
+             * C := CH = C(1-\tau). */
             one_minus_tau = ONE - tau;
             cblas_cscal(lastc, &one_minus_tau, C, 1);
         } else {
             /*
-             * w(0:lastc-1) := C(0:lastc-1, 1:lastv-1) * v(i:)
+             * w(0:lastc-1,0) := C(0:lastc-1,1:lastv-1) * v(1:lastv-1,0)
              */
             cblas_cgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv - 1, &ONE,
@@ -155,18 +160,19 @@ void clarf1f(const char* side, const INT m, const INT n,
                         &ZERO, work, 1);
 
             /*
-             * w(0:lastc-1) += C(0:lastc-1, 0)
+             * w(0:lastc-1,0) += C(0:lastc-1,0) v(0,0) = C(0:lastc-1,0)
              */
             cblas_caxpy(lastc, &ONE, C, 1, work, 1);
 
             /*
-             * C(0:lastc-1, 0) -= tau * w
+             * C(0:lastc-1,0)     := C(...) - tau * w(0:lastc-1,0) * v(0,0)**T
+             *                    = C(...) - tau * w(0:lastc-1,0)
              */
             neg_tau = -tau;
             cblas_caxpy(lastc, &neg_tau, work, 1, C, 1);
 
             /*
-             * C(0:lastc-1, 1:lastv-1) -= tau * w * v(i:)**H
+             * C(0:lastc-1,1:lastv-1) := C(...) - tau * w(0:lastc-1,0) * v(1:lastv-1)**T
              */
             cblas_cgerc(CblasColMajor, lastc, lastv - 1,
                         &neg_tau, work, 1, &v[i], incv,

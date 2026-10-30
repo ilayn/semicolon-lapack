@@ -61,13 +61,14 @@ void dlarf1f(const char* side, const INT m, const INT n,
         }
 
         if (incv > 0) {
-            i = (lastv - 1) * incv;  /* 0-based: last element index */
+            i = (lastv - 1) * incv;
         } else {
             i = 0;
         }
 
         /* Look for the last non-zero row in V.
-         * Since v(0) = 1 implicitly, don't access it. */
+         * Since we are assuming that V(0) = 1, and it is not stored, so we
+         * shouldn't access it. */
         while (lastv > 1 && v[i] == 0.0) {
             lastv--;
             i -= incv;
@@ -82,7 +83,7 @@ void dlarf1f(const char* side, const INT m, const INT n,
         }
 
         /* Set index for V. If INCV < 0, then I points to the end of V.
-         * For INCV > 0, set I to point to V(2) */
+         * For INCV > 0, set I to point to V(1) */
         if (incv > 0) {
             i = incv;
         }
@@ -95,23 +96,24 @@ void dlarf1f(const char* side, const INT m, const INT n,
     if (applyleft) {
         /* Form H * C */
         if (lastv == 1) {
-            /* v = [1], so H*C = (1 - tau)*C(0, 0:lastc-1) */
+            /* C(0,0:lastc-1) := ( 1 - tau ) * C(0,0:lastc-1) */
             cblas_dscal(lastc, ONE - tau, C, ldc);
         } else {
-            /* w(0:lastc-1) := C(1:lastv-1, 0:lastc-1)^T * v(i:) */
+            /* w(0:lastc-1,0) := C(1:lastv-1,0:lastc-1)**T * v(1:lastv-1,0) */
             cblas_dgemv(CblasColMajor, CblasTrans,
                         lastv - 1, lastc, ONE,
                         &C[1], ldc,
                         &v[i], incv,
                         ZERO, work, 1);
 
-            /* w(0:lastc-1) += C(0, 0:lastc-1)^T (since v(0) = 1) */
+            /* w(0:lastc-1,0) += C(0,0:lastc-1)**T * v(0,0) = C(0,0:lastc-1)**T */
             cblas_daxpy(lastc, ONE, C, ldc, work, 1);
 
-            /* C(0, 0:lastc-1) -= tau * w */
+            /* C(0, 0:lastc-1)   := C(...) - tau * v(0,0) * w(0:lastc-1,0)**T
+             *                   = C(...) - tau * w(0:lastc-1,0)**T */
             cblas_daxpy(lastc, -tau, work, 1, C, ldc);
 
-            /* C(1:lastv-1, 0:lastc-1) -= tau * v(i:) * w^T */
+            /* C(1:lastv-1,0:lastc-1) := C(...) - tau * v(1:lastv-1,0)*w(0:lastc-1,0)**T */
             cblas_dger(CblasColMajor, lastv - 1, lastc,
                        -tau, &v[i], incv, work, 1,
                        &C[1], ldc);
@@ -119,23 +121,24 @@ void dlarf1f(const char* side, const INT m, const INT n,
     } else {
         /* Form C * H */
         if (lastv == 1) {
-            /* v = [1], so C*H = (1 - tau)*C(0:lastc-1, 0) */
+            /* C(0:lastc-1,0) := ( 1 - tau ) * C(0:lastc-1,0) */
             cblas_dscal(lastc, ONE - tau, C, 1);
         } else {
-            /* w(0:lastc-1) := C(0:lastc-1, 1:lastv-1) * v(i:) */
+            /* w(0:lastc-1,0) := C(0:lastc-1,1:lastv-1) * v(1:lastv-1,0) */
             cblas_dgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv - 1, ONE,
                         &C[ldc], ldc,
                         &v[i], incv,
                         ZERO, work, 1);
 
-            /* w(0:lastc-1) += C(0:lastc-1, 0) (since v(0) = 1) */
+            /* w(0:lastc-1,0) += C(0:lastc-1,0) v(0,0) = C(0:lastc-1,0) */
             cblas_daxpy(lastc, ONE, C, 1, work, 1);
 
-            /* C(0:lastc-1, 0) -= tau * w */
+            /* C(0:lastc-1,0)     := C(...) - tau * w(0:lastc-1,0) * v(0,0)**T
+             *                    = C(...) - tau * w(0:lastc-1,0) */
             cblas_daxpy(lastc, -tau, work, 1, C, 1);
 
-            /* C(0:lastc-1, 1:lastv-1) -= tau * w * v(i:)^T */
+            /* C(0:lastc-1,1:lastv-1) := C(...) - tau * w(0:lastc-1,0) * v(1:lastv-1)**T */
             cblas_dger(CblasColMajor, lastc, lastv - 1,
                        -tau, work, 1, &v[i], incv,
                        &C[ldc], ldc);

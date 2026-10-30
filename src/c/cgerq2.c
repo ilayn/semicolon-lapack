@@ -46,7 +46,7 @@ void cgerq2(const INT m, const INT n,
 {
     INT i, k;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;

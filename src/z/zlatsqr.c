@@ -111,7 +111,7 @@ void zlatsqr(const INT m, const INT n, const INT mb, const INT nb,
     }
 
     kk = (m - n) % (mb - n);
-    ii = m - kk;  /* 0-based: Fortran II = M-KK+1 becomes C ii = m - kk */
+    ii = m - kk;
 
     /* Compute the QR factorization of the first block A(0:mb-1, 0:n-1) */
     zgeqrt(mb, n, nb, &A[0], lda, T, ldt, work, info);

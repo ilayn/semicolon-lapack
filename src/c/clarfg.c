@@ -84,7 +84,7 @@ void clarfg(const INT n, c64* alpha, c64* x,
                     break;
                 }
             }
-            knt++;  /* Convert from 0-based loop count to iteration count */
+            knt++;
 
             /* New BETA is at most 1, at least SAFMIN */
 

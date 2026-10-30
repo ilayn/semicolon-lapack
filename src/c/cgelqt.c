@@ -58,7 +58,7 @@ void cgelqt(const INT m, const INT n, const INT mb,
     INT k, i, ib, iinfo;
     INT minmn;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     minmn = m < n ? m : n;
 
@@ -89,11 +89,11 @@ void cgelqt(const INT m, const INT n, const INT mb,
     for (i = 0; i < k; i += mb) {
         ib = (k - i) < mb ? (k - i) : mb;
 
-        /* Compute the LQ factorization of the current block A(i:i+ib-1, i:n-1) */
+        /* Compute the LQ factorization of the current block A(i:m-1, i:i+ib-1) */
         cgelqt3(ib, n - i, &A[i + i * lda], lda, &T[0 + i * ldt], ldt, &iinfo);
 
         if (i + ib < m) {
-            /* Update by applying H^T to A(i+ib:m-1, i:n-1) from the right */
+            /* Update by applying H**T to A(i:m-1, i+ib:n-1) from the right */
             clarfb("R", "N", "F", "R",
                    m - i - ib, n - i, ib,
                    &A[i + i * lda], lda,

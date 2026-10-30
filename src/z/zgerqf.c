@@ -42,7 +42,7 @@ void zgerqf(const INT m, const INT n,
     INT ki, kk, mu, nu;
     INT lquery;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     k = m < n ? m : n;
     lquery = (lwork == -1);
@@ -88,7 +88,7 @@ void zgerqf(const INT m, const INT n,
     ldwork = m;
 
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("GERQF");
         if (nx < 0) nx = 0;
         if (nx < k) {
@@ -102,22 +102,23 @@ void zgerqf(const INT m, const INT n,
     }
 
     if (nb >= nbmin && nb < k && nx < k) {
-        /* Use blocked code (backward processing) */
+        /* Use blocked code initially.
+         * The last kk rows are handled by the block method. */
         ki = ((k - nx - 1) / nb) * nb;
         kk = k < ki + nb ? k : ki + nb;
 
-        /* Process the last kk rows in blocks of nb, from bottom to top */
         for (i = k - kk + ki; i >= k - kk; i -= nb) {
             ib = (k - i) < nb ? (k - i) : nb;
 
-            /* Factor block A(m-k+i:m-k+i+ib-1, 0:n-k+i+ib-1) */
+            /* Compute the RQ factorization of the current block
+             * A(m-k+i:m-k+i+ib-1, 0:n-k+i+ib-1) */
             zgerq2(ib, n - k + i + ib,
                    &A[(m - k + i) + 0 * lda], lda,
                    &tau[i], work, &iinfo);
 
             if (m - k + i > 0) {
                 /* Form the triangular factor of the block reflector
-                 * H = H(i) H(i+1) . . . H(i+ib-1) */
+                 * H = H(i+ib-1) . . . H(i+1) H(i) */
                 zlarft("B", "R", n - k + i + ib, ib,
                        &A[(m - k + i) + 0 * lda], lda,
                        &tau[i], work, ldwork);
@@ -132,7 +133,6 @@ void zgerqf(const INT m, const INT n,
             }
         }
 
-        /* Dimensions of the unblocked remainder */
         mu = m - kk;
         nu = n - kk;
     } else {
@@ -140,7 +140,7 @@ void zgerqf(const INT m, const INT n,
         nu = n;
     }
 
-    /* Use unblocked code for the remaining block */
+    /* Use unblocked code to factor the last or only block */
     if (mu > 0 && nu > 0) {
         zgerq2(mu, nu, A, lda, tau, work, &iinfo);
     }

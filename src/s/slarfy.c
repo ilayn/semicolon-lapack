@@ -47,10 +47,9 @@ void slarfy(const char* uplo, const INT n, const f32* restrict V,
 
     cblas_uplo = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
 
-    /* Form w := C * v */
+    /* Form  w:= C * v */
     cblas_ssymv(CblasColMajor, cblas_uplo, n, 1.0f, C, ldc, V, incv, 0.0f, work, 1);
 
-    /* alpha := -0.5 * tau * dot(w, v) */
     alpha = -0.5f * tau * cblas_sdot(n, work, 1, V, incv);
     cblas_saxpy(n, alpha, V, incv, work, 1);
 

@@ -71,7 +71,6 @@ void sormql(const char* side, const char* trans,
     INT mi = 0, nb, nbmin, ni = 0, nq, nw;
     INT i1, i2, i3;
 
-    /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
     lquery = (lwork == -1);
@@ -85,7 +84,7 @@ void sormql(const char* side, const char* trans,
         nw = m > 1 ? m : 1;
     }
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -106,7 +105,7 @@ void sormql(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        /* Compute optimal workspace */
+        /* Compute the workspace requirements */
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
@@ -150,11 +149,8 @@ void sormql(const char* side, const char* trans,
         sorm2l(side, trans, m, n, k, A, lda, tau, C, ldc, work, &iinfo);
     } else {
         /* Use blocked code */
-        iwt = nw * nb;  /* offset into work for the T array */
+        iwt = nw * nb;
 
-        /* Determine loop direction:
-         * Left+NoTrans or Right+Trans: i = 0, nb, ... (forward)
-         * Left+Trans or Right+NoTrans: i = ..., nb, 0 (backward) */
         if ((left && notran) || (!left && !notran)) {
             i1 = 0;
             i2 = k - 1;
@@ -181,10 +177,10 @@ void sormql(const char* side, const char* trans,
                    &tau[i], &work[iwt], LDT);
 
             if (left) {
-                /* H or H^T is applied to C(0:m-k+i+ib-1, 0:n-1) */
+                /* H or H**T is applied to C(0:m-k+i+ib-1, 0:n-1) */
                 mi = m - k + i + ib;
             } else {
-                /* H or H^T is applied to C(0:m-1, 0:n-k+i+ib-1) */
+                /* H or H**T is applied to C(0:m-1, 0:n-k+i+ib-1) */
                 ni = n - k + i + ib;
             }
 

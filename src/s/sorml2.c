@@ -60,14 +60,13 @@ void sorml2(const char* side, const char* trans,
     INT left, notran;
     INT i1, i2, i3;
 
-    /* Decode arguments */
+    /* Test the input arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
 
     /* NQ is the order of Q */
     nq = left ? m : n;
 
-    /* Parameter validation */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -94,9 +93,6 @@ void sorml2(const char* side, const char* trans,
         return;
     }
 
-    /* Determine loop direction:
-     * Left+NoTrans or Right+Trans: i = 0, 1, ..., k-1 (forward)
-     * Left+Trans or Right+NoTrans: i = k-1, k-2, ..., 0 (backward) */
     if ((left && notran) || (!left && !notran)) {
         i1 = 0;
         i2 = k - 1;

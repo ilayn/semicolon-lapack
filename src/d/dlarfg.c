@@ -54,7 +54,7 @@ void dlarfg(const INT n, f64* alpha, f64* x,
         /* H = I */
         *tau = 0.0;
     } else {
-        /* General case */
+        /* general case */
         beta = -copysign(dlapy2(*alpha, xnorm), *alpha);
         safmin = dlamch("S") / dlamch("E");
         knt = 0;
@@ -70,7 +70,7 @@ void dlarfg(const INT n, f64* alpha, f64* x,
                     break;
                 }
             }
-            knt++;  /* Convert from 0-based loop count to iteration count */
+            knt++;
 
             /* New BETA is at most 1, at least SAFMIN */
             xnorm = cblas_dnrm2(n - 1, x, incx);

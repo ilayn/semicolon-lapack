@@ -50,7 +50,7 @@ void cungql(const INT m, const INT n, const INT k,
     INT lquery;
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     lquery = (lwork == -1);
 
@@ -94,7 +94,7 @@ void cungql(const INT m, const INT n, const INT k,
     nx = 0;
     iws = n;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("UNGQL");
         if (nx < 0) nx = 0;
         if (nx < k) {

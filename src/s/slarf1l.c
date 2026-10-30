@@ -48,12 +48,12 @@ void slarf1l(const char* side, const INT m, const INT n,
     }
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
-    firstv = 0;  /* 0-based */
+    firstv = 0;
     lastc = 0;
 
     if (tau != 0.0f) {
-        /* Set up variables for scanning V. LASTV begins pointing to the end
-         * of V up to V(1). */
+        /* Set up variables for scanning V.  LASTV begins pointing to the end
+         * of V up to V(0). */
         if (applyleft) {
             lastv = m;
         } else {
@@ -102,7 +102,7 @@ void slarf1l(const char* side, const INT m, const INT n,
             cblas_sscal(lastc, ONE - tau, &C[lastv - 1], ldc);
         } else {
             /*
-             * w(0:lastc-1) := C(firstv:lastv-2,0:lastc-1)**T * v(firstv:lastv-2)
+             * w(0:lastc-1,0) := C(firstv:lastv-2,0:lastc-1)**T * v(firstv:lastv-2,0)
              */
             cblas_sgemv(CblasColMajor, CblasTrans,
                         lastv - firstv - 1, lastc, ONE,
@@ -111,17 +111,17 @@ void slarf1l(const char* side, const INT m, const INT n,
                         ZERO, work, 1);
 
             /*
-             * w(0:lastc-1) += C(lastv-1,0:lastc-1)**T * v(lastv-1)
+             * w(0:lastc-1,0) += C(lastv-1,0:lastc-1)**T * v(lastv-1,0)
              */
             cblas_saxpy(lastc, ONE, &C[lastv - 1], ldc, work, 1);
 
             /*
-             * C(lastv-1,0:lastc-1) += - tau * v(lastv-1) * w(0:lastc-1)**T
+             * C(lastv-1,0:lastc-1) += - tau * v(lastv-1,0) * w(0:lastc-1,0)**T
              */
             cblas_saxpy(lastc, -tau, work, 1, &C[lastv - 1], ldc);
 
             /*
-             * C(firstv:lastv-2,0:lastc-1) += - tau * v(firstv:lastv-2) * w(0:lastc-1)**T
+             * C(firstv:lastv-2,0:lastc-1) += - tau * v(firstv:lastv-2,0) * w(0:lastc-1,0)**T
              */
             cblas_sger(CblasColMajor, lastv - firstv - 1, lastc,
                        -tau, &v[i], incv, work, 1,
@@ -138,7 +138,7 @@ void slarf1l(const char* side, const INT m, const INT n,
             cblas_sscal(lastc, ONE - tau, &C[(lastv - 1) * ldc], 1);
         } else {
             /*
-             * w(0:lastc-1) := C(0:lastc-1,firstv:lastv-2) * v(firstv:lastv-2)
+             * w(0:lastc-1,0) := C(0:lastc-1,firstv:lastv-2) * v(firstv:lastv-2,0)
              */
             cblas_sgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv - firstv - 1, ONE,
@@ -147,17 +147,17 @@ void slarf1l(const char* side, const INT m, const INT n,
                         ZERO, work, 1);
 
             /*
-             * w(0:lastc-1) += C(0:lastc-1,lastv-1) * v(lastv-1)
+             * w(0:lastc-1,0) += C(0:lastc-1,lastv-1) * v(lastv-1,0)
              */
             cblas_saxpy(lastc, ONE, &C[(lastv - 1) * ldc], 1, work, 1);
 
             /*
-             * C(0:lastc-1,lastv-1) += - tau * v(lastv-1) * w(0:lastc-1)
+             * C(0:lastc-1,lastv-1) += - tau * v(lastv-1,0) * w(0:lastc-1,0)
              */
             cblas_saxpy(lastc, -tau, work, 1, &C[(lastv - 1) * ldc], 1);
 
             /*
-             * C(0:lastc-1,firstv:lastv-2) += - tau * w(0:lastc-1) * v(firstv:lastv-2)**T
+             * C(0:lastc-1,firstv:lastv-2) += - tau * w(0:lastc-1,0) * v(firstv:lastv-2)**T
              */
             cblas_sger(CblasColMajor, lastc, lastv - firstv - 1,
                        -tau, work, 1, &v[i], incv,

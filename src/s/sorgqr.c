@@ -51,7 +51,7 @@ void sorgqr(const INT m, const INT n, const INT k,
     INT lquery;
     const f32 ZERO = 0.0f;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     nb = lapack_get_nb("ORGQR");
     lwkopt = (n > 1 ? n : 1) * nb;
@@ -86,7 +86,7 @@ void sorgqr(const INT m, const INT n, const INT k,
     nx = 0;
     iws = n;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("ORGQR");
         if (nx < 0) nx = 0;
         if (nx < k) {

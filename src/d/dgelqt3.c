@@ -53,7 +53,6 @@ void dgelqt3(const INT m, const INT n,
 {
     INT i, j, m1, m2, i1, j1, iinfo;
 
-    /* Parameter validation */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -76,54 +75,42 @@ void dgelqt3(const INT m, const INT n,
 
     } else {
 
-        /* Otherwise, split A into blocks */
+        /* Otherwise, split A into blocks... */
         m1 = m / 2;
         m2 = m - m1;
-        i1 = m1;       /* 0-based: Fortran I1 = MIN(M1+1, M) maps to m1 */
-        j1 = m;        /* 0-based: Fortran J1 = MIN(M+1, N) maps to m */
+        i1 = m1;
+        j1 = m;
 
-        /* Compute A(0:m1-1, 0:n-1) <- (Y1, R1, T1), where Q1 = I - Y1 T1 Y1^T */
+        /* Compute A(0:m1-1, 0:n-1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H */
         dgelqt3(m1, n, A, lda, T, ldt, &iinfo);
 
-        /*
-         * Compute A(m1:m-1, 0:n-1) = Q1^T * A(m1:m-1, 0:n-1)
-         * [workspace: T(m1:m-1, 0:m1-1)]
-         */
+        /* Compute A(i1:m-1, 0:n-1) = A(i1:m-1, 0:n-1) Q1^H [workspace: T(i1:m-1, 0:m1-1)] */
 
-        /* T(m1:m-1, 0:m1-1) = A(m1:m-1, 0:m1-1) */
         for (i = 0; i < m2; i++) {
             for (j = 0; j < m1; j++) {
                 T[(i + m1) + j * ldt] = A[(i + m1) + j * lda];
             }
         }
 
-        /* T(m1:m-1, 0:m1-1) = T(m1:m-1, 0:m1-1) * U1^T
-         * where U1 is the upper triangular part of A(0:m1-1, 0:m1-1) with unit diag */
         cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, CblasUnit,
                     m2, m1, 1.0, A, lda, &T[i1], ldt);
 
-        /* T(m1:m-1, 0:m1-1) += A(m1:m-1, m1:n-1) * A(0:m1-1, m1:n-1)^T */
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     m2, m1, n - m1, 1.0,
                     &A[i1 + i1 * lda], lda, &A[0 + i1 * lda], lda,
                     1.0, &T[i1], ldt);
 
-        /* T(m1:m-1, 0:m1-1) = T(m1:m-1, 0:m1-1) * T1
-         * where T1 is the upper triangular T(0:m1-1, 0:m1-1) */
         cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
                     m2, m1, 1.0, T, ldt, &T[i1], ldt);
 
-        /* A(m1:m-1, m1:n-1) -= T(m1:m-1, 0:m1-1) * A(0:m1-1, m1:n-1) */
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m2, n - m1, m1, -1.0,
                     &T[i1], ldt, &A[0 + i1 * lda], lda,
                     1.0, &A[i1 + i1 * lda], lda);
 
-        /* A(m1:m-1, 0:m1-1) -= T(m1:m-1, 0:m1-1) * U1 */
         cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, CblasUnit,
                     m2, m1, 1.0, A, lda, &T[i1], ldt);
 
-        /* A(m1:m-1, 0:m1-1) -= T(m1:m-1, 0:m1-1) and zero T(m1:m-1, 0:m1-1) */
         for (i = 0; i < m2; i++) {
             for (j = 0; j < m1; j++) {
                 A[(i + m1) + j * lda] = A[(i + m1) + j * lda] - T[(i + m1) + j * ldt];
@@ -131,27 +118,21 @@ void dgelqt3(const INT m, const INT n,
             }
         }
 
-        /* Compute A(m1:m-1, m1:n-1) <- (Y2, R2, T2) where Q2 = I - Y2 T2 Y2^T */
+        /* Compute A(i1:m-1, i1:n-1) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H */
         dgelqt3(m2, n - m1, &A[i1 + i1 * lda], lda,
                 &T[i1 + i1 * ldt], ldt, &iinfo);
 
-        /*
-         * Compute T3 = T(0:m1-1, m1:m-1) = -T1 * Y1^T * Y2 * T2
-         */
+        /* Compute T3 = T(0:m1-1, i1:m-1) = -T1 Y1^H Y2 T2 */
 
-        /* T(0:m1-1, m1:m-1) = A(0:m1-1, m1:m-1)  (copy) */
         for (i = 0; i < m2; i++) {
             for (j = 0; j < m1; j++) {
                 T[j + (i + m1) * ldt] = A[j + (i + m1) * lda];
             }
         }
 
-        /* T(0:m1-1, m1:m-1) = T(0:m1-1, m1:m-1) * U2^T
-         * where U2 is upper triangular part of A(m1:m-1, m1:m-1) with unit diag */
         cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, CblasUnit,
                     m1, m2, 1.0, &A[i1 + i1 * lda], lda, &T[0 + i1 * ldt], ldt);
 
-        /* T(0:m1-1, m1:m-1) += A(0:m1-1, m:n-1) * A(m1:m-1, m:n-1)^T */
         if (n > m) {
             cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                         m1, m2, n - m, 1.0,
@@ -159,17 +140,15 @@ void dgelqt3(const INT m, const INT n,
                         1.0, &T[0 + i1 * ldt], ldt);
         }
 
-        /* T(0:m1-1, m1:m-1) = -T1 * T(0:m1-1, m1:m-1) */
         cblas_dtrmm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
                     m1, m2, -1.0, T, ldt, &T[0 + i1 * ldt], ldt);
 
-        /* T(0:m1-1, m1:m-1) = T(0:m1-1, m1:m-1) * T2 */
         cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
                     m1, m2, 1.0, &T[i1 + i1 * ldt], ldt, &T[0 + i1 * ldt], ldt);
 
         /*
-         * Result: Y = (Y1, Y2); L = [ L1            0  ]; T = [ T1  T3 ]
-         *                            [ A(0:m1-1, m1:n-1)  L2 ]      [  0  T2 ]
+         * Y = (Y1,Y2); L = [ L1                 0  ];  T = [T1 T3]
+         *                  [ A(i1:m-1, 0:m1-1)  L2 ]       [ 0 T2]
          */
     }
 }

@@ -198,14 +198,12 @@ void dorbdb(
                 dlarfgp(p - i, &X11[i + i * ldx11], &X11[(i + 1) + i * ldx11], 1,
                         &taup1[i]);
             } else if (p == i + 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X11[i + i * ldx11], NULL, 1, &taup1[i]);
             }
             if (m - p > i + 1) {
                 dlarfgp(m - p - i, &X21[i + i * ldx21], &X21[(i + 1) + i * ldx21], 1,
                         &taup2[i]);
             } else if (m - p == i + 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X21[i + i * ldx21], NULL, 1, &taup2[i]);
             }
 
@@ -244,7 +242,6 @@ void dorbdb(
 
             if (i < q - 1) {
                 if (q - i - 1 == 1) {
-                    /* N=1: X not accessed */
                     dlarfgp(1, &X11[i + (i + 1) * ldx11], NULL, ldx11, &tauq1[i]);
                 } else {
                     dlarfgp(q - i - 1, &X11[i + (i + 1) * ldx11],
@@ -253,7 +250,6 @@ void dorbdb(
             }
             if (q + i < m) {
                 if (m - q == i + 1) {
-                    /* N=1: X not accessed */
                     dlarfgp(1, &X12[i + i * ldx12], NULL, ldx12, &tauq2[i]);
                 } else {
                     dlarfgp(m - q - i, &X12[i + i * ldx12], &X12[i + (i + 1) * ldx12], ldx12,
@@ -282,7 +278,6 @@ void dorbdb(
 
             cblas_dscal(m - q - i, -z1 * z4, &X12[i + i * ldx12], ldx12);
             if (i >= m - q - 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X12[i + i * ldx12], NULL, ldx12, &tauq2[i]);
             } else {
                 dlarfgp(m - q - i, &X12[i + i * ldx12], &X12[i + (i + 1) * ldx12], ldx12,
@@ -304,7 +299,6 @@ void dorbdb(
 
             cblas_dscal(m - p - q - i, z2 * z4, &X22[(q + i) + (p + i) * ldx22], ldx22);
             if (i == m - p - q - 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X22[(q + i) + (p + i) * ldx22], NULL, ldx22, &tauq2[p + i]);
             } else {
                 dlarfgp(m - p - q - i, &X22[(q + i) + (p + i) * ldx22],
@@ -342,7 +336,6 @@ void dorbdb(
             dlarfgp(p - i, &X11[i + i * ldx11], &X11[i + (i + 1) * ldx11], ldx11,
                     &taup1[i]);
             if (i == m - p - 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X21[i + i * ldx21], NULL, ldx21, &taup2[i]);
             } else {
                 dlarfgp(m - p - i, &X21[i + i * ldx21], &X21[i + (i + 1) * ldx21], ldx21,
@@ -382,7 +375,6 @@ void dorbdb(
 
             if (i < q - 1) {
                 if (q - i - 1 == 1) {
-                    /* N=1: X not accessed */
                     dlarfgp(1, &X11[(i + 1) + i * ldx11], NULL, 1, &tauq1[i]);
                 } else {
                     dlarfgp(q - i - 1, &X11[(i + 1) + i * ldx11],
@@ -393,7 +385,6 @@ void dorbdb(
                 dlarfgp(m - q - i, &X12[i + i * ldx12], &X12[(i + 1) + i * ldx12], 1,
                         &tauq2[i]);
             } else {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X12[i + i * ldx12], NULL, 1, &tauq2[i]);
             }
 
@@ -433,7 +424,6 @@ void dorbdb(
 
             cblas_dscal(m - p - q - i, z2 * z4, &X22[(p + i) + (q + i) * ldx22], 1);
             if (m - p - q == i + 1) {
-                /* N=1: X not accessed */
                 dlarfgp(1, &X22[(p + i) + (q + i) * ldx22], NULL, 1, &tauq2[p + i]);
             } else {
                 dlarfgp(m - p - q - i, &X22[(p + i) + (q + i) * ldx22],

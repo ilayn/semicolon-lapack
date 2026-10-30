@@ -69,7 +69,7 @@ void slaswlq(const INT m, const INT n, const INT mb, const INT nb,
         lwmin = m * mb;
     }
 
-    /* Parameter validation */
+    /* TEST THE INPUT ARGUMENTS */
     if (m < 0) {
         *info = -1;
     } else if (n < 0 || n < m) {

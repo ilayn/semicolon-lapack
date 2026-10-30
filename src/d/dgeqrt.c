@@ -63,7 +63,7 @@ void dgeqrt(const INT m, const INT n, const INT nb,
     INT k, i, ib, iinfo;
     INT minmn;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     minmn = m < n ? m : n;
 
@@ -98,7 +98,7 @@ void dgeqrt(const INT m, const INT n, const INT nb,
         dgeqrt3(m - i, ib, &A[i + i * lda], lda, &T[0 + i * ldt], ldt, &iinfo);
 
         if (i + ib < n) {
-            /* Update by applying H^T to A(i:m-1, i+ib:n-1) from the left */
+            /* Update by applying H**T to A(i:m-1, i+ib:n-1) from the left */
             dlarfb("L", "T", "F", "C",
                    m - i, n - i - ib, ib,
                    &A[i + i * lda], lda,

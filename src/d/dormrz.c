@@ -74,12 +74,9 @@ void dormrz(const char* side, const char* trans,
             f64* restrict work, const INT lwork,
             INT* info)
 {
-    /* NBMAX is the maximum block size (hardcoded in LAPACK Fortran source);
-     * LDT is the leading dimension of the T array stored in WORK;
-     * TSIZE is the size of the T array. */
     const INT NBMAX = 64;
-    const INT ldt_val = NBMAX + 1;  /* 65 */
-    const INT TSIZE = ldt_val * NBMAX;  /* 65*64 = 4160 */
+    const INT ldt_val = NBMAX + 1;
+    const INT TSIZE = ldt_val * NBMAX;
 
     INT left, notran, lquery;
     INT i, ib, ic, iinfo, iwt, ja, jc;
@@ -87,7 +84,6 @@ void dormrz(const char* side, const char* trans,
     INT i1, i2, i3;
     char transt;
 
-    /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
     lquery = (lwork == -1);
@@ -101,7 +97,7 @@ void dormrz(const char* side, const char* trans,
         nw = m > 1 ? m : 1;
     }
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (!left && side[0] != 'R' && side[0] != 'r') {
         *info = -1;
@@ -124,7 +120,7 @@ void dormrz(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        /* Compute optimal workspace */
+        /* Compute the workspace requirements */
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
@@ -165,11 +161,8 @@ void dormrz(const char* side, const char* trans,
         dormr3(side, trans, m, n, k, l, A, lda, tau, C, ldc, work, &iinfo);
     } else {
         /* Use blocked code */
-        iwt = nw * nb;  /* 0-based offset into work for the T array */
+        iwt = nw * nb;
 
-        /* Determine loop direction:
-         * (Left && Trans) or (Right && NoTrans): forward (i1=0, step=nb)
-         * (Left && NoTrans) or (Right && Trans): backward */
         if ((left && !notran) || (!left && notran)) {
             i1 = 0;
             i2 = k - 1;
@@ -183,16 +176,13 @@ void dormrz(const char* side, const char* trans,
         if (left) {
             ni = n;
             jc = 0;
-            ja = m - l;  /* 0-based: Fortran JA = M-L+1 -> ja = m-l */
+            ja = m - l;
         } else {
             mi = m;
             ic = 0;
-            ja = n - l;  /* 0-based: Fortran JA = N-L+1 -> ja = n-l */
+            ja = n - l;
         }
 
-        /* TRANS inversion for DLARZB:
-         * If NOTRAN: transt = 'T'
-         * If TRANS:  transt = 'N' */
         if (notran) {
             transt = 'T';
         } else {
@@ -209,16 +199,16 @@ void dormrz(const char* side, const char* trans,
                    &tau[i], &work[iwt], ldt_val);
 
             if (left) {
-                /* H or H^T is applied to C(i:m-1, 0:n-1) */
+                /* H or H**T is applied to C(i:m-1,0:n-1) */
                 mi = m - i;
                 ic = i;
             } else {
-                /* H or H^T is applied to C(0:m-1, i:n-1) */
+                /* H or H**T is applied to C(0:m-1,i:n-1) */
                 ni = n - i;
                 jc = i;
             }
 
-            /* Apply H or H^T */
+            /* Apply H or H**T */
             dlarzb(side, &transt, "B", "R", mi, ni, ib, l,
                    &A[i + ja * lda], lda,
                    &work[iwt], ldt_val,

@@ -71,7 +71,7 @@ void dtplqt2(const INT m, const INT n, const INT l,
     if (n == 0 || m == 0) return;
 
     for (i = 0; i < m; i++) {
-        p = n - l + (l < (i + 1) ? l : (i + 1));  /* N-L+MIN(L, I+1) in 0-based */
+        p = n - l + (l < (i + 1) ? l : (i + 1));
 
         dlarfg(p + 1, &A[i + i * lda], &B[i], ldb, &T[i * ldt]);
 
@@ -99,9 +99,9 @@ void dtplqt2(const INT m, const INT n, const INT l,
         for (j = 0; j < i; j++) {
             T[i + j * ldt] = ZERO;
         }
-        p = (i < l) ? i : l;                     /* MIN(I, L) */
-        np = (n - l + 1) < n ? (n - l + 1) : n;  /* MIN(N-L+1, N) */
-        mp = (p + 1) < m ? (p + 1) : m;          /* MIN(P+1, M) */
+        p = (i < l) ? i : l;
+        np = (n - l + 1) < n ? (n - l + 1) : n;
+        mp = (p + 1) < m ? (p + 1) : m;
 
         for (j = 0; j < p; j++) {
             T[i + j * ldt] = alpha * B[i + (np - 1 + j) * ldb];

@@ -108,8 +108,6 @@ void zunm2l(const char* side, const char* trans,
         return;
     }
 
-    /* Fortran: I1=1,I2=K,I3=1 or I1=K,I2=1,I3=-1 (1-based)
-     * C:       i1=0,i2=k-1,i3=1 or i1=k-1,i2=0,i3=-1 (0-based) */
     if ((left && notran) || (!left && !notran)) {
         i1 = 0;
         i2 = k - 1;

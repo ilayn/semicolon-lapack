@@ -56,14 +56,13 @@ void sgemlq(const char* side, const char* trans,
     INT left, right, tran, notran, lquery;
     INT mb, nb, lw, mn, minmnk, lwmin;
 
-    /* Decode arguments */
+    /* Test the input arguments */
     lquery = (lwork == -1);
     notran = (trans[0] == 'N' || trans[0] == 'n');
     tran   = (trans[0] == 'T' || trans[0] == 't');
     left   = (side[0] == 'L' || side[0] == 'l');
     right  = (side[0] == 'R' || side[0] == 'r');
 
-    /* Read block sizes from T array (stored by SGELQ) */
     mb = (INT)T[1];
     nb = (INT)T[2];
 
@@ -75,7 +74,6 @@ void sgemlq(const char* side, const char* trans,
         mn = n;
     }
 
-    /* Compute minimum workspace */
     minmnk = m < n ? m : n;
     minmnk = minmnk < k ? minmnk : k;
     if (minmnk == 0) {
@@ -84,10 +82,8 @@ void sgemlq(const char* side, const char* trans,
         lwmin = lw > 1 ? lw : 1;
     }
 
-    /* NBLCKS computation: present in Fortran but result unused */
     (void)((nb > k) && (mn > k));
 
-    /* Parameter validation */
     *info = 0;
     if (!left && !right) {
         *info = -1;
@@ -125,14 +121,11 @@ void sgemlq(const char* side, const char* trans,
         return;
     }
 
-    /* Choose between SGEMLQT (standard) and SLAMSWLQ (short-wide) */
     if ((left && m <= k) || (right && n <= k)
         || (nb <= k) || (nb >= (m > n ? (m > k ? m : k) : (n > k ? n : k)))) {
-        /* Use standard blocked algorithm */
         sgemlqt(side, trans, m, n, k, mb,
                 A, lda, &T[5], mb, C, ldc, work, info);
     } else {
-        /* Use short-wide algorithm */
         slamswlq(side, trans, m, n, k, mb, nb,
                  A, lda, &T[5], mb, C, ldc, work, lwork, info);
     }

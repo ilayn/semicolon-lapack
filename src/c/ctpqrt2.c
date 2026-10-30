@@ -72,7 +72,7 @@ void ctpqrt2(const INT m, const INT n, const INT l,
     if (n == 0 || m == 0) return;
 
     for (i = 0; i < n; i++) {
-        p = m - l + (l < (i + 1) ? l : (i + 1));  /* M-L+MIN(L, I+1) in 0-based */
+        p = m - l + (l < (i + 1) ? l : (i + 1));
 
         clarfg(p + 1, &A[i + i * lda], &B[i * ldb], 1, &T[i]);
 
@@ -100,9 +100,9 @@ void ctpqrt2(const INT m, const INT n, const INT l,
         for (j = 0; j < i; j++) {
             T[j + i * ldt] = ZERO;
         }
-        p = (i < l) ? i : l;                     /* MIN(I, L) in 0-based: i is already 0-based */
-        mp = m - l;                               /* 0-based index of first row of B2 */
-        np = (p + 1) < n ? (p + 1) : n;          /* MIN(P+1, N) */
+        p = (i < l) ? i : l;
+        mp = m - l;
+        np = (p + 1) < n ? (p + 1) : n;
 
         for (j = 0; j < p; j++) {
             T[j + i * ldt] = alpha * B[(mp + j) + i * ldb];

@@ -78,7 +78,6 @@ void dlarzb(const char* side, const char* trans, const char* direct,
         return;
     }
 
-    /* Determine the transpose to apply to T */
     if (trans[0] == 'N' || trans[0] == 'n') {
         transt = CblasTrans;
     } else {

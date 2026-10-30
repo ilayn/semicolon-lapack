@@ -54,12 +54,12 @@ void zlarf1l(const char* side, const INT m, const INT n,
     }
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
-    firstv = 0;  /* 0-based */
+    firstv = 0;
     lastc = 0;
 
     if (tau != ZERO) {
-        /* Set up variables for scanning V. LASTV begins pointing to the end
-         * of V up to V(1). */
+        /* Set up variables for scanning V.  LASTV begins pointing to the end
+         * of V up to V(0). */
         if (applyleft) {
             lastv = m;
         } else {
@@ -109,7 +109,7 @@ void zlarf1l(const char* side, const INT m, const INT n,
             cblas_zscal(lastc, &one_minus_tau, &C[lastv - 1], ldc);
         } else {
             /*
-             * w(0:lastc-1) := C(firstv:lastv-2,0:lastc-1)**H * v(firstv:lastv-2)
+             * w(0:lastc-1,0) := C(firstv:lastv-2,0:lastc-1)**H * v(firstv:lastv-2,0)
              */
             cblas_zgemv(CblasColMajor, CblasConjTrans,
                         lastv - firstv - 1, lastc, &ONE,
@@ -118,14 +118,14 @@ void zlarf1l(const char* side, const INT m, const INT n,
                         work, 1);
 
             /*
-             * w(0:lastc-1) += conj(C(lastv-1,0:lastc-1))
+             * w(0:lastc-1,0) += C(lastv-1,0:lastc-1)**H * v(lastv-1,0)
              */
             for (j = 0; j < lastc; j++) {
                 work[j] = work[j] + conj(C[(lastv - 1) + j * ldc]);
             }
 
             /*
-             * C(lastv-1,0:lastc-1) += - tau * conj(w(0:lastc-1))
+             * C(lastv-1,0:lastc-1) += - tau * v(lastv-1,0) * w(0:lastc-1,0)**H
              */
             for (j = 0; j < lastc; j++) {
                 C[(lastv - 1) + j * ldc] = C[(lastv - 1) + j * ldc]
@@ -133,7 +133,7 @@ void zlarf1l(const char* side, const INT m, const INT n,
             }
 
             /*
-             * C(firstv:lastv-2,0:lastc-1) += - tau * v(firstv:lastv-2) * w(0:lastc-1)**H
+             * C(firstv:lastv-2,0:lastc-1) += - tau * v(firstv:lastv-2,0) * w(0:lastc-1,0)**H
              */
             neg_tau = -tau;
             cblas_zgerc(CblasColMajor, lastv - firstv - 1, lastc,
@@ -152,7 +152,7 @@ void zlarf1l(const char* side, const INT m, const INT n,
             cblas_zscal(lastc, &one_minus_tau, &C[(lastv - 1) * ldc], 1);
         } else {
             /*
-             * w(0:lastc-1) := C(0:lastc-1,firstv:lastv-2) * v(firstv:lastv-2)
+             * w(0:lastc-1,0) := C(0:lastc-1,firstv:lastv-2) * v(firstv:lastv-2,0)
              */
             cblas_zgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv - firstv - 1, &ONE,
@@ -161,18 +161,18 @@ void zlarf1l(const char* side, const INT m, const INT n,
                         work, 1);
 
             /*
-             * w(0:lastc-1) += C(0:lastc-1,lastv-1)
+             * w(0:lastc-1,0) += C(0:lastc-1,lastv-1) * v(lastv-1,0)
              */
             cblas_zaxpy(lastc, &ONE, &C[(lastv - 1) * ldc], 1, work, 1);
 
             /*
-             * C(0:lastc-1,lastv-1) += - tau * w(0:lastc-1)
+             * C(0:lastc-1,lastv-1) += - tau * v(lastv-1,0) * w(0:lastc-1,0)
              */
             neg_tau = -tau;
             cblas_zaxpy(lastc, &neg_tau, work, 1, &C[(lastv - 1) * ldc], 1);
 
             /*
-             * C(0:lastc-1,firstv:lastv-2) += - tau * w(0:lastc-1) * v(firstv:lastv-2)**H
+             * C(0:lastc-1,firstv:lastv-2) += - tau * w(0:lastc-1,0) * v(firstv:lastv-2)**H
              */
             cblas_zgerc(CblasColMajor, lastc, lastv - firstv - 1,
                         &neg_tau, work, 1, &v[i], incv,

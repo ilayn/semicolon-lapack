@@ -83,7 +83,7 @@ void cungqr(const INT m, const INT n, const INT k,
     nx = 0;
     iws = n;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("UNGQR");
         if (nx < 0) nx = 0;
         if (nx < k) {
