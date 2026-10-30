@@ -1,6 +1,6 @@
 /**
  * @file csycon_3.c
- * @brief CSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
+ * @brief CSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by CSYTRF_RK or CSYTRF_BK.
  */
 
 #include "semicolon_lapack_complex_single.h"
@@ -9,7 +9,7 @@
 /**
  * CSYCON_3 estimates the reciprocal of the condition number (in the
  * 1-norm) of a complex symmetric matrix A using the factorization
- * computed by CSYTRF_RK or ZSYTRF_BK:
+ * computed by CSYTRF_RK or CSYTRF_BK:
  *
  *    A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
  *
@@ -28,7 +28,7 @@
  * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     A     Complex array of dimension `(lda,n)`.
  *                      Diagonal of the block diagonal matrix D and factors
- *                      U or L as computed by `csytrf_rk` and `zsytrf_bk`:
+ *                      U or L as computed by `csytrf_rk` and `csytrf_bk`:
  *
  *                      - Only diagonal elements of the symmetric block
  *                        diagonal matrix D on the diagonal of A, i.e.
@@ -52,7 +52,7 @@
  *                      `uplo='L'` cases.
  * @param[in]     ipiv  Array of dimension `n`.
  *                      Details of the interchanges and the block structure
- *                      of D as determined by `csytrf_rk` or `zsytrf_bk`.
+ *                      of D as determined by `csytrf_rk` or `csytrf_bk`.
  * @param[in]     anorm The 1-norm of the original matrix A.
  * @param[out]    rcond The reciprocal of the condition number of the matrix
  *                      A, computed as `rcond=1/(anorm*ainvnm)`, where

@@ -399,6 +399,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
 
 
                     if (*info != 0) {
+                        *ns = ns_local;
                         return;
                     }
 
@@ -444,6 +445,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             nrmu = cblas_snrm2(nru, &Z[irowu + (icolz + i) * ldz], 2);
                             if (nrmu == ZERO) {
                                 *info = 2 * n + 1;
+                                *ns = ns_local;
                                 return;
                             }
                             cblas_sscal(nru, ONE / nrmu, &Z[irowu + (icolz + i) * ldz], 2);
@@ -463,6 +465,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             nrmv = cblas_snrm2(nrv, &Z[irowv + (icolz + i) * ldz], 2);
                             if (nrmv == ZERO) {
                                 *info = 2 * n + 1;
+                                *ns = ns_local;
                                 return;
                             }
                             cblas_sscal(nrv, -ONE / nrmv, &Z[irowv + (icolz + i) * ldz], 2);
@@ -506,13 +509,13 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                     icolz = icolz + nsl;
                     irowu = irowz;
                     irowv = irowz + 1;
-                    isplt = idptr + 2;
+                    isplt = idptr + 1;
                     ns_local = ns_local + nsl;
                     nru = 0;
                     nrv = 0;
                 } /* NTGK.GT.0 */
 
-                if (irowz < 2 * n && wantz) {
+                if (irowz < 2 * n - 1 && wantz) {
                     for (i = 0; i < irowz; i++) {
                         Z[i + icolz * ldz] = ZERO;
                     }

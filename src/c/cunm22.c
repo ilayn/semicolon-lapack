@@ -116,7 +116,7 @@ void cunm22(const char* side, const char* trans,
         return;
     }
 
-    /* Degenerate cases (n1 = 0 or n2 = 0) are handled using ZTRMM. */
+    /* Degenerate cases (n1 = 0 or n2 = 0) are handled using CTRMM. */
     if (n1 == 0) {
         cblas_ctrmm(CblasColMajor,
                     left ? CblasLeft : CblasRight,

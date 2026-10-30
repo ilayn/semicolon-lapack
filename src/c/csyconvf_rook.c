@@ -1,6 +1,6 @@
 /**
  * @file csyconvf_rook.c
- * @brief CSYCONVF_ROOK converts between factorization formats used in CSYTRF_ROOK and CSYTRF_RK/ZSYTRF_BK.
+ * @brief CSYCONVF_ROOK converts between factorization formats used in CSYTRF_ROOK and CSYTRF_RK/CSYTRF_BK.
  */
 
 #include <complex.h>
@@ -11,17 +11,17 @@
  * If parameter WAY = 'C':
  * CSYCONVF_ROOK converts the factorization output format used in
  * CSYTRF_ROOK provided on entry in parameter A into the factorization
- * output format used in CSYTRF_RK (or ZSYTRF_BK) that is stored
+ * output format used in CSYTRF_RK (or CSYTRF_BK) that is stored
  * on exit in parameters A and E. IPIV format for CSYTRF_ROOK and
- * CSYTRF_RK (or ZSYTRF_BK) is the same and is not converted.
+ * CSYTRF_RK (or CSYTRF_BK) is the same and is not converted.
  *
  * If parameter WAY = 'R':
  * CSYCONVF_ROOK performs the conversion in reverse direction, i.e.
  * converts the factorization output format used in CSYTRF_RK
- * (or ZSYTRF_BK) provided on entry in parameters A and E into
+ * (or CSYTRF_BK) provided on entry in parameters A and E into
  * the factorization output format used in CSYTRF_ROOK that is stored
  * on exit in parameter A. IPIV format for CSYTRF_ROOK and
- * CSYTRF_RK (or ZSYTRF_BK) is the same and is not converted.
+ * CSYTRF_RK (or CSYTRF_BK) is the same and is not converted.
  *
  * @param[in]     uplo
  *                      - `'U'`: Upper triangular
@@ -46,7 +46,7 @@
  *                        superdiagonal part of A.
  *
  *                      On exit, contains factorization details in format
- *                      used in `csytrf_rk` or `zsytrf_bk`:
+ *                      used in `csytrf_rk` or `csytrf_bk`:
  *
  *                      - Only diagonal elements of the symmetric block
  *                        diagonal matrix D on the diagonal of A, i.e.
@@ -60,7 +60,7 @@
  *                      2) If `way='R'`:
  *
  *                      On entry, contains factorization details in format
- *                      used in `csytrf_rk` or `zsytrf_bk`:
+ *                      used in `csytrf_rk` or `csytrf_bk`:
  *
  *                      - Only diagonal elements of the symmetric block
  *                        diagonal matrix D on the diagonal of A, i.e.
@@ -110,7 +110,7 @@
  *                      structure of D as determined:
  *
  *                      1) by `csytrf_rook`, if `way='C'`;
- *                      2) by `csytrf_rk` (or `zsytrf_bk`), if `way='R'`.
+ *                      2) by `csytrf_rk` (or `csytrf_bk`), if `way='R'`.
  *
  *                      The ipiv format is the same for all these routines.
  *

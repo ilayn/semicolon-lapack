@@ -597,7 +597,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 work[m + n + p] = xsc * scalem;
                 work[n + p] = xsc * (scalem * sqrtf(temp1));
                 aatmax = (aatmax > work[n + p]) ? aatmax : work[n + p];
-                if (work[n + p] != ZERO && work[n + p] < aatmin) aatmin = work[n + p];
+                if (work[n + p] != ZERO) aatmin = (aatmin < work[n + p]) ? aatmin : work[n + p];
             }
         } else {
             for (p = 0; p < m; p++) {
@@ -662,8 +662,10 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             temp1 = aapp;
             aapp = aatmax;
+            aatmax = temp1;
             temp1 = aaqq;
             aaqq = aatmin;
+            aatmin = temp1;
             kill = lsvec;
             lsvec = rsvec;
             rsvec = kill;
@@ -894,8 +896,8 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 xsc = epsln / (f32)n;
                 for (q = 0; q < nr; q++) {
                     temp1 = xsc * fabsf(A[q + q * lda]);
-                    for (p = 0; p < nr; p++) {
-                        if (p > q || A[p + q * lda] == ZERO) {
+                    for (p = 0; p < n; p++) {
+                        if ((p > q && fabsf(A[p + q * lda]) <= temp1) || p < q) {
                             A[p + q * lda] = copysignf(temp1, A[p + q * lda]);
                         }
                     }
@@ -922,7 +924,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             for (q = 0; q < nr; q++) {
                 temp1 = xsc * fabsf(A[q + q * lda]);
                 for (p = 0; p < nr; p++) {
-                    if (p > q || A[p + q * lda] == ZERO) {
+                    if ((p > q && fabsf(A[p + q * lda]) <= temp1) || p < q) {
                         A[p + q * lda] = copysignf(temp1, A[p + q * lda]);
                     }
                 }

@@ -184,11 +184,11 @@ void cunhr_col(const INT m, const INT n, const INT nb,
          *        T(jb) * (V1(jb)**T) = (-1)*U(jb)*S(jb).
          *
          *      Even though the blocks X(jb) and B(jb) are upper-
-         *      triangular, the routine ZTRSM will access all jnb**2
+         *      triangular, the routine CTRSM will access all jnb**2
          *      elements of the square T(0:jnb-1, jb:jb+jnb-1). Therefore,
          *      we need to set to zero the elements of the block
          *      T(0:jnb-1, jb:jb+jnb-1) below the diagonal before the call
-         *      to ZTRSM.
+         *      to CTRSM.
          *
          * (2-3a) Set the elements to zero.
          */

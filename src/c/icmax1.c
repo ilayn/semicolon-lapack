@@ -11,7 +11,7 @@
 /**
  * ICMAX1 finds the index of the first vector element of maximum absolute value.
  *
- * Based on IZAMAX from Level 1 BLAS.
+ * Based on ICAMAX from Level 1 BLAS.
  * The change is to use the 'genuine' absolute value.
  *
  * @param[in] n     The number of elements in the vector ZX.

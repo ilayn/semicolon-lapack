@@ -40,50 +40,45 @@ void cgeqrf(const INT m, const INT n,
             c64* restrict work, const INT lwork,
             INT* info)
 {
-    INT k, nb, nbmin, nx, iws, ldwork;
+    INT k, nb, nbmin, nx, iws, ldwork, lwkopt;
     INT i, ib, iinfo;
     INT lquery;
 
     /* Test the input arguments */
-    *info = 0;
     k = m < n ? m : n;
+    *info = 0;
+    nb = lapack_get_nb("GEQRF");
     lquery = (lwork == -1);
-
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
         *info = -2;
-    } else if (lda < (m > 1 ? m : 1)) {
+    } else if (lda < (1 > m ? 1 : m)) {
         *info = -4;
-    }
-
-    if (*info == 0) {
-        if (k == 0) {
-            work[0] = CMPLXF(1.0f, 0.0f);
-        } else {
-            nb = lapack_get_nb("GEQRF");
-            work[0] = CMPLXF(sroundup_lwork(n * nb), 0.0f);
-        }
-        if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
+    } else if (!lquery) {
+        if (lwork <= 0 || (m > 0 && lwork < (1 > n ? 1 : n))) {
             *info = -7;
         }
     }
-
     if (*info != 0) {
         xerbla("CGEQRF", -(*info));
         return;
-    }
-
-    if (lquery) {
+    } else if (lquery) {
+        if (k == 0) {
+            lwkopt = 1;
+        } else {
+            lwkopt = n * nb;
+        }
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
     /* Quick return if possible */
     if (k == 0) {
+        work[0] = 1.0f;
         return;
     }
 
-    nb = lapack_get_nb("GEQRF");
     nbmin = 2;
     nx = 0;
     iws = n;

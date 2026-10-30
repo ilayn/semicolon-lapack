@@ -65,6 +65,8 @@ void slaein(
     INT i, i1, i2, i3, ierr, its, j;
     f32 absbii, absbjj, ei, ej, growto, norm, nrmsml;
     f32 rec, rootn, scale, temp, v0norm, v1norm, vcrit, vmax, w, w1, x, xi, xr, y;
+    const char* trans;
+    char normin;
 
     *info = 0;
 
@@ -132,37 +134,7 @@ void slaein(
                 B[n - 1 + (n - 1) * ldb] = eps3;
             }
 
-            char normin = 'N';
-            for (its = 0; its < n; its++) {
-                v0norm = cblas_sasum(n, vr, 1);
-
-                /* Solve U*x = scale*v for a right eigenvector */
-                slatrs("U", "N", "N", &normin, n, B, ldb, vr, &scale, work, &ierr);
-                normin = 'Y';
-
-                /* Test for sufficient growth in the norm of v */
-                v1norm = cblas_sasum(n, vr, 1);
-                if (v1norm >= growto * scale * v0norm) {
-                    goto L120;
-                }
-
-                /* Choose new orthogonal starting vector and try again */
-                temp = eps3 / (rootn + ONE);
-                vr[0] = eps3;
-                for (i = 1; i < n; i++) {
-                    vr[i] = temp;
-                }
-                vr[n - its - 1] -= eps3 * rootn;
-            }
-
-            /* Failure to find eigenvector in n iterations */
-            *info = 1;
-
-        L120:
-            /* Normalize eigenvector */
-            i = cblas_isamax(n, vr, 1);
-            cblas_sscal(n, ONE / fabsf(vr[i]), vr, 1);
-
+            trans = "N";
         } else {
             /* UL decomposition with partial pivoting of B, replacing zero
              * pivots by eps3. */
@@ -194,37 +166,41 @@ void slaein(
                 B[0] = eps3;
             }
 
-            char normin = 'N';
-            for (its = 0; its < n; its++) {
-                v0norm = cblas_sasum(n, vr, 1);
+            trans = "T";
+        }
 
-                /* Solve U**T*x = scale*v for a left eigenvector */
-                slatrs("U", "T", "N", &normin, n, B, ldb, vr, &scale, work, &ierr);
-                normin = 'Y';
+        normin = 'N';
+        for (its = 0; its < n; its++) {
+            v0norm = cblas_sasum(n, vr, 1);
 
-                /* Test for sufficient growth in the norm of v */
-                v1norm = cblas_sasum(n, vr, 1);
-                if (v1norm >= growto * scale * v0norm) {
-                    goto L120b;
-                }
+            /* Solve U*x = scale*v for a right eigenvector
+             *   or U**T*x = scale*v for a left eigenvector,
+             * overwriting x on v. */
+            slatrs("U", trans, "N", &normin, n, B, ldb, vr, &scale, work, &ierr);
+            normin = 'Y';
 
-                /* Choose new orthogonal starting vector and try again */
-                temp = eps3 / (rootn + ONE);
-                vr[0] = eps3;
-                for (i = 1; i < n; i++) {
-                    vr[i] = temp;
-                }
-                vr[n - its - 1] -= eps3 * rootn;
+            /* Test for sufficient growth in the norm of v */
+            v1norm = cblas_sasum(n, vr, 1);
+            if (v1norm >= growto * scale * v0norm) {
+                goto L120;
             }
 
-            /* Failure to find eigenvector in n iterations */
-            *info = 1;
-
-        L120b:
-            /* Normalize eigenvector */
-            i = cblas_isamax(n, vr, 1);
-            cblas_sscal(n, ONE / fabsf(vr[i]), vr, 1);
+            /* Choose new orthogonal starting vector and try again */
+            temp = eps3 / (rootn + ONE);
+            vr[0] = eps3;
+            for (i = 1; i < n; i++) {
+                vr[i] = temp;
+            }
+            vr[n - its - 1] -= eps3 * rootn;
         }
+
+        /* Failure to find eigenvector in n iterations */
+        *info = 1;
+
+    L120:
+        /* Normalize eigenvector */
+        i = cblas_isamax(n, vr, 1);
+        cblas_sscal(n, ONE / fabsf(vr[i]), vr, 1);
 
     } else {
         /* Complex eigenvalue */

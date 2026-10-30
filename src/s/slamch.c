@@ -31,7 +31,7 @@ f32 slamch(const char* cmach)
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    f32 eps, sfmin, small, rmach;
+    f32 eps, sfmin, small, hugeval, rmach;
 
     // Assume rounding, not chopping. Always.
     eps = FLT_EPSILON * 0.5f;
@@ -40,8 +40,9 @@ f32 slamch(const char* cmach)
         rmach = eps;
     } else if (cmach[0] == 'S' || cmach[0] == 's') {
         sfmin = FLT_MIN;
-        small = ONE / FLT_MAX;
-        if (small >= sfmin) {
+        hugeval = FLT_MAX;
+        if (hugeval * sfmin <= ONE) {
+            small = ONE / hugeval;
             // Use SMALL plus a bit, to avoid the possibility of rounding
             // causing overflow when computing 1/sfmin.
             sfmin = small * (ONE + eps);

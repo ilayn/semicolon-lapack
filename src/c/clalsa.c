@@ -161,7 +161,7 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
         nlf = ic - nl;
         nrf = ic + 1;
 
-        /* Since B and BX are complex, the following call to DGEMM
+        /* Since B and BX are complex, the following call to SGEMM
          * is performed in two steps (real and imaginary parts). */
 
         j = nl * nrhs * 2;
@@ -194,7 +194,7 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
             }
         }
 
-        /* Since B and BX are complex, the following call to DGEMM
+        /* Since B and BX are complex, the following call to SGEMM
          * is performed in two steps (real and imaginary parts). */
 
         j = nr * nrhs * 2;
@@ -337,7 +337,7 @@ L170:
         nlf = ic - nl;
         nrf = ic + 1;
 
-        /* Since B and BX are complex, the following call to DGEMM is
+        /* Since B and BX are complex, the following call to SGEMM is
          * performed in two steps (real and imaginary parts). */
 
         j = nlp1 * nrhs * 2;
@@ -370,7 +370,7 @@ L170:
             }
         }
 
-        /* Since B and BX are complex, the following call to DGEMM is
+        /* Since B and BX are complex, the following call to SGEMM is
          * performed in two steps (real and imaginary parts). */
 
         j = nrp1 * nrhs * 2;

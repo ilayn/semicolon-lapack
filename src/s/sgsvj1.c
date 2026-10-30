@@ -133,6 +133,7 @@ void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
+        pskipped = 0;
 
         for (ibr = 0; ibr < nblr; ibr++) {
             igl = ibr * kbl;
@@ -379,11 +380,11 @@ L2011:
         }
 
         /* Additional steering devices */
-        if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
-            swband = i;
+        if (i + 1 < swband && (mxaapq <= roottol || iswrot <= n)) {
+            swband = i + 1;
         }
 
-        if (i > swband + 1 && mxaapq < (f32)n * tol && (f32)n * mxaapq * mxsinj < tol) {
+        if (i > swband && mxaapq < (f32)n * tol && (f32)n * mxaapq * mxsinj < tol) {
             goto L1994;
         }
 

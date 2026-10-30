@@ -81,9 +81,6 @@ void ssterf(const INT n, f32* restrict D,
                 break;
             }
         }
-        if (m == n - 1 && (fabsf(E[m - 1]) > (sqrtf(fabsf(D[m - 1])) * sqrtf(fabsf(D[m]))) * eps)) {
-            m = n - 1;
-        }
 
         INT l = l1;
         INT lsv = l;

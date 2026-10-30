@@ -233,7 +233,7 @@ void clals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                 rwork[0] = -1.0f;
                 temp = cblas_snrm2(k, rwork, 1);
 
-                /* Since B and BX are complex, the following call to DGEMV
+                /* Since B and BX are complex, the following call to SGEMV
                  * is performed in two steps (real and imaginary parts). */
 
                 i = k + nrhs * 2;
@@ -301,7 +301,7 @@ void clals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                     }
                 }
 
-                /* Since B and BX are complex, the following call to DGEMV
+                /* Since B and BX are complex, the following call to SGEMV
                  * is performed in two steps (real and imaginary parts). */
 
                 i = k + nrhs * 2;

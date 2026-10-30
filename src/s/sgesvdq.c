@@ -286,11 +286,15 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     INT wntvr, wntva, rsvec, dntwv;
     INT accla, acclm, acclh, conda;
     INT rowprm, rtrans, lquery;
-    INT lwqp3, lwcon, lwsvd, lworq, minwrk, optwrk;
+    INT lwcon, lwqp3, lwrk_dgelqf, lwrk_dgesvd, lwrk_dgesvd2;
+    INT lwrk_dgeqp3 = 0, lwrk_dgeqrf, lwrk_dormlq, lwrk_dormqr = 0;
+    INT lwrk_dormqr2, lwlqf, lwqrf, lwsvd, lwsvd2, lworq;
+    INT lworq2, lworlq, minwrk, minwrk2, optwrk, optwrk2;
     INT iminwrk, rminwrk;
     INT ierr, iwoff, nr, n1, optratio, p, q;
     INT ascaled;
     f32 big, epsln, sconda, sfmin, rtmp;
+    f32 rdummy[1];
 
     /* Test the input arguments */
     wntus = (jobu[0] == 'S' || jobu[0] == 's' || jobu[0] == 'U' || jobu[0] == 'u');
@@ -315,104 +319,21 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     rtrans = (jobr[0] == 'T' || jobr[0] == 't');
 
     if (rowprm) {
-        iminwrk = conda ? (n + m - 1 + n) : (n + m - 1);
-        iminwrk = (iminwrk > 1) ? iminwrk : 1;
-        rminwrk = (m > 2) ? m : 2;
+        if (conda) {
+            iminwrk = (1 > n + m - 1 + n) ? 1 : n + m - 1 + n;
+        } else {
+            iminwrk = (1 > n + m - 1) ? 1 : n + m - 1;
+        }
+        rminwrk = (2 > m) ? 2 : m;
     } else {
-        iminwrk = conda ? (n + n) : n;
-        iminwrk = (iminwrk > 1) ? iminwrk : 1;
+        if (conda) {
+            iminwrk = (1 > n + n) ? 1 : n + n;
+        } else {
+            iminwrk = (1 > n) ? 1 : n;
+        }
         rminwrk = 2;
     }
-
     lquery = (liwork == -1 || lwork == -1 || lrwork == -1);
-
-    /*
-     * .. compute the minimal and the optimal workspace lengths
-     * [[The expressions for computing the minimal and the optimal
-     * values of LWORK are written with a lot of redundancy and
-     * can be simplified. However, this detailed form is easier for
-     * maintenance and modifications of the code.]]
-     */
-    lwqp3 = 3 * n + 1;
-    if (wntus || wntur) {
-        lworq = (n > 1) ? n : 1;
-    } else if (wntua) {
-        lworq = (m > 1) ? m : 1;
-    } else {
-        lworq = 1;
-    }
-    lwcon = 3 * n;
-    lwsvd = (5 * n > 1) ? 5 * n : 1;
-
-    if (!lsvec && !rsvec) {
-        /*
-         * .. minimal and optimal sizes of the workspace if
-         * only the singular values are requested
-         */
-        minwrk = n + lwqp3;
-        if (conda && minwrk < lwcon) minwrk = lwcon;
-        if (minwrk < lwsvd) minwrk = lwsvd;
-    } else if (lsvec && !rsvec) {
-        /*
-         * .. minimal and optimal sizes of the workspace if the
-         * singular values and the left singular vectors are requested
-         */
-        INT t = lwqp3;
-        if (t < lwsvd) t = lwsvd;
-        if (t < lworq) t = lworq;
-        if (conda && t < lwcon) t = lwcon;
-        minwrk = n + t;
-    } else if (rsvec && !lsvec) {
-        /*
-         * .. minimal and optimal sizes of the workspace if the
-         * singular values and the right singular vectors are requested
-         */
-        INT t = lwqp3;
-        if (t < lwsvd) t = lwsvd;
-        if (conda && t < lwcon) t = lwcon;
-        minwrk = n + t;
-    } else {
-        /*
-         * .. minimal and optimal sizes of the workspace if the
-         * full SVD is requested
-         */
-        INT t = lwqp3;
-        if (t < lwsvd) t = lwsvd;
-        if (t < lworq) t = lworq;
-        if (conda && t < lwcon) t = lwcon;
-        minwrk = n + t;
-        if (wntva) {
-            const INT half = n / 2;
-            INT lwsvd2 = 5 * half;
-            if (lwsvd2 < 1) lwsvd2 = 1;
-            INT minwrk2;
-            if (rtrans) {
-                /* .. minimal workspace length for N x N/2 SGEQRF */
-                INT lwqrf = (half > 1) ? half : 1;
-                INT lworq2 = (n > 1) ? n : 1;
-                minwrk2 = lwqp3;
-                if (minwrk2 < half + lwqrf) minwrk2 = half + lwqrf;
-                if (minwrk2 < half + lwsvd2) minwrk2 = half + lwsvd2;
-                if (minwrk2 < half + lworq2) minwrk2 = half + lworq2;
-                if (minwrk2 < lworq) minwrk2 = lworq;
-            } else {
-                /* .. minimal workspace length for N/2 x N SGELQF */
-                INT lwlqf = (half > 1) ? half : 1;
-                INT lworlq = (n > 1) ? n : 1;
-                minwrk2 = lwqp3;
-                if (minwrk2 < half + lwlqf) minwrk2 = half + lwlqf;
-                if (minwrk2 < half + lwsvd2) minwrk2 = half + lwsvd2;
-                if (minwrk2 < half + lworlq) minwrk2 = half + lworlq;
-                if (minwrk2 < lworq) minwrk2 = lworq;
-            }
-            if (conda && minwrk2 < lwcon) minwrk2 = lwcon;
-            minwrk2 = n + minwrk2;
-            if (minwrk < minwrk2) minwrk = minwrk2;
-        }
-    }
-    if (minwrk < 2) minwrk = 2;
-    optwrk = minwrk;
-
     *info = 0;
     if (!accla && !acclm && !acclh) {
         *info = -1;
@@ -434,27 +355,269 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
         *info = -9;
     } else if (ldu < 1 || (lsvc0 && ldu < m) || (wntuf && ldu < n)) {
         *info = -12;
-    } else if (ldv < 1 || ((rsvec || conda) && ldv < n)) {
+    } else if (ldv < 1 || (rsvec && ldv < n) || (conda && ldv < n)) {
         *info = -14;
     } else if (liwork < iminwrk && !lquery) {
         *info = -17;
     }
 
-    if (*info == 0 && !lquery) {
-        if (lwork < minwrk) {
-            *info = -19;
+    if (*info == 0) {
+        /*
+         * .. compute the minimal and the optimal workspace lengths
+         * [[The expressions for computing the minimal and the optimal
+         * values of LWORK are written with a lot of redundancy and
+         * can be simplified. However, this detailed form is easier for
+         * maintenance and modifications of the code.]]
+         */
+
+        /* .. minimal workspace length for SGEQP3 of an M x N matrix */
+        lwqp3 = 3 * n + 1;
+        /* .. minimal workspace length for SORMQR to build left singular vectors */
+        if (wntus || wntur) {
+            lworq = (n > 1) ? n : 1;
+        } else if (wntua) {
+            lworq = (m > 1) ? m : 1;
+        } else {
+            lworq = 0;
         }
-        if (lrwork < rminwrk) {
-            *info = -21;
+        /* .. minimal workspace length for SPOCON of an N x N matrix */
+        lwcon = 3 * n;
+        /* .. SGESVD of an N x N matrix */
+        lwsvd = (5 * n > 1) ? 5 * n : 1;
+        if (lquery) {
+            sgeqp3(m, n, A, lda, iwork, NULL, rdummy, -1, &ierr);
+            lwrk_dgeqp3 = (INT)rdummy[0];
+            if (wntus || wntur) {
+                sormqr("L", "N", m, n, n, A, lda, NULL, U,
+                       ldu, rdummy, -1, &ierr);
+                lwrk_dormqr = (INT)rdummy[0];
+            } else if (wntua) {
+                sormqr("L", "N", m, m, n, A, lda, NULL, U,
+                       ldu, rdummy, -1, &ierr);
+                lwrk_dormqr = (INT)rdummy[0];
+            } else {
+                lwrk_dormqr = 0;
+            }
         }
+        minwrk = 2;
+        optwrk = 2;
+        if (!lsvec && !rsvec) {
+            /*
+             * .. minimal and optimal sizes of the workspace if
+             * only the singular values are requested
+             */
+            if (conda) {
+                minwrk = n + lwqp3;
+                if (minwrk < lwcon) minwrk = lwcon;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+            } else {
+                minwrk = n + lwqp3;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+            }
+            if (lquery) {
+                sgesvd("N", "N", n, n, A, lda, S, U, ldu,
+                       V, ldv, rdummy, -1, &ierr);
+                lwrk_dgesvd = (INT)rdummy[0];
+                if (conda) {
+                    optwrk = n + lwrk_dgeqp3;
+                    if (optwrk < n + lwcon) optwrk = n + lwcon;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                } else {
+                    optwrk = n + lwrk_dgeqp3;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                }
+            }
+        } else if (lsvec && !rsvec) {
+            /*
+             * .. minimal and optimal sizes of the workspace if the
+             * singular values and the left singular vectors are requested
+             */
+            if (conda) {
+                minwrk = lwqp3;
+                if (minwrk < lwcon) minwrk = lwcon;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                if (minwrk < lworq) minwrk = lworq;
+                minwrk = n + minwrk;
+            } else {
+                minwrk = lwqp3;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                if (minwrk < lworq) minwrk = lworq;
+                minwrk = n + minwrk;
+            }
+            if (lquery) {
+                if (rtrans) {
+                    sgesvd("N", "O", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                } else {
+                    sgesvd("O", "N", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                }
+                lwrk_dgesvd = (INT)rdummy[0];
+                if (conda) {
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwcon) optwrk = lwcon;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    if (optwrk < lwrk_dormqr) optwrk = lwrk_dormqr;
+                    optwrk = n + optwrk;
+                } else {
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    if (optwrk < lwrk_dormqr) optwrk = lwrk_dormqr;
+                    optwrk = n + optwrk;
+                }
+            }
+        } else if (rsvec && !lsvec) {
+            /*
+             * .. minimal and optimal sizes of the workspace if the
+             * singular values and the right singular vectors are requested
+             */
+            if (conda) {
+                minwrk = lwqp3;
+                if (minwrk < lwcon) minwrk = lwcon;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                minwrk = n + minwrk;
+            } else {
+                minwrk = lwqp3;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                minwrk = n + minwrk;
+            }
+            if (lquery) {
+                if (rtrans) {
+                    sgesvd("O", "N", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                } else {
+                    sgesvd("N", "O", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                }
+                lwrk_dgesvd = (INT)rdummy[0];
+                if (conda) {
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwcon) optwrk = lwcon;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    optwrk = n + optwrk;
+                } else {
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    optwrk = n + optwrk;
+                }
+            }
+        } else {
+            /*
+             * .. minimal and optimal sizes of the workspace if the
+             * full SVD is requested
+             */
+            if (rtrans) {
+                minwrk = lwqp3;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                if (minwrk < lworq) minwrk = lworq;
+                if (conda && minwrk < lwcon) minwrk = lwcon;
+                minwrk = minwrk + n;
+                if (wntva) {
+                    /* .. minimal workspace length for N x N/2 SGEQRF */
+                    lwqrf = (n / 2 > 1) ? n / 2 : 1;
+                    /* .. minimal workspace length for N/2 x N/2 SGESVD */
+                    lwsvd2 = (5 * (n / 2) > 1) ? 5 * (n / 2) : 1;
+                    lworq2 = (n > 1) ? n : 1;
+                    minwrk2 = lwqp3;
+                    if (minwrk2 < n / 2 + lwqrf) minwrk2 = n / 2 + lwqrf;
+                    if (minwrk2 < n / 2 + lwsvd2) minwrk2 = n / 2 + lwsvd2;
+                    if (minwrk2 < n / 2 + lworq2) minwrk2 = n / 2 + lworq2;
+                    if (minwrk2 < lworq) minwrk2 = lworq;
+                    if (conda && minwrk2 < lwcon) minwrk2 = lwcon;
+                    minwrk2 = n + minwrk2;
+                    if (minwrk < minwrk2) minwrk = minwrk2;
+                }
+            } else {
+                minwrk = lwqp3;
+                if (minwrk < lwsvd) minwrk = lwsvd;
+                if (minwrk < lworq) minwrk = lworq;
+                if (conda && minwrk < lwcon) minwrk = lwcon;
+                minwrk = minwrk + n;
+                if (wntva) {
+                    /* .. minimal workspace length for N/2 x N SGELQF */
+                    lwlqf = (n / 2 > 1) ? n / 2 : 1;
+                    lwsvd2 = (5 * (n / 2) > 1) ? 5 * (n / 2) : 1;
+                    lworlq = (n > 1) ? n : 1;
+                    minwrk2 = lwqp3;
+                    if (minwrk2 < n / 2 + lwlqf) minwrk2 = n / 2 + lwlqf;
+                    if (minwrk2 < n / 2 + lwsvd2) minwrk2 = n / 2 + lwsvd2;
+                    if (minwrk2 < n / 2 + lworlq) minwrk2 = n / 2 + lworlq;
+                    if (minwrk2 < lworq) minwrk2 = lworq;
+                    if (conda && minwrk2 < lwcon) minwrk2 = lwcon;
+                    minwrk2 = n + minwrk2;
+                    if (minwrk < minwrk2) minwrk = minwrk2;
+                }
+            }
+            if (lquery) {
+                if (rtrans) {
+                    sgesvd("O", "A", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                    lwrk_dgesvd = (INT)rdummy[0];
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    if (optwrk < lwrk_dormqr) optwrk = lwrk_dormqr;
+                    if (conda && optwrk < lwcon) optwrk = lwcon;
+                    optwrk = n + optwrk;
+                    if (wntva) {
+                        sgeqrf(n, n / 2, U, ldu, NULL, rdummy, -1, &ierr);
+                        lwrk_dgeqrf = (INT)rdummy[0];
+                        sgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
+                               ldu, NULL, 1, rdummy, -1, &ierr);
+                        lwrk_dgesvd2 = (INT)rdummy[0];
+                        sormqr("R", "C", n, n, n / 2, U, ldu, NULL,
+                               V, ldv, rdummy, -1, &ierr);
+                        lwrk_dormqr2 = (INT)rdummy[0];
+                        optwrk2 = lwrk_dgeqp3;
+                        if (optwrk2 < n / 2 + lwrk_dgeqrf) optwrk2 = n / 2 + lwrk_dgeqrf;
+                        if (optwrk2 < n / 2 + lwrk_dgesvd2) optwrk2 = n / 2 + lwrk_dgesvd2;
+                        if (optwrk2 < n / 2 + lwrk_dormqr2) optwrk2 = n / 2 + lwrk_dormqr2;
+                        if (conda && optwrk2 < lwcon) optwrk2 = lwcon;
+                        optwrk2 = n + optwrk2;
+                        if (optwrk < optwrk2) optwrk = optwrk2;
+                    }
+                } else {
+                    sgesvd("S", "O", n, n, A, lda, S, U, ldu,
+                           V, ldv, rdummy, -1, &ierr);
+                    lwrk_dgesvd = (INT)rdummy[0];
+                    optwrk = lwrk_dgeqp3;
+                    if (optwrk < lwrk_dgesvd) optwrk = lwrk_dgesvd;
+                    if (optwrk < lwrk_dormqr) optwrk = lwrk_dormqr;
+                    if (conda && optwrk < lwcon) optwrk = lwcon;
+                    optwrk = n + optwrk;
+                    if (wntva) {
+                        sgelqf(n / 2, n, U, ldu, NULL, rdummy, -1, &ierr);
+                        lwrk_dgelqf = (INT)rdummy[0];
+                        sgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
+                               ldu, NULL, 1, rdummy, -1, &ierr);
+                        lwrk_dgesvd2 = (INT)rdummy[0];
+                        sormlq("R", "N", n, n, n / 2, U, ldu, NULL,
+                               V, ldv, rdummy, -1, &ierr);
+                        lwrk_dormlq = (INT)rdummy[0];
+                        optwrk2 = lwrk_dgeqp3;
+                        if (optwrk2 < n / 2 + lwrk_dgelqf) optwrk2 = n / 2 + lwrk_dgelqf;
+                        if (optwrk2 < n / 2 + lwrk_dgesvd2) optwrk2 = n / 2 + lwrk_dgesvd2;
+                        if (optwrk2 < n / 2 + lwrk_dormlq) optwrk2 = n / 2 + lwrk_dormlq;
+                        if (conda && optwrk2 < lwcon) optwrk2 = lwcon;
+                        optwrk2 = n + optwrk2;
+                        if (optwrk < optwrk2) optwrk = optwrk2;
+                    }
+                }
+            }
+        }
+
+        if (minwrk < 2) minwrk = 2;
+        if (optwrk < 2) optwrk = 2;
+        if (lwork < minwrk && !lquery) *info = -19;
     }
 
+    if (*info == 0 && lrwork < rminwrk && !lquery) {
+        *info = -21;
+    }
     if (*info != 0) {
         xerbla("SGESVDQ", -(*info));
         return;
-    }
-
-    if (lquery) {
+    } else if (lquery) {
+        /* Return optimal workspace */
         iwork[0] = iminwrk;
         work[0] = (f32)optwrk;
         work[1] = (f32)minwrk;
@@ -464,7 +627,7 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     /* Quick return if the matrix is void. */
     if (m == 0 || n == 0) {
-        *numrank = 0;
+        /* .. all output is void. */
         return;
     }
 
@@ -473,12 +636,12 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     sfmin = slamch("S");
 
     ascaled = 0;
-    iwoff = 1;
+    iwoff = 0;
     sconda = -ONE;
     n1 = n;
 
     if (rowprm) {
-        iwoff = m;
+        iwoff = m - 1;
         /*
          * .. reordering the rows in decreasing sequence in the
          * ell-infinity norm - this enhances numerical robustness in
@@ -515,11 +678,11 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
                 slaset("G", m, n, ZERO, ONE, U, ldu);
             }
             for (p = 0; p < n; p++) {
-                iwork[p] = p + 1;
+                iwork[p] = p;
             }
             if (rowprm) {
                 for (p = n; p < n + m - 1; p++) {
-                    iwork[p] = p - n + 1;
+                    iwork[p] = p - n;
                 }
             }
             if (conda) rwork[0] = -ONE;
@@ -1109,5 +1272,4 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     rwork[1] = (f32)(p - nr);
 
     *numrank = nr;
-    *info = ierr;
 }

@@ -30,7 +30,7 @@ static inline f32 abssq(c64 ff) {
  *    where c(i)**2 + ABS(s(i))**2 = 1
  *
  * The following conventions are used (these are the same as in CLARTG,
- * but differ from the BLAS1 routine ZROTG):
+ * but differ from the BLAS1 routine CROTG):
  *    If y(i)=0, then c(i)=1 and s(i)=0.
  *    If x(i)=0, then c(i)=0 and s(i) is chosen so that r(i) is real.
  *

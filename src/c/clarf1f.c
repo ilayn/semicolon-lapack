@@ -126,7 +126,7 @@ void clarf1f(const char* side, const INT m, const INT n,
             /*
              * C(0, 0:lastc-1)   := C(...) - tau * v(0,0) * w(0:lastc-1,0)**H
              *                   = C(...) - tau * Conj(w(0:lastc-1,0))
-             * This is essentially a zaxpyc
+             * This is essentially a caxpyc
              */
             for (j = 0; j < lastc; j++) {
                 C[j * ldc] = C[j * ldc] - tau * conjf(work[j]);

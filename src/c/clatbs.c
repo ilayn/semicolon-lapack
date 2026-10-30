@@ -18,7 +18,7 @@
  * and s is a scaling factor, usually less than or equal to 1, chosen so
  * that the components of x will be less than the overflow threshold.
  * If the unscaled problem will not cause overflow, the Level 2 BLAS
- * routine ZTBSV is called. If the matrix A is singular (A(j,j) = 0
+ * routine CTBSV is called. If the matrix A is singular (A(j,j) = 0
  * for some j), then s is set to 0 and a non-trivial solution to
  * A*x = 0 is returned.
  *

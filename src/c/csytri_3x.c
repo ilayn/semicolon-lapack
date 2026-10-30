@@ -1,6 +1,6 @@
 /**
  * @file csytri_3x.c
- * @brief CSYTRI_3X computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK (blocked algorithm).
+ * @brief CSYTRI_3X computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or CSYTRF_BK (blocked algorithm).
  */
 
 #include <math.h>
@@ -11,7 +11,7 @@
 
 /**
  * CSYTRI_3X computes the inverse of a complex symmetric indefinite
- * matrix A using the factorization computed by CSYTRF_RK or ZSYTRF_BK:
+ * matrix A using the factorization computed by CSYTRF_RK or CSYTRF_BK:
  *
  *     A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
  *

@@ -12,7 +12,7 @@
  * SCSUM1 takes the sum of the absolute values of a complex
  * vector and returns a f32 precision result.
  *
- * Based on DZASUM from the Level 1 BLAS.
+ * Based on SCASUM from the Level 1 BLAS.
  * The change is to use the 'genuine' absolute value.
  *
  * @param[in] n     The number of elements in the vector CX.

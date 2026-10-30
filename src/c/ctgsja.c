@@ -16,7 +16,7 @@
  * of two complex upper triangular (or trapezoidal) matrices A and B.
  *
  * On entry, it is assumed that matrices A and B have the following
- * forms, which may be obtained by the preprocessing subroutine ZGGSVP
+ * forms, which may be obtained by the preprocessing subroutine CGGSVP
  * from a general M-by-N matrix A and P-by-N matrix B:
  *
  *              N-K-L  K    L

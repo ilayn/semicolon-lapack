@@ -1,6 +1,6 @@
 /**
  * @file csyconvf.c
- * @brief CSYCONVF converts between factorization formats used in CSYTRF and CSYTRF_RK/ZSYTRF_BK.
+ * @brief CSYCONVF converts between factorization formats used in CSYTRF and CSYTRF_RK/CSYTRF_BK.
  */
 
 #include <complex.h>
@@ -11,19 +11,19 @@
  * If parameter WAY = 'C':
  * CSYCONVF converts the factorization output format used in
  * CSYTRF provided on entry in parameter A into the factorization
- * output format used in CSYTRF_RK (or ZSYTRF_BK) that is stored
+ * output format used in CSYTRF_RK (or CSYTRF_BK) that is stored
  * on exit in parameters A and E. It also converts in place details of
  * the interchanges stored in IPIV from the format used in CSYTRF into
- * the format used in CSYTRF_RK (or ZSYTRF_BK).
+ * the format used in CSYTRF_RK (or CSYTRF_BK).
  *
  * If parameter WAY = 'R':
  * CSYCONVF performs the conversion in reverse direction, i.e.
  * converts the factorization output format used in CSYTRF_RK
- * (or ZSYTRF_BK) provided on entry in parameters A and E into
+ * (or CSYTRF_BK) provided on entry in parameters A and E into
  * the factorization output format used in CSYTRF that is stored
  * on exit in parameter A. It also converts in place details of
  * the interchanges stored in IPIV from the format used in CSYTRF_RK
- * (or ZSYTRF_BK) into the format used in CSYTRF.
+ * (or CSYTRF_BK) into the format used in CSYTRF.
  *
  * @param[in]     uplo
  *                      - `'U'`: Upper triangular
@@ -48,7 +48,7 @@
  *                        superdiagonal part of A.
  *
  *                      On exit, contains factorization details in format
- *                      used in `csytrf_rk` or `zsytrf_bk`:
+ *                      used in `csytrf_rk` or `csytrf_bk`:
  *
  *                      - Only diagonal elements of the symmetric block
  *                        diagonal matrix D on the diagonal of A, i.e.
@@ -62,7 +62,7 @@
  *                      2) If `way='R'`:
  *
  *                      On entry, contains factorization details in format
- *                      used in `csytrf_rk` or `zsytrf_bk`:
+ *                      used in `csytrf_rk` or `csytrf_bk`:
  *
  *                      - Only diagonal elements of the symmetric block
  *                        diagonal matrix D on the diagonal of A, i.e.
@@ -113,11 +113,11 @@
  *                      interchanges and the block structure of D in the
  *                      format used in `csytrf`; on exit, details of the
  *                      interchanges and the block structure of D in the
- *                      format used in `csytrf_rk` (or `zsytrf_bk`).
+ *                      format used in `csytrf_rk` (or `csytrf_bk`).
  *
  *                      2) If `way='R'`: on entry, details of the
  *                      interchanges and the block structure of D in the
- *                      format used in `csytrf_rk` (or `zsytrf_bk`); on
+ *                      format used in `csytrf_rk` (or `csytrf_bk`); on
  *                      exit, details of the interchanges and the block
  *                      structure of D in the format used in `csytrf`.
  * @param[out]    info

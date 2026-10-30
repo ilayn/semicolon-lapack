@@ -53,7 +53,7 @@ void sgeqrt3(const INT m, const INT n,
              f32* restrict T, const INT ldt,
              INT* info)
 {
-    INT i, j, n1, n2, iinfo;
+    INT i, j, n1, n2, i1, j1, iinfo;
 
     *info = 0;
     if (n < 0) {
@@ -80,6 +80,8 @@ void sgeqrt3(const INT m, const INT n,
         /* Otherwise, split A into blocks... */
         n1 = n / 2;
         n2 = n - n1;
+        j1 = (n1 < n - 1) ? n1 : n - 1;
+        i1 = (n < m - 1) ? n : m - 1;
 
         /* Compute A(0:m-1, 0:n1-1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H */
         sgeqrt3(m, n1, A, lda, T, ldt, &iinfo);
@@ -93,23 +95,23 @@ void sgeqrt3(const INT m, const INT n,
         }
 
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, CblasUnit,
-                    n1, n2, 1.0f, A, lda, &T[n1 * ldt], ldt);
+                    n1, n2, 1.0f, A, lda, &T[j1 * ldt], ldt);
 
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                     n1, n2, m - n1, 1.0f,
-                    &A[n1], lda, &A[n1 + n1 * lda], lda,
-                    1.0f, &T[n1 * ldt], ldt);
+                    &A[j1], lda, &A[j1 + j1 * lda], lda,
+                    1.0f, &T[j1 * ldt], ldt);
 
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit,
-                    n1, n2, 1.0f, T, ldt, &T[n1 * ldt], ldt);
+                    n1, n2, 1.0f, T, ldt, &T[j1 * ldt], ldt);
 
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m - n1, n2, n1, -1.0f,
-                    &A[n1], lda, &T[n1 * ldt], ldt,
-                    1.0f, &A[n1 + n1 * lda], lda);
+                    &A[j1], lda, &T[j1 * ldt], ldt,
+                    1.0f, &A[j1 + j1 * lda], lda);
 
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
-                    n1, n2, 1.0f, A, lda, &T[n1 * ldt], ldt);
+                    n1, n2, 1.0f, A, lda, &T[j1 * ldt], ldt);
 
         for (j = 0; j < n2; j++) {
             for (i = 0; i < n1; i++) {
@@ -118,8 +120,8 @@ void sgeqrt3(const INT m, const INT n,
         }
 
         /* Compute A(n1:m-1, n1:n-1) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H */
-        sgeqrt3(m - n1, n2, &A[n1 + n1 * lda], lda,
-                &T[n1 + n1 * ldt], ldt, &iinfo);
+        sgeqrt3(m - n1, n2, &A[j1 + j1 * lda], lda,
+                &T[j1 + j1 * ldt], ldt, &iinfo);
 
         /* Compute T3 = T(0:n1-1, n1:n-1) = -T1 Y1^H Y2 T2 */
 
@@ -130,20 +132,18 @@ void sgeqrt3(const INT m, const INT n,
         }
 
         cblas_strmm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, CblasUnit,
-                    n1, n2, 1.0f, &A[n1 + n1 * lda], lda, &T[n1 * ldt], ldt);
+                    n1, n2, 1.0f, &A[j1 + j1 * lda], lda, &T[j1 * ldt], ldt);
 
-        if (m > n) {
-            cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                        n1, n2, m - n, 1.0f,
-                        &A[n], lda, &A[n + n1 * lda], lda,
-                        1.0f, &T[n1 * ldt], ldt);
-        }
+        cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
+                    n1, n2, m - n, 1.0f,
+                    &A[i1], lda, &A[i1 + j1 * lda], lda,
+                    1.0f, &T[j1 * ldt], ldt);
 
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
-                    n1, n2, -1.0f, T, ldt, &T[n1 * ldt], ldt);
+                    n1, n2, -1.0f, T, ldt, &T[j1 * ldt], ldt);
 
         cblas_strmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
-                    n1, n2, 1.0f, &T[n1 + n1 * ldt], ldt, &T[n1 * ldt], ldt);
+                    n1, n2, 1.0f, &T[j1 + j1 * ldt], ldt, &T[j1 * ldt], ldt);
 
         /*
          * Y = (Y1,Y2); R = [ R1  A(0:n1-1, n1:n-1) ];  T = [T1 T3]
