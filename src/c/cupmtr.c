@@ -100,12 +100,6 @@ void cupmtr(const char* side, const char* uplo, const char* trans,
         return;
     }
 
-    /*
-     * All loop indices (i, i1, i2, i3, ii) use Fortran 1-based values
-     * to preserve the packed storage arithmetic from the reference.
-     * Array accesses subtract 1 to convert to 0-based C indexing.
-     */
-
     if (upper) {
 
         /* Q was determined by a call to CHPTRD with UPLO = 'U' */

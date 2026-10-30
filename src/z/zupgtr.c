@@ -70,7 +70,7 @@ void zupgtr(const char* uplo, const INT n, const c128* AP,
         // set the last row and column of Q equal to those of the unit
         // matrix
 
-        ij = 1;  // Fortran IJ=2, but 0-based: points to AP[1] (second element)
+        ij = 1;
         for (j = 0; j < n - 1; j++) {
             for (i = 0; i < j; i++) {
                 Q[i + j * ldq] = AP[ij];
@@ -99,7 +99,7 @@ void zupgtr(const char* uplo, const INT n, const c128* AP,
         for (i = 1; i < n; i++) {
             Q[i] = CZERO;
         }
-        ij = 2;  // Fortran IJ=3, 0-based: AP[2]
+        ij = 2;
         for (j = 1; j < n; j++) {
             Q[j * ldq] = CZERO;
             for (i = j + 1; i < n; i++) {

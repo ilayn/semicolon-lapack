@@ -194,8 +194,7 @@ void chpevd(
     chptrd(uplo, n, AP, W, &rwork[inde], &work[indtau], &iinfo);
 
     /* For eigenvalues only, call SSTERF.  For eigenvectors, first call
-       CSTEDC to generate the eigenvectors from the tridiagonal form,
-       then call CUPMTR to multiply by the Householder transformations. */
+       CUPGTR to generate the orthogonal matrix, then call CSTEDC. */
 
     if (!wantz) {
         ssterf(n, W, &rwork[inde], info);

@@ -108,7 +108,6 @@ void zhetrd(const char* uplo, const INT n, c128* A, const INT lda,
     if (nb > 1 && nb < n) {
         nx = lapack_get_nx("HETRD");
         if (nx > nb) {
-            /* keep nx */
         } else {
             nx = nb;
         }
