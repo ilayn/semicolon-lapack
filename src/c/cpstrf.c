@@ -97,7 +97,7 @@ void cpstrf(
         return;
     }
 
-    // Initialize PIV (0-based)
+    // Initialize PIV
     for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }

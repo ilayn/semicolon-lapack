@@ -99,7 +99,7 @@ void cgttrs(
         itrans = 2;
     }
 
-    /* For tridiagonal systems, LAPACK's ilaenv returns NB=1 (unblocked).
-       Simply call cgtts2 directly for all right-hand sides. */
+    /* Determine the number of right-hand sides to solve at a time.
+       NB = 1 from ilaenv for CGTTRS. */
     cgtts2(itrans, n, nrhs, DL, D, DU, DU2, ipiv, B, ldb);
 }

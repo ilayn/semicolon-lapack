@@ -87,9 +87,8 @@ void dsgesv(
     f64 anrm, cte, eps, rnrm, xnrm;
     INT converged;
 
-    // Pointers into swork
-    float *SA;   // n x n
-    float *SX;   // n x nrhs
+    float *SA;
+    float *SX;
 
     *info = 0;
     *iter = 0;
@@ -111,12 +110,12 @@ void dsgesv(
         return;
     }
 
-    // Quick return if possible
+    // Quick return if (N.EQ.0).
     if (n == 0 || nrhs == 0) {
         return;
     }
 
-    // Set up pointers into swork
+    // Set the indices PTSA, PTSX for referencing SA and SX in SWORK.
     SA = swork;
     SX = &swork[n * n];
 
@@ -125,14 +124,16 @@ void dsgesv(
     eps = dlamch("E");
     cte = anrm * eps * sqrt((f64)n) * BWDMAX;
 
-    // Convert B from f64 to single precision and store in SX
+    // Convert B from double precision to single precision and store the
+    // result in SX.
     dlag2s(n, nrhs, B, ldb, SX, n, &iinfo);
     if (iinfo != 0) {
         *iter = -2;
         goto fallback;
     }
 
-    // Convert A from f64 to single precision and store in SA
+    // Convert A from double precision to single precision and store the
+    // result in SA.
     dlag2s(n, n, A, lda, SA, n, &iinfo);
     if (iinfo != 0) {
         *iter = -2;
@@ -149,15 +150,16 @@ void dsgesv(
     // Solve the system SA*SX = SB
     sgetrs("N", n, nrhs, SA, n, ipiv, SX, n, &iinfo);
 
-    // Convert SX back to f64 precision
+    // Convert SX back to double precision
     slag2d(n, nrhs, SX, n, X, ldx, &iinfo);
 
-    // Compute R = B - A*X (R is stored in work)
+    // Compute R = B - AX (R is WORK).
     dlacpy("A", n, nrhs, B, ldb, work, n);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                 n, nrhs, n, NEGONE, A, lda, X, ldx, ONE, work, n);
 
-    // Check whether the NRHS normwise backward errors satisfy the stopping criterion
+    // Check whether the NRHS normwise backward errors satisfy the
+    // stopping criterion. If yes, set ITER=0 and return.
     converged = 1;
     for (i = 0; i < nrhs; i++) {
         INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
@@ -175,9 +177,9 @@ void dsgesv(
         return;
     }
 
-    // Iterative refinement
     for (iiter = 1; iiter <= ITERMAX; iiter++) {
-        // Convert R from f64 to single precision and store in SX
+        // Convert R (in WORK) from double precision to single precision
+        // and store the result in SX.
         dlag2s(n, nrhs, work, n, SX, n, &iinfo);
         if (iinfo != 0) {
             *iter = -2;
@@ -187,19 +189,21 @@ void dsgesv(
         // Solve the system SA*SX = SR
         sgetrs("N", n, nrhs, SA, n, ipiv, SX, n, &iinfo);
 
-        // Convert SX back to f64 precision and update the current iterate
+        // Convert SX back to double precision and update the current
+        // iterate.
         slag2d(n, nrhs, SX, n, work, n, &iinfo);
 
         for (i = 0; i < nrhs; i++) {
             cblas_daxpy(n, ONE, &work[i * n], 1, &X[i * ldx], 1);
         }
 
-        // Compute R = B - A*X
+        // Compute R = B - AX (R is WORK).
         dlacpy("A", n, nrhs, B, ldb, work, n);
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     n, nrhs, n, NEGONE, A, lda, X, ldx, ONE, work, n);
 
-        // Check whether the NRHS normwise backward errors satisfy the stopping criterion
+        // Check whether the NRHS normwise backward errors satisfy the
+        // stopping criterion. If yes, set ITER=IITER>0 and return.
         converged = 1;
         for (i = 0; i < nrhs; i++) {
             INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
@@ -218,12 +222,15 @@ void dsgesv(
         }
     }
 
-    // Exceeded maximum iterations
+    // If we are at this place of the code, this is because we have
+    // performed ITER=ITERMAX iterations and never satisfied the
+    // stopping criterion, set up the ITER flag accordingly and follow up
+    // on double precision routine.
     *iter = -ITERMAX - 1;
 
 fallback:
     // Single-precision iterative refinement failed to converge to a
-    // satisfactory solution, so we resort to f64 precision.
+    // satisfactory solution, so we resort to double precision.
     dgetrf(n, n, A, lda, ipiv, info);
     if (*info != 0) {
         return;

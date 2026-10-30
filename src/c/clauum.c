@@ -70,7 +70,8 @@ void clauum(
     // Quick return if possible
     if (n == 0) return;
 
-    // Determine block size (NB=64 from ilaenv for LAUUM)
+    // Determine the block size for this environment.
+    // NB = 64 from ilaenv for LAUUM.
     INT nb = lapack_get_nb("LAUUM");
 
     if (nb <= 1 || nb >= n) {

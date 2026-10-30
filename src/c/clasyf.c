@@ -12,7 +12,6 @@
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
 static const f32 ALPHA_BK = 0.6403882032022076f;
 
-/* CABS1 returns |real(z)| + |imag(z)| */
 /**
  * CLASYF computes a partial factorization of a complex symmetric matrix A
  * using the Bunch-Kaufman diagonal pivoting method. The partial
@@ -215,7 +214,10 @@ void clasyf(
                 /* Interchange rows and columns KP and KK.
                  * Updated column KP is already stored in column KKW of W. */
                 if (kp != kk) {
-                    /* Copy non-updated column KK to column KP of submatrix A */
+                    /* Copy non-updated column KK to column KP of submatrix A
+                     * at step K. No need to copy element into column K
+                     * (or K and K-1 for 2-by-2 pivot) of A, since these columns
+                     * will be later overwritten. */
                     A[kp + kp * lda] = A[kk + kk * lda];
 
                     if (kk - kp - 1 > 0) {
@@ -228,8 +230,10 @@ void clasyf(
                                     &A[0 + kp * lda], 1);
                     }
 
-                    /* Interchange rows KK and KP in last K+1 to N columns of A.
-                     * Interchange rows KK and KP in last KKW to NB columns of W. */
+                    /* Interchange rows KK and KP in last K+1 to N columns of A
+                     * (columns K (or K and K-1 for 2-by-2 pivot) of A will be
+                     * later overwritten). Interchange rows KK and KP
+                     * in last KKW to NB columns of W. */
                     if (k < n - 1) {
                         cblas_cswap(n - 1 - k, &A[kk + (k + 1) * lda], lda,
                                     &A[kp + (k + 1) * lda], lda);
@@ -470,7 +474,10 @@ void clasyf(
                 /* Interchange rows and columns KP and KK.
                  * Updated column KP is already stored in column KK of W. */
                 if (kp != kk) {
-                    /* Copy non-updated column KK to column KP of submatrix A */
+                    /* Copy non-updated column KK to column KP of submatrix A
+                     * at step K. No need to copy element into column K
+                     * (or K and K+1 for 2-by-2 pivot) of A, since these columns
+                     * will be later overwritten. */
                     A[kp + kp * lda] = A[kk + kk * lda];
 
                     if (kp - kk - 1 > 0) {
@@ -483,8 +490,10 @@ void clasyf(
                                     &A[(kp + 1) + kp * lda], 1);
                     }
 
-                    /* Interchange rows KK and KP in first K-1 columns of A.
-                     * Interchange rows KK and KP in first KK columns of W. */
+                    /* Interchange rows KK and KP in first K-1 columns of A
+                     * (columns K (or K and K+1 for 2-by-2 pivot) of A will be
+                     * later overwritten). Interchange rows KK and KP
+                     * in first KK columns of W. */
                     if (k > 0) {
                         cblas_cswap(k, &A[kk + 0 * lda], lda,
                                     &A[kp + 0 * lda], lda);

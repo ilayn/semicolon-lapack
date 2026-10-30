@@ -93,12 +93,15 @@ void zhetri(
     if (upper) {
         /* Compute inv(A) from the factorization A = U*D*U**H.
          *
-         * K increases from 0 to n-1 in steps of 1 or 2. */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = 0;
         while (k < n) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = CMPLX(ONE / creal(A[k + k * lda]), 0.0);
 
                 /* Compute column k of the inverse. */
@@ -113,7 +116,9 @@ void zhetri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block. */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 f64 t = cabs(A[k + (k + 1) * lda]);
                 f64 ak = creal(A[k + k * lda]) / t;
                 f64 akp1 = creal(A[(k + 1) + (k + 1) * lda]) / t;
@@ -145,7 +150,8 @@ void zhetri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp. */
+            /* Interchange rows and columns K and KP in the leading
+             * submatrix A(0:k+1,0:k+1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -154,12 +160,10 @@ void zhetri(
             }
 
             if (kp != k) {
-                /* Swap columns k and kp in rows 0:kp-1 */
                 if (kp > 0) {
                     cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
                 }
 
-                /* Swap and conjugate elements between kp and k */
                 for (INT j = kp + 1; j < k; j++) {
                     c128 temp = conj(A[j + k * lda]);
                     A[j + k * lda] = conj(A[kp + j * lda]);
@@ -167,12 +171,10 @@ void zhetri(
                 }
                 A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                /* Swap diagonal elements */
                 c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k+1) with A(kp, k+1) */
                 if (kstep == 2) {
                     temp = A[k + (k + 1) * lda];
                     A[k + (k + 1) * lda] = A[kp + (k + 1) * lda];
@@ -186,12 +188,15 @@ void zhetri(
     } else {
         /* Compute inv(A) from the factorization A = L*D*L**H.
          *
-         * K decreases from n-1 to 0 in steps of 1 or 2. */
+         * K is the main loop index, decreasing from n-1 to 0 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = n - 1;
         while (k >= 0) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = CMPLX(ONE / creal(A[k + k * lda]), 0.0);
 
                 /* Compute column k of the inverse. */
@@ -206,7 +211,9 @@ void zhetri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block. */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 f64 t = cabs(A[k + (k - 1) * lda]);
                 f64 ak = creal(A[(k - 1) + (k - 1) * lda]) / t;
                 f64 akp1 = creal(A[k + k * lda]) / t;
@@ -240,7 +247,8 @@ void zhetri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp. */
+            /* Interchange rows and columns K and KP in the trailing
+             * submatrix A(k-1:n-1,k-1:n-1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -249,13 +257,11 @@ void zhetri(
             }
 
             if (kp != k) {
-                /* Swap columns k and kp in rows kp+1:n-1 */
                 if (kp < n - 1) {
                     cblas_zswap(n - kp - 1, &A[(kp + 1) + k * lda], 1,
                                 &A[(kp + 1) + kp * lda], 1);
                 }
 
-                /* Swap and conjugate elements between k and kp */
                 for (INT j = k + 1; j < kp; j++) {
                     c128 temp = conj(A[j + k * lda]);
                     A[j + k * lda] = conj(A[kp + j * lda]);
@@ -263,12 +269,10 @@ void zhetri(
                 }
                 A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                /* Swap diagonal elements */
                 c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k-1) with A(kp, k-1) */
                 if (kstep == 2) {
                     temp = A[k + (k - 1) * lda];
                     A[k + (k - 1) * lda] = A[kp + (k - 1) * lda];

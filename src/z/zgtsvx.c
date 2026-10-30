@@ -155,10 +155,8 @@ void zgtsvx(
 
     if (nofact) {
         /* Compute the LU factorization of A */
-        /* Copy D to DF */
         cblas_zcopy(n, D, 1, DF, 1);
         if (n > 1) {
-            /* Copy DL to DLF and DU to DUF */
             cblas_zcopy(n - 1, DL, 1, DLF, 1);
             cblas_zcopy(n - 1, DU, 1, DUF, 1);
         }
@@ -186,7 +184,8 @@ void zgtsvx(
     zlacpy("Full", n, nrhs, B, ldb, X, ldx);
     zgttrs(trans, n, nrhs, DLF, DF, DUF, DU2, ipiv, X, ldx, info);
 
-    /* Use iterative refinement to improve the computed solutions */
+    /* Use iterative refinement to improve the computed solutions and
+     * compute error bounds and backward error estimates for them. */
     zgtrfs(trans, n, nrhs, DL, D, DU, DLF, DF, DUF, DU2, ipiv,
            B, ldb, X, ldx, ferr, berr, work, rwork, info);
 

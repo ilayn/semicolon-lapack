@@ -84,7 +84,6 @@ void sgtsv(
     }
 
     if (nrhs == 1) {
-        /* Optimized path for single RHS */
         for (i = 0; i < n - 2; i++) {
             if (fabsf(D[i]) >= fabsf(DL[i])) {
                 /* No row interchange required */
@@ -93,7 +92,7 @@ void sgtsv(
                     D[i + 1] = D[i + 1] - fact * DU[i];
                     B[i + 1] = B[i + 1] - fact * B[i];
                 } else {
-                    *info = i + 1;  /* 1-based */
+                    *info = i + 1;
                     return;
                 }
                 DL[i] = ZERO;
@@ -120,7 +119,7 @@ void sgtsv(
                     D[i + 1] = D[i + 1] - fact * DU[i];
                     B[i + 1] = B[i + 1] - fact * B[i];
                 } else {
-                    *info = i + 1;  /* 1-based */
+                    *info = i + 1;
                     return;
                 }
             } else {
@@ -136,11 +135,10 @@ void sgtsv(
         }
 
         if (D[n - 1] == ZERO) {
-            *info = n;  /* 1-based */
+            *info = n;
             return;
         }
     } else {
-        /* General path for multiple RHS */
         for (i = 0; i < n - 2; i++) {
             if (fabsf(D[i]) >= fabsf(DL[i])) {
                 /* No row interchange required */
@@ -151,7 +149,7 @@ void sgtsv(
                         B[(i + 1) + j * ldb] = B[(i + 1) + j * ldb] - fact * B[i + j * ldb];
                     }
                 } else {
-                    *info = i + 1;  /* 1-based */
+                    *info = i + 1;
                     return;
                 }
                 DL[i] = ZERO;
@@ -182,7 +180,7 @@ void sgtsv(
                         B[(i + 1) + j * ldb] = B[(i + 1) + j * ldb] - fact * B[i + j * ldb];
                     }
                 } else {
-                    *info = i + 1;  /* 1-based */
+                    *info = i + 1;
                     return;
                 }
             } else {
@@ -200,15 +198,12 @@ void sgtsv(
         }
 
         if (D[n - 1] == ZERO) {
-            *info = n;  /* 1-based */
+            *info = n;
             return;
         }
     }
 
-    /*
-     * Back solve with the matrix U from the factorization.
-     * Note: In sgtsv, DL is reused for DU2 (second superdiagonal).
-     */
+    /* Back solve with the matrix U from the factorization. */
     if (nrhs <= 2) {
         for (j = 0; j < nrhs; j++) {
             B[(n - 1) + j * ldb] = B[(n - 1) + j * ldb] / D[n - 1];

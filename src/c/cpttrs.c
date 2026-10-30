@@ -70,10 +70,7 @@ void cpttrs(
     if (n == 0 || nrhs == 0)
         return;
 
-    /*
-     * ILAENV(1, 'CPTTRS', ...) returns NB=1 (no special case in ilaenv.f).
-     * Therefore, we call cptts2 directly without blocking.
-     */
+    /* ILAENV(1, 'CPTTRS', ...) = 1: ilaenv.f has no PTTRS entry. */
     INT iuplo = upper ? 1 : 0;
     cptts2(iuplo, n, nrhs, D, E, B, ldb);
 }

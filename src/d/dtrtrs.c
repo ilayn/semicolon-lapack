@@ -112,12 +112,11 @@ void dtrtrs(
     }
     *info = 0;
 
-    // Map character arguments to CBLAS enums
     CBLAS_UPLO uplo_flag = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE trans_flag = (trans[0] == 'N' || trans[0] == 'n') ? CblasNoTrans : CblasTrans;
     CBLAS_DIAG diag_flag = nounit ? CblasNonUnit : CblasUnit;
 
-    // Solve A * X = B  or  A**T * X = B
+    // Solve A * x = b  or  A**T * x = b.
     cblas_dtrsm(CblasColMajor, CblasLeft, uplo_flag, trans_flag, diag_flag,
                 n, nrhs, ONE, A, lda, B, ldb);
 }

@@ -9,7 +9,6 @@
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
-/* Maximum block size for work arrays */
 #define NBMAX 64
 #define LDWORK (NBMAX + 1)
 
@@ -87,7 +86,6 @@ void dgbtrf(
     const f64 NEG_ONE = -1.0;
     const f64 ZERO = 0.0;
 
-    /* Work arrays for A13 and A31 blocks that fall outside the band */
     f64 work13[LDWORK * NBMAX];
     f64 work31[LDWORK * NBMAX];
 
@@ -153,8 +151,7 @@ void dgbtrf(
 
         /* Gaussian elimination with partial pivoting */
 
-        /* Set fill-in elements in columns ku+1 to kv-1 to zero
-           0-based: columns ku+1 to kv-1 */
+        /* Set fill-in elements in columns ku+1 to kv-1 to zero */
         for (j = ku + 1; j < kv && j < n; j++) {
             for (i = kv - j; i < kl; i++) {
                 AB[i + j * ldab] = ZERO;
@@ -162,7 +159,7 @@ void dgbtrf(
         }
 
         /* ju is the index of the last column affected by the current
-           stage of the factorization. 0-based. */
+           stage of the factorization. */
         ju = 0;
 
         minmn = (m < n) ? m : n;
@@ -204,7 +201,7 @@ void dgbtrf(
                 if (km < 0) km = 0;
 
                 jp = cblas_idamax(km + 1, &AB[kv + jj * ldab], 1);
-                ipiv[jj] = jp + jj - j;  /* Store relative to block start initially */
+                ipiv[jj] = jp + jj - j;
 
                 if (AB[kv + jp + jj * ldab] != ZERO) {
                     INT new_ju = jj + ku + jp;
@@ -214,7 +211,6 @@ void dgbtrf(
                     if (jp != 0) {
                         /* Apply interchange to columns j to j+jb-1 */
                         if (jp + jj < j + kl) {
-                            /* The interchange does not affect A31 */
                             cblas_dswap(jb, &AB[kv + jj - j + j * ldab], ldab - 1,
                                         &AB[kv + jp + jj - j + j * ldab], ldab - 1);
                         } else {
@@ -250,7 +246,7 @@ void dgbtrf(
                     /* If pivot is zero, set INFO to the index of the pivot
                        unless a zero pivot has already been found. */
                     if (*info == 0) {
-                        *info = jj + 1;  /* 1-based for reporting */
+                        *info = jj + 1;
                     }
                 }
 

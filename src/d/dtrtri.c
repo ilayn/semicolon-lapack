@@ -71,7 +71,7 @@ void dtrtri(
     if (nounit) {
         for (*info = 0; *info < n; (*info)++) {
             if (A[*info + *info * lda] == ZERO) {
-                (*info)++;  // Convert to 1-based for error reporting
+                (*info)++;
                 return;
             }
         }

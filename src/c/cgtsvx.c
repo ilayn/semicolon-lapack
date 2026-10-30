@@ -155,10 +155,8 @@ void cgtsvx(
 
     if (nofact) {
         /* Compute the LU factorization of A */
-        /* Copy D to DF */
         cblas_ccopy(n, D, 1, DF, 1);
         if (n > 1) {
-            /* Copy DL to DLF and DU to DUF */
             cblas_ccopy(n - 1, DL, 1, DLF, 1);
             cblas_ccopy(n - 1, DU, 1, DUF, 1);
         }
@@ -186,7 +184,8 @@ void cgtsvx(
     clacpy("Full", n, nrhs, B, ldb, X, ldx);
     cgttrs(trans, n, nrhs, DLF, DF, DUF, DU2, ipiv, X, ldx, info);
 
-    /* Use iterative refinement to improve the computed solutions */
+    /* Use iterative refinement to improve the computed solutions and
+     * compute error bounds and backward error estimates for them. */
     cgtrfs(trans, n, nrhs, DL, D, DU, DLF, DF, DUF, DU2, ipiv,
            B, ldb, X, ldx, ferr, berr, work, rwork, info);
 

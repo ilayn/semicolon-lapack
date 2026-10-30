@@ -168,7 +168,8 @@ void zhetrf(
          * Factorize A as U*D*U**H using the upper triangle of A
          *
          * K is the main loop index, decreasing from n-1 to 0 in steps of
-         * kb, where kb is the number of columns factorized by zlahef.
+         * KB, where KB is the number of columns factorized by ZLAHEF;
+         * KB is either NB or NB-1, or k+1 for the last block
          * ============================================================ */
         INT k = n - 1;
         while (k >= 0) {
@@ -191,14 +192,16 @@ void zhetrf(
                     *info = iinfo;
                 }
 
-                k = -1;  /* exit loop */
+                k = -1;
             }
         }
     } else {
         /* ============================================================
          * Factorize A as L*D*L**H using the lower triangle of A
          *
-         * K is the main loop index, increasing from 0 in steps of kb.
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * KB, where KB is the number of columns factorized by ZLAHEF;
+         * KB is either NB or NB-1, or n-k for the last block
          * ============================================================ */
         INT k = 0;
         while (k < n) {
@@ -229,7 +232,7 @@ void zhetrf(
                     *info = iinfo + k;
                 }
 
-                /* Adjust IPIV for the unblocked portion */
+                /* Adjust IPIV */
                 INT kb = n - k;
                 for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
@@ -239,7 +242,7 @@ void zhetrf(
                     }
                 }
 
-                k = n;  /* exit loop */
+                k = n;
             }
         }
     }

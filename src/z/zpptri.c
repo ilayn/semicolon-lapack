@@ -39,10 +39,9 @@ void zpptri(
     c128* restrict AP,
     INT* info)
 {
-    // zpptri.f lines 108-109: Parameters
     const f64 ONE = 1.0;
 
-    // zpptri.f lines 128-138: Test the input parameters
+    // Test the input parameters
     *info = 0;
     INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -55,19 +54,19 @@ void zpptri(
         return;
     }
 
-    // zpptri.f lines 142-143: Quick return if possible
+    // Quick return if possible
     if (n == 0) {
         return;
     }
 
-    // zpptri.f lines 147-149: Invert the triangular Cholesky factor U or L
+    // Invert the triangular Cholesky factor U or L
     ztptri(uplo, "N", n, AP, info);
     if (*info > 0) {
         return;
     }
 
     if (upper) {
-        // zpptri.f lines 153-165: Compute the product inv(U) * inv(U)**H
+        // Compute the product inv(U) * inv(U)**H
         INT jj = -1;
         for (INT j = 0; j < n; j++) {
             INT jc = jj + 1;
@@ -79,7 +78,7 @@ void zpptri(
             cblas_zdscal(j + 1, ajj, &AP[jc], 1);
         }
     } else {
-        // zpptri.f lines 167-182: Compute the product inv(L)**H * inv(L)
+        // Compute the product inv(L)**H * inv(L)
         INT jj = 0;
         for (INT j = 0; j < n; j++) {
             INT jjn = jj + n - j;

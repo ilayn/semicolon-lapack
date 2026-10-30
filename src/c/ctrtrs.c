@@ -113,7 +113,6 @@ void ctrtrs(
     }
     *info = 0;
 
-    // Map character arguments to CBLAS enums
     CBLAS_UPLO uplo_flag = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE trans_flag;
     if (trans[0] == 'N' || trans[0] == 'n') {

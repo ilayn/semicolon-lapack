@@ -83,7 +83,6 @@ void sgetrs(
         // Solve A * X = B.
 
         // Apply row interchanges to the right hand sides.
-        // Note: LAPACK uses 1-based k1=1, k2=N; we use 0-based k1=0, k2=n-1
         slaswp(nrhs, B, ldb, 0, n - 1, ipiv, 1);
 
         // Solve L*X = B, overwriting B with X.
@@ -105,7 +104,6 @@ void sgetrs(
                     n, nrhs, ONE, A, lda, B, ldb);
 
         // Apply row interchanges to the solution vectors.
-        // Note: incx=-1 means apply pivots in reverse order
         slaswp(nrhs, B, ldb, 0, n - 1, ipiv, -1);
     }
 }

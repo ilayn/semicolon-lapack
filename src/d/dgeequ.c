@@ -90,7 +90,6 @@ void dgeequ(
     }
 
     // Get machine constants
-    // DLAMCH("S") returns safe minimum, such that 1/sfmin does not overflow
     smlnum = DBL_MIN;
     bignum = ONE / smlnum;
 
@@ -120,7 +119,7 @@ void dgeequ(
         // Find the first zero scale factor and return an error code
         for (i = 0; i < m; i++) {
             if (R[i] == ZERO) {
-                *info = i + 1;  // 1-based index for error reporting
+                *info = i + 1;
                 return;
             }
         }
@@ -165,7 +164,7 @@ void dgeequ(
         // Find the first zero scale factor and return an error code
         for (j = 0; j < n; j++) {
             if (C[j] == ZERO) {
-                *info = m + j + 1;  // 1-based index for error reporting
+                *info = m + j + 1;
                 return;
             }
         }

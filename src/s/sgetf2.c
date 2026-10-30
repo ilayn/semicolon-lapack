@@ -81,7 +81,7 @@ void sgetf2(
     }
 
     for (j = 0; j < minmn; j++) {
-        // Find pivot: explicit loop instead of cblas_idamax
+        // Find pivot and test for singularity.
         jp = j;
         max_val = fabsf(A[j + j * lda]);
         for (i = j + 1; i < m; i++) {
@@ -94,7 +94,7 @@ void sgetf2(
         ipiv[j] = jp;
 
         if (A[jp + j * lda] != ZERO) {
-            // Swap rows: explicit loop instead of cblas_dswap
+            // Apply the interchange to columns 0:n-1.
             if (jp != j) {
                 for (k = 0; k < n; k++) {
                     tmp = A[j + k * lda];
@@ -103,7 +103,7 @@ void sgetf2(
                 }
             }
 
-            // Scale column: explicit loop instead of cblas_dscal
+            // Compute elements j+1:m-1 of j-th column.
             if (j < m - 1) {
                 pivot = A[j + j * lda];
                 if (fabsf(pivot) >= sfmin) {
@@ -122,7 +122,7 @@ void sgetf2(
             *info = j + 1;
         }
 
-        // Rank-1 update: keep cblas_dger for the trailing submatrix
+        // Update trailing submatrix.
         if (j < minmn - 1) {
             cblas_sger(CblasColMajor, m - j - 1, n - j - 1, -1.0f,
                        &A[j + 1 + j * lda], 1,

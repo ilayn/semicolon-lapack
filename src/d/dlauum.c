@@ -66,7 +66,8 @@ void dlauum(
     // Quick return if possible
     if (n == 0) return;
 
-    // Determine block size (NB=64 from ilaenv for LAUUM)
+    // Determine the block size for this environment.
+    // NB = 64 from ilaenv for LAUUM.
     INT nb = lapack_get_nb("LAUUM");
 
     if (nb <= 1 || nb >= n) {
@@ -79,26 +80,19 @@ void dlauum(
             for (INT i = 0; i < n; i += nb) {
                 INT ib = nb < (n - i) ? nb : (n - i);
 
-                // Fortran: DTRMM('Right', 'Upper', 'Transpose', 'Non-unit', I-1, IB, ONE, A(I,I), LDA, A(1,I), LDA)
-                // 0-based: m = i, n = ib
                 cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper, CblasTrans,
                             CblasNonUnit, i, ib, ONE,
                             &A[i + i * lda], lda, &A[i * lda], lda);
 
-                // Factor the diagonal block
                 dlauu2("U", ib, &A[i + i * lda], lda, info);
 
                 if (i + ib < n) {
-                    // Fortran: DGEMM('N', 'T', I-1, IB, N-I-IB+1, ONE, A(1,I+IB), LDA, A(I,I+IB), LDA, ONE, A(1,I), LDA)
-                    // 0-based: m = i, n = ib, k = n-i-ib
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 i, ib, n - i - ib, ONE,
                                 &A[(i + ib) * lda], lda,
                                 &A[i + (i + ib) * lda], lda,
                                 ONE, &A[i * lda], lda);
 
-                    // Fortran: DSYRK('Upper', 'N', IB, N-I-IB+1, ONE, A(I,I+IB), LDA, ONE, A(I,I), LDA)
-                    // 0-based: n = ib, k = n-i-ib
                     cblas_dsyrk(CblasColMajor, CblasUpper, CblasNoTrans,
                                 ib, n - i - ib, ONE,
                                 &A[i + (i + ib) * lda], lda,
@@ -110,26 +104,19 @@ void dlauum(
             for (INT i = 0; i < n; i += nb) {
                 INT ib = nb < (n - i) ? nb : (n - i);
 
-                // Fortran: DTRMM('Left', 'Lower', 'Transpose', 'Non-unit', IB, I-1, ONE, A(I,I), LDA, A(I,1), LDA)
-                // 0-based: m = ib, n = i
                 cblas_dtrmm(CblasColMajor, CblasLeft, CblasLower, CblasTrans,
                             CblasNonUnit, ib, i, ONE,
                             &A[i + i * lda], lda, &A[i], lda);
 
-                // Factor the diagonal block
                 dlauu2("L", ib, &A[i + i * lda], lda, info);
 
                 if (i + ib < n) {
-                    // Fortran: DGEMM('T', 'N', IB, I-1, N-I-IB+1, ONE, A(I+IB,I), LDA, A(I+IB,1), LDA, ONE, A(I,1), LDA)
-                    // 0-based: m = ib, n = i, k = n-i-ib
                     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 ib, i, n - i - ib, ONE,
                                 &A[(i + ib) + i * lda], lda,
                                 &A[(i + ib)], lda,
                                 ONE, &A[i], lda);
 
-                    // Fortran: DSYRK('Lower', 'T', IB, N-I-IB+1, ONE, A(I+IB,I), LDA, ONE, A(I,I), LDA)
-                    // 0-based: n = ib, k = n-i-ib
                     cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans,
                                 ib, n - i - ib, ONE,
                                 &A[(i + ib) + i * lda], lda,

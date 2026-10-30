@@ -108,7 +108,7 @@ void sgbequb(
     /* Get machine constants. Assume SMLNUM is a power of the radix. */
     smlnum = FLT_MIN;
     bignum = ONE / smlnum;
-    radix = FLT_RADIX;  /* Base of the floating-point representation */
+    radix = FLT_RADIX;
     logrdx = logf(radix);
 
     /* Compute row scale factors */
@@ -118,11 +118,6 @@ void sgbequb(
 
     /* Find the maximum element in each row */
     for (j = 0; j < n; j++) {
-        /*
-         * In 0-based indexing:
-         * Row range for column j: max(0, j-ku) to min(m-1, j+kl)
-         * Band storage: AB[ku + i - j + j*ldab] = A(i,j)
-         */
         INT i_start = (j - ku > 0) ? j - ku : 0;
         INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
@@ -131,7 +126,6 @@ void sgbequb(
         }
     }
 
-    /* Round to power of radix */
     for (i = 0; i < m; i++) {
         if (R[i] > ZERO) {
             R[i] = powf(radix, (INT)(logf(R[i]) / logrdx));
@@ -151,7 +145,7 @@ void sgbequb(
         /* Find the first zero scale factor and return an error code */
         for (i = 0; i < m; i++) {
             if (R[i] == ZERO) {
-                *info = i + 1;  /* 1-based index for error reporting */
+                *info = i + 1;
                 return;
             }
         }
@@ -184,7 +178,6 @@ void sgbequb(
             f32 scaled_val = fabsf(AB[ku + i - j + j * ldab]) * R[i];
             C[j] = (C[j] > scaled_val) ? C[j] : scaled_val;
         }
-        /* Round to power of radix */
         if (C[j] > ZERO) {
             C[j] = powf(radix, (INT)(logf(C[j]) / logrdx));
         }
@@ -202,7 +195,7 @@ void sgbequb(
         /* Find the first zero scale factor and return an error code */
         for (j = 0; j < n; j++) {
             if (C[j] == ZERO) {
-                *info = m + j + 1;  /* 1-based index for error reporting */
+                *info = m + j + 1;
                 return;
             }
         }

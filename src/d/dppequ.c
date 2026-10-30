@@ -52,11 +52,10 @@ void dppequ(
     f64* amax,
     INT* info)
 {
-    // dppequ.f lines 131-133: Parameters
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    // dppequ.f lines 154-164: Test the input parameters
+    // Test the input parameters
     *info = 0;
     INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -69,43 +68,33 @@ void dppequ(
         return;
     }
 
-    // dppequ.f lines 168-172: Quick return if possible
+    // Quick return if possible
     if (n == 0) {
         *scond = ONE;
         *amax = ZERO;
         return;
     }
 
-    // dppequ.f lines 176-178: Initialize SMIN and AMAX
+    // Initialize SMIN and AMAX
     S[0] = AP[0];
     f64 smin = S[0];
     *amax = S[0];
 
     if (upper) {
-        // dppequ.f lines 180-191: UPLO = 'U': Upper triangle of A is stored.
+        // UPLO = 'U': Upper triangle of A is stored.
         // Find the minimum and maximum diagonal elements.
-        // In upper packed storage, diagonal element A(i,i) is at position
-        // i + i*(i+1)/2 (0-based), which equals i*(i+3)/2
-        // The Fortran code uses JJ = JJ + I for I = 2..N (1-based)
-        // which corresponds to jj = jj + (i+1) for i = 1..n-1 (0-based)
-        INT jj = 0;  // dppequ.f line 185: JJ = 1 (but 0-based here)
+        INT jj = 0;
         for (INT i = 1; i < n; i++) {
-            // dppequ.f line 187: JJ = JJ + I (where I is 1-based, so I = i+1)
             jj = jj + (i + 1);
             S[i] = AP[jj];
             smin = (smin < S[i]) ? smin : S[i];
             *amax = (*amax > S[i]) ? *amax : S[i];
         }
     } else {
-        // dppequ.f lines 193-205: UPLO = 'L': Lower triangle of A is stored.
+        // UPLO = 'L': Lower triangle of A is stored.
         // Find the minimum and maximum diagonal elements.
-        // In lower packed storage, diagonal element A(i,i) is at position
-        // i + (i-1)*(2*n-i)/2 (1-based Fortran)
-        // The Fortran code uses JJ = JJ + N - I + 2 for I = 2..N (1-based)
-        INT jj = 0;  // dppequ.f line 198: JJ = 1 (but 0-based here)
+        INT jj = 0;
         for (INT i = 1; i < n; i++) {
-            // dppequ.f line 200: JJ = JJ + N - I + 2 (where I is 1-based, so I = i+1)
-            // JJ = JJ + N - (i+1) + 2 = JJ + N - i + 1
             jj = jj + n - i + 1;
             S[i] = AP[jj];
             smin = (smin < S[i]) ? smin : S[i];
@@ -114,21 +103,21 @@ void dppequ(
     }
 
     if (smin <= ZERO) {
-        // dppequ.f lines 207-216: Find the first non-positive diagonal element and return.
+        // Find the first non-positive diagonal element and return.
         for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
-                *info = i + 1;  // 1-based for error reporting
+                *info = i + 1;
                 return;
             }
         }
     } else {
-        // dppequ.f lines 217-224: Set the scale factors to the reciprocals
+        // Set the scale factors to the reciprocals
         // of the diagonal elements.
         for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrt(S[i]);
         }
 
-        // dppequ.f line 228: Compute SCOND = min(S(I)) / max(S(I))
+        // Compute SCOND = min(S(I)) / max(S(I))
         *scond = sqrt(smin) / sqrt(*amax);
     }
 }

@@ -60,21 +60,19 @@ void dpprfs(
     INT* restrict iwork,
     INT* info)
 {
-    // dpprfs.f lines 189-198: Parameters
-    const INT ITMAX = 5;  // dpprfs.f line 190
-    const f64 ZERO = 0.0;  // dpprfs.f line 192
-    const f64 ONE = 1.0;  // dpprfs.f line 194
-    const f64 TWO = 2.0;  // dpprfs.f line 196
-    const f64 THREE = 3.0;  // dpprfs.f line 198
+    const INT ITMAX = 5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
-    // dpprfs.f lines 201-206: Local Scalars and Arrays
     INT upper;
     INT count, i, ik, j, k, kase, kk, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
     INT isave[3];
     INT locinfo;
 
-    // dpprfs.f lines 224-240: Test the input parameters
+    // Test the input parameters
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -93,143 +91,160 @@ void dpprfs(
         return;
     }
 
-    // dpprfs.f lines 244-250: Quick return if possible
+    // Quick return if possible
     if (n == 0 || nrhs == 0) {
-        for (j = 0; j < nrhs; j++) {  // dpprfs.f line 245: DO 10 J = 1, NRHS
-            ferr[j] = ZERO;  // dpprfs.f line 246
-            berr[j] = ZERO;  // dpprfs.f line 247
+        for (j = 0; j < nrhs; j++) {
+            ferr[j] = ZERO;
+            berr[j] = ZERO;
         }
         return;
     }
 
-    // dpprfs.f lines 254-258: NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     nz = n + 1;
-    eps = dlamch("E");  // Epsilon
-    safmin = dlamch("S");  // Safe minimum
-    safe1 = nz * safmin;  // dpprfs.f line 257
-    safe2 = safe1 / eps;  // dpprfs.f line 258
+    eps = dlamch("E");
+    safmin = dlamch("S");
+    safe1 = nz * safmin;
+    safe2 = safe1 / eps;
 
-    // dpprfs.f lines 262-415: Do for each right hand side
-    for (j = 0; j < nrhs; j++) {  // dpprfs.f line 262: DO 140 J = 1, NRHS
-
-        // dpprfs.f lines 264-265
+    // Do for each right hand side
+    for (j = 0; j < nrhs; j++) {
         count = 1;
         lstres = THREE;
 
-        // dpprfs.f line 266: label 20 - Loop until stopping criterion is satisfied
+        // Loop until stopping criterion is satisfied.
         while (1) {
-            // dpprfs.f lines 272-275: Compute residual R = B - A * X
-            // CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
+            // Compute residual R = B - A * X
             cblas_dcopy(n, &B[j * ldb], 1, &work[n], 1);
-            // CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE, WORK( N+1 ), 1 )
             cblas_dspmv(CblasColMajor, upper ? CblasUpper : CblasLower,
                         n, -ONE, AP, &X[j * ldx], 1, ONE, &work[n], 1);
 
-            // dpprfs.f lines 286-288: Compute componentwise relative backward error
-            for (i = 0; i < n; i++) {  // dpprfs.f line 286: DO 30 I = 1, N
-                work[i] = fabs(B[i + j * ldb]);  // dpprfs.f line 287
+            // Compute componentwise relative backward error from formula
+            //
+            // max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+            //
+            // where abs(Z) is the componentwise absolute value of the matrix
+            // or vector Z.  If the i-th component of the denominator is less
+            // than SAFE2, then SAFE1 is added to the i-th components of the
+            // numerator and denominator before dividing.
+            for (i = 0; i < n; i++) {
+                work[i] = fabs(B[i + j * ldb]);
             }
 
-            // dpprfs.f lines 292-320: Compute abs(A)*abs(X) + abs(B)
-            kk = 0;  // dpprfs.f line 292: KK = 1 (0-based: kk = 0)
+            // Compute abs(A)*abs(X) + abs(B)
+            kk = 0;
             if (upper) {
-                // dpprfs.f lines 294-305
-                for (k = 0; k < n; k++) {  // dpprfs.f line 294: DO 50 K = 1, N
-                    s = ZERO;  // dpprfs.f line 295
-                    xk = fabs(X[k + j * ldx]);  // dpprfs.f line 296
-                    ik = kk;  // dpprfs.f line 297
-                    for (i = 0; i < k; i++) {  // dpprfs.f line 298: DO 40 I = 1, K - 1
-                        work[i] = work[i] + fabs(AP[ik]) * xk;  // dpprfs.f line 299
-                        s = s + fabs(AP[ik]) * fabs(X[i + j * ldx]);  // dpprfs.f line 300
-                        ik = ik + 1;  // dpprfs.f line 301
+                for (k = 0; k < n; k++) {
+                    s = ZERO;
+                    xk = fabs(X[k + j * ldx]);
+                    ik = kk;
+                    for (i = 0; i < k; i++) {
+                        work[i] = work[i] + fabs(AP[ik]) * xk;
+                        s = s + fabs(AP[ik]) * fabs(X[i + j * ldx]);
+                        ik = ik + 1;
                     }
-                    // dpprfs.f line 303: WORK( K ) = WORK( K ) + ABS( AP( KK+K-1 ) )*XK + S
-                    // In 0-based: kk + k is the diagonal element position
                     work[k] = work[k] + fabs(AP[kk + k]) * xk + s;
-                    kk = kk + (k + 1);  // dpprfs.f line 304: KK = KK + K
+                    kk = kk + (k + 1);
                 }
             } else {
-                // dpprfs.f lines 307-319
-                for (k = 0; k < n; k++) {  // dpprfs.f line 307: DO 70 K = 1, N
-                    s = ZERO;  // dpprfs.f line 308
-                    xk = fabs(X[k + j * ldx]);  // dpprfs.f line 309
-                    work[k] = work[k] + fabs(AP[kk]) * xk;  // dpprfs.f line 310
-                    ik = kk + 1;  // dpprfs.f line 311
-                    for (i = k + 1; i < n; i++) {  // dpprfs.f line 312: DO 60 I = K + 1, N
-                        work[i] = work[i] + fabs(AP[ik]) * xk;  // dpprfs.f line 313
-                        s = s + fabs(AP[ik]) * fabs(X[i + j * ldx]);  // dpprfs.f line 314
-                        ik = ik + 1;  // dpprfs.f line 315
+                for (k = 0; k < n; k++) {
+                    s = ZERO;
+                    xk = fabs(X[k + j * ldx]);
+                    work[k] = work[k] + fabs(AP[kk]) * xk;
+                    ik = kk + 1;
+                    for (i = k + 1; i < n; i++) {
+                        work[i] = work[i] + fabs(AP[ik]) * xk;
+                        s = s + fabs(AP[ik]) * fabs(X[i + j * ldx]);
+                        ik = ik + 1;
                     }
-                    work[k] = work[k] + s;  // dpprfs.f line 317
-                    kk = kk + (n - k);  // dpprfs.f line 318: KK = KK + ( N-K+1 )
+                    work[k] = work[k] + s;
+                    kk = kk + (n - k);
                 }
             }
 
-            // dpprfs.f lines 321-330
-            s = ZERO;  // dpprfs.f line 321
-            for (i = 0; i < n; i++) {  // dpprfs.f line 322: DO 80 I = 1, N
-                if (work[i] > safe2) {  // dpprfs.f line 323
-                    s = (s > fabs(work[n + i]) / work[i]) ? s : fabs(work[n + i]) / work[i];  // dpprfs.f line 324
+            s = ZERO;
+            for (i = 0; i < n; i++) {
+                if (work[i] > safe2) {
+                    s = (s > fabs(work[n + i]) / work[i]) ? s : fabs(work[n + i]) / work[i];
                 } else {
                     s = (s > (fabs(work[n + i]) + safe1) / (work[i] + safe1)) ?
-                        s : (fabs(work[n + i]) + safe1) / (work[i] + safe1);  // dpprfs.f lines 326-327
+                        s : (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                 }
             }
-            berr[j] = s;  // dpprfs.f line 330
+            berr[j] = s;
 
-            // dpprfs.f lines 338-348: Test stopping criterion
+            // Test stopping criterion. Continue iterating if
+            //    1) The residual BERR(J) is larger than machine epsilon, and
+            //    2) BERR(J) decreased by at least a factor of 2 during the
+            //       last iteration, and
+            //    3) At most ITMAX iterations tried.
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
-                // dpprfs.f lines 343-344: Update solution and try again
+                // Update solution and try again
                 dpptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
                 cblas_daxpy(n, ONE, &work[n], 1, &X[j * ldx], 1);
-                lstres = berr[j];  // dpprfs.f line 345
-                count = count + 1;  // dpprfs.f line 346
-                // GO TO 20 (continue while loop)
+                lstres = berr[j];
+                count = count + 1;
             } else {
-                break;  // Exit while loop
+                break;
             }
         }
 
-        // dpprfs.f lines 372-378: Bound error from formula
-        for (i = 0; i < n; i++) {  // dpprfs.f line 372: DO 90 I = 1, N
-            if (work[i] > safe2) {  // dpprfs.f line 373
-                work[i] = fabs(work[n + i]) + nz * eps * work[i];  // dpprfs.f line 374
+        // Bound error from formula
+        //
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(A))*
+        //    ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+        //
+        // where
+        //   norm(Z) is the magnitude of the largest component of Z
+        //   inv(A) is the inverse of A
+        //   abs(Z) is the componentwise absolute value of the matrix or
+        //      vector Z
+        //   NZ is the maximum number of nonzeros in any row of A, plus 1
+        //   EPS is machine epsilon
+        //
+        // The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(A)*abs(X) + abs(B) is less than SAFE2.
+        for (i = 0; i < n; i++) {
+            if (work[i] > safe2) {
+                work[i] = fabs(work[n + i]) + nz * eps * work[i];
             } else {
-                work[i] = fabs(work[n + i]) + nz * eps * work[i] + safe1;  // dpprfs.f line 376
+                work[i] = fabs(work[n + i]) + nz * eps * work[i] + safe1;
             }
         }
 
-        // dpprfs.f lines 380-404: Use DLACN2 to estimate the infinity-norm
-        kase = 0;  // dpprfs.f line 380
-        while (1) {  // dpprfs.f line 381: label 100
-            // dpprfs.f lines 382-384
+        // Use DLACN2 to estimate the infinity-norm of the matrix
+        //    inv(A) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+        kase = 0;
+        while (1) {
             dlacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
             if (kase == 0) {
                 break;
             }
             if (kase == 1) {
-                // dpprfs.f lines 390-393: Multiply by diag(W)*inv(A**T)
+                // Multiply by diag(W)*inv(A**T)
                 dpptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
-                for (i = 0; i < n; i++) {  // dpprfs.f line 391: DO 110 I = 1, N
-                    work[n + i] = work[i] * work[n + i];  // dpprfs.f line 392
+                for (i = 0; i < n; i++) {
+                    work[n + i] = work[i] * work[n + i];
                 }
             } else if (kase == 2) {
-                // dpprfs.f lines 398-401: Multiply by inv(A)*diag(W)
-                for (i = 0; i < n; i++) {  // dpprfs.f line 398: DO 120 I = 1, N
-                    work[n + i] = work[i] * work[n + i];  // dpprfs.f line 399
+                // Multiply by inv(A)*diag(W)
+                for (i = 0; i < n; i++) {
+                    work[n + i] = work[i] * work[n + i];
                 }
                 dpptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
             }
-            // GO TO 100 (continue while loop)
         }
 
-        // dpprfs.f lines 408-413: Normalize error
-        lstres = ZERO;  // dpprfs.f line 408
-        for (i = 0; i < n; i++) {  // dpprfs.f line 409: DO 130 I = 1, N
-            lstres = (lstres > fabs(X[i + j * ldx])) ? lstres : fabs(X[i + j * ldx]);  // dpprfs.f line 410
+        // Normalize error
+        lstres = ZERO;
+        for (i = 0; i < n; i++) {
+            lstres = (lstres > fabs(X[i + j * ldx])) ? lstres : fabs(X[i + j * ldx]);
         }
-        if (lstres != ZERO) {  // dpprfs.f line 412
-            ferr[j] = ferr[j] / lstres;  // dpprfs.f line 413
+        if (lstres != ZERO) {
+            ferr[j] = ferr[j] / lstres;
         }
     }
 }

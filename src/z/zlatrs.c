@@ -501,7 +501,7 @@ void zlatrs(
                 csumj = ZERO;
                 if (creal(uscal) == ONE && cimag(uscal) == 0.0) {
                     // If the scaling needed for A in the dot product is 1,
-                    // call ZDOTC to perform the conjugated dot product
+                    // call ZDOTC to perform the dot product.
                     if (upper) {
                         cblas_zdotc_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {

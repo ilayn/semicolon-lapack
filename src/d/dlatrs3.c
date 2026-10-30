@@ -79,7 +79,6 @@ void dlatrs3(
     const INT lwork,
     INT* info)
 {
-    /* Parameters from Fortran - match LAPACK exactly */
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 #define NRHSMIN 2
@@ -87,11 +86,9 @@ void dlatrs3(
 #define NBMIN 8
 #define NBMAX 64
 
-    /* Local arrays - match Fortran local arrays */
     f64 W[NBMAX];
     f64 XNRM[NBRHS];
 
-    /* Local scalars */
     INT upper, notran, nounit, lquery;
     INT awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
     INT jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
@@ -116,9 +113,16 @@ void dlatrs3(
     if (nbx < 1) nbx = 1;
 
     /* Compute the workspace */
-    /* The workspace comprises two parts:
-     * 1. Local scale factors: NBA * max(NBA, min(NRHS, NBRHS))
-     * 2. Upper bounds of blocks: NBA * NBA
+    /* The workspace comprises two parts.
+     * The first part stores the local scale factors. Each simultaneously
+     * computed right-hand side requires one local scale factor per block
+     * row. WORK( I+KK*LDS ) is the scale factor of the vector
+     * segment associated with the I-th block row and the KK-th vector
+     * in the block column.
+     * The second part stores upper bounds of the triangular A. There are
+     * a total of NBA x NBA blocks, of which only the upper triangular
+     * part or the lower triangular part is referenced. The upper bound of
+     * the block A( I, J ) is stored as WORK( AWRK + I + J * NBA ).
      */
     INT minrhs = (nrhs < NBRHS) ? nrhs : NBRHS;
     lscale = nba * ((nba > minrhs) ? nba : minrhs);
@@ -173,7 +177,7 @@ void dlatrs3(
         return;
     }
 
-    /* Determine machine dependent constants to control overflow */
+    /* Determine machine dependent constant to control overflow. */
     bignum = dlamch("O");
     smlnum = dlamch("S");
 
@@ -190,8 +194,8 @@ void dlatrs3(
      * the block with the largest norm TMAX. */
     tmax = ZERO;
     for (j = 0; j < nba; j++) {
-        j1 = j * nb;                        /* 0-based start */
-        j2 = ((j + 1) * nb < n) ? (j + 1) * nb : n;  /* 0-based exclusive end */
+        j1 = j * nb;
+        j2 = ((j + 1) * nb < n) ? (j + 1) * nb : n;
 
         if (upper) {
             ifirst = 0;
@@ -218,23 +222,33 @@ void dlatrs3(
     }
 
     if (!(tmax <= dlamch("O"))) {
-        /* Some matrix entries have huge absolute value. Fall back to LATRS.
-         * Set normin = 'N' for every right-hand side to force computation
-         * of TSCAL in LATRS to avoid overflow. */
+        /* Some matrix entries have huge absolute value. At least one upper
+         * bound norm( A(i1:i2-1, j1:j2-1), 'I') is not a valid floating-point
+         * number, either due to overflow in LANGE or due to Inf in A.
+         * Fall back to LATRS. Set normin = 'N' for every right-hand side to
+         * force computation of TSCAL in LATRS to avoid the likely overflow
+         * in the computation of the column norms CNORM. */
         for (k = 0; k < nrhs; k++) {
             dlatrs(uplo, trans, diag, "N", n, A, lda, &X[k * ldx], &scale[k], cnorm, info);
         }
         return;
     }
 
-    /* Loop over block columns of X */
+    /* Every right-hand side requires workspace to store NBA local scale
+     * factors. To save workspace, X is computed successively in block columns
+     * of width NBRHS, requiring a total of NBA x NBRHS space. If sufficient
+     * workspace is available, larger values of NBRHS or NBRHS = NRHS are viable.
+     */
     for (k = 0; k < nbx; k++) {
-        /* K1: column index of the first column in X( J, K ) (0-based)
-         * K2: column index of the first column in X( J, K+1 ) (0-based exclusive) */
+        /* Loop over block columns (index = K) of X and, for column-wise scalings,
+         * over individual columns (index = KK).
+         * K1: column index of the first column in X( J, K )
+         * K2: column index of the first column in X( J, K+1 )
+         * so the K2 - K1 is the column count of the block X( J, K ) */
         k1 = k * NBRHS;
         k2 = ((k + 1) * NBRHS < nrhs) ? (k + 1) * NBRHS : nrhs;
 
-        /* Initialize local scaling factors of current block column */
+        /* Initialize local scaling factors of current block column X( J, K ) */
         for (kk = 0; kk < k2 - k1; kk++) {
             for (i = 0; i < nba; i++) {
                 work[i + (kk + 1) * lds] = ONE;
@@ -266,13 +280,15 @@ void dlatrs3(
         }
 
         for (j = jfirst; (jinc > 0) ? (j <= jlast) : (j >= jlast); j += jinc) {
-            /* J1: row index of the first row in A( J, J ) (0-based)
-             * J2: row index past the last row (0-based exclusive) */
+            /* J1: row index of the first row in A( J, J )
+             * J2: row index of the first row in A( J+1, J+1 )
+             * so that J2 - J1 is the row count of the block A( J, J ) */
             j1 = j * nb;
             j2 = ((j + 1) * nb < n) ? (j + 1) * nb : n;
 
             /* Solve op(A( J, J )) * X( J, RHS ) = SCALOC * B( J, RHS )
-             * for all right-hand sides in the current block column. */
+             * for all right-hand sides in the current block column,
+             * one RHS at a time. */
             for (kk = 0; kk < k2 - k1; kk++) {
                 rhs = k1 + kk;
                 if (kk == 0) {
@@ -285,12 +301,17 @@ void dlatrs3(
                            &scaloc, cnorm, info);
                 }
 
-                /* Find largest absolute value entry in X( J1:J2-1, RHS ) */
+                /* Find largest absolute value entry in the vector segment
+                 * X( J1:J2-1, RHS ) as an upper bound for the worst case
+                 * growth in the linear updates.
+                 */
                 XNRM[kk] = dlange("I", j2 - j1, 1, &X[j1 + rhs * ldx], ldx, W);
 
                 if (scaloc == ZERO) {
                     /* LATRS found that A is singular through A(j,j) = 0.
-                     * Reset computation: x(0:n-1) = 0, x(j) = 1, scale = 0 */
+                     * Reset the computation x(0:n-1) = 0, x(j) = 1, SCALE = 0
+                     * and compute A*x = 0 (or A**T*x = 0). Note that
+                     * X(J1:J2-1, KK) is set by LATRS. */
                     scale[rhs] = ZERO;
                     for (ii = 0; ii < j1; ii++) {
                         X[ii + kk * ldx] = ZERO;
@@ -311,7 +332,8 @@ void dlatrs3(
                     scaloc = scaloc * scal;
                     work[j + (kk + 1) * lds] = smlnum;
                     /* If LATRS overestimated the growth, x may be
-                     * rescaled to preserve a valid combined scale factor. */
+                     * rescaled to preserve a valid combined scale
+                     * factor WORK( J, KK ) > 0. */
                     rscal = ONE / scaloc;
                     if (XNRM[kk] * rscal <= bignum) {
                         XNRM[kk] = XNRM[kk] * rscal;
@@ -320,7 +342,9 @@ void dlatrs3(
                     } else {
                         /* The system op(A) * x = b is badly scaled and its
                          * solution cannot be represented as (1/scale) * x.
-                         * Set x to zero. */
+                         * Set x to zero. This approach deviates from LATRS
+                         * where a completely meaningless non-zero vector
+                         * is returned that is not a solution to op(A) * x = b. */
                         scale[rhs] = ZERO;
                         for (ii = 0; ii < n; ii++) {
                             X[ii + kk * ldx] = ZERO;
@@ -360,19 +384,27 @@ void dlatrs3(
             }
 
             for (i = ifirst; (iinc > 0) ? (i <= ilast) : (i >= ilast); i += iinc) {
-                /* I1: row index of the first row in X( I, K ) (0-based)
-                 * I2: row index past the last row (0-based exclusive) */
+                /* I1: row index of the first column in X( I, K )
+                 * I2: row index of the first column in X( I+1, K )
+                 * so the I2 - I1 is the row count of the block X( I, K ) */
                 i1 = i * nb;
                 i2 = ((i + 1) * nb < n) ? (i + 1) * nb : n;
 
-                /* Prepare the linear update to be executed with GEMM. */
+                /* Prepare the linear update to be executed with GEMM.
+                 * For each column, compute a consistent scaling, a
+                 * scaling factor to survive the linear update, and
+                 * rescale the column segments, if necessary. Then
+                 * the linear update is safely executed.
+                 */
                 for (kk = 0; kk < k2 - k1; kk++) {
                     rhs = k1 + kk;
                     /* Compute consistent scaling */
                     scamin = work[i + (kk + 1) * lds];
                     scamin = (scamin < work[j + (kk + 1) * lds]) ? scamin : work[j + (kk + 1) * lds];
 
-                    /* Compute scaling factor to survive the linear update */
+                    /* Compute scaling factor to survive the linear update
+                     * simulating consistent scaling.
+                     */
                     bnrm = dlange("I", i2 - i1, 1, &X[i1 + rhs * ldx], ldx, W);
                     bnrm = bnrm * (scamin / work[i + (kk + 1) * lds]);
                     XNRM[kk] = XNRM[kk] * (scamin / work[j + (kk + 1) * lds]);

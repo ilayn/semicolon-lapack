@@ -78,7 +78,6 @@ void dpocon(
         return;
     }
 
-    // Safe minimum
     f64 smlnum = dlamch("S");
 
     // Estimate the 1-norm of inv(A).

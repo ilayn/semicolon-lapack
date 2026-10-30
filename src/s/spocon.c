@@ -78,7 +78,6 @@ void spocon(
         return;
     }
 
-    // Safe minimum
     f32 smlnum = slamch("S");
 
     // Estimate the 1-norm of inv(A).

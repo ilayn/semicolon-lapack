@@ -275,14 +275,11 @@ void sgbsvx(
     }
 
     if (nofact || equil) {
-        /* Compute the LU factorization of the band matrix A.
-         * Copy AB to AFB, converting from kl+ku+1 rows to 2*kl+ku+1 rows storage */
+        /* Compute the LU factorization of the band matrix A. */
         for (j = 0; j < n; j++) {
             j1 = (j - ku > 0) ? j - ku : 0;
             j2 = (j + kl < n - 1) ? j + kl : n - 1;
             INT len = j2 - j1 + 1;
-            /* Source: AB at row ku + j1 - j, column j
-             * Dest: AFB at row kl + ku + j1 - j, column j */
             cblas_scopy(len, &AB[ku + j1 - j + j * ldab], 1,
                         &AFB[kl + ku + j1 - j + j * ldafb], 1);
         }

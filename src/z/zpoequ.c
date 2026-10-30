@@ -84,7 +84,7 @@ void zpoequ(
         // Find the first non-positive diagonal element and return.
         for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
-                *info = i + 1;  // 1-based for error reporting
+                *info = i + 1;
                 return;
             }
         }

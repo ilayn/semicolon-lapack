@@ -77,7 +77,8 @@ void cpotrf(
     // Quick return if possible
     if (n == 0) return;
 
-    // Determine the block size (NB=64 from ilaenv for POTRF)
+    // Determine the block size for this environment.
+    // NB = 64 from ilaenv for POTRF.
     INT nb = lapack_get_nb("POTRF");
 
     if (nb <= 1 || nb >= n) {
@@ -88,10 +89,10 @@ void cpotrf(
         if (upper) {
             // Compute the Cholesky factorization A = U**H * U.
             for (INT j = 0; j < n; j += nb) {
-                // Update and factorize the current diagonal block
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 INT jb = nb < (n - j) ? nb : (n - j);
 
-                // ZHERK('Upper', 'Conjugate transpose', JB, J-1, -ONE, A(1,J), LDA, ONE, A(J,J), LDA)
                 if (j > 0) {
                     cblas_cherk(CblasColMajor, CblasUpper, CblasConjTrans,
                                 jb, j, NEG_ONE,
@@ -99,7 +100,6 @@ void cpotrf(
                                 ONE, &A[j + j * lda], lda);
                 }
 
-                // Factor the diagonal block
                 cpotrf2("U", jb, &A[j + j * lda], lda, info);
                 if (*info != 0) {
                     *info = *info + j;
@@ -108,7 +108,6 @@ void cpotrf(
 
                 if (j + jb < n) {
                     // Compute the current block row
-                    // ZGEMM('Conjugate transpose', 'No transpose', JB, N-J-JB+1, J-1, -CONE, A(1,J), LDA, A(1,J+JB), LDA, CONE, A(J,J+JB), LDA)
                     if (j > 0) {
                         cblas_cgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
                                     jb, n - j - jb, j, &NEG_CONE,
@@ -116,7 +115,6 @@ void cpotrf(
                                     &A[(j + jb) * lda], lda,
                                     &CONE, &A[j + (j + jb) * lda], lda);
                     }
-                    // ZTRSM('Left', 'Upper', 'Conjugate transpose', 'Non-unit', JB, N-J-JB+1, CONE, A(J,J), LDA, A(J,J+JB), LDA)
                     cblas_ctrsm(CblasColMajor, CblasLeft, CblasUpper, CblasConjTrans,
                                 CblasNonUnit, jb, n - j - jb, &CONE,
                                 &A[j + j * lda], lda,
@@ -126,10 +124,10 @@ void cpotrf(
         } else {
             // Compute the Cholesky factorization A = L * L**H.
             for (INT j = 0; j < n; j += nb) {
-                // Update and factorize the current diagonal block
+                // Update and factorize the current diagonal block and test
+                // for non-positive-definiteness.
                 INT jb = nb < (n - j) ? nb : (n - j);
 
-                // ZHERK('Lower', 'No transpose', JB, J-1, -ONE, A(J,1), LDA, ONE, A(J,J), LDA)
                 if (j > 0) {
                     cblas_cherk(CblasColMajor, CblasLower, CblasNoTrans,
                                 jb, j, NEG_ONE,
@@ -137,7 +135,6 @@ void cpotrf(
                                 ONE, &A[j + j * lda], lda);
                 }
 
-                // Factor the diagonal block
                 cpotrf2("L", jb, &A[j + j * lda], lda, info);
                 if (*info != 0) {
                     *info = *info + j;
@@ -146,7 +143,6 @@ void cpotrf(
 
                 if (j + jb < n) {
                     // Compute the current block column
-                    // ZGEMM('No transpose', 'Conjugate transpose', N-J-JB+1, JB, J-1, -CONE, A(J+JB,1), LDA, A(J,1), LDA, CONE, A(J+JB,J), LDA)
                     if (j > 0) {
                         cblas_cgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                     n - j - jb, jb, j, &NEG_CONE,
@@ -154,7 +150,6 @@ void cpotrf(
                                     &A[j], lda,
                                     &CONE, &A[(j + jb) + j * lda], lda);
                     }
-                    // ZTRSM('Right', 'Lower', 'Conjugate transpose', 'Non-unit', N-J-JB+1, JB, CONE, A(J,J), LDA, A(J+JB,J), LDA)
                     cblas_ctrsm(CblasColMajor, CblasRight, CblasLower, CblasConjTrans,
                                 CblasNonUnit, n - j - jb, jb, &CONE,
                                 &A[j + j * lda], lda,

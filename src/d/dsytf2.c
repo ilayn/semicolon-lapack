@@ -120,21 +120,24 @@ void dsytf2(
         return;
     }
 
-    /* Quick return if possible */
     if (n == 0) {
         return;
     }
 
     if (upper) {
         /* Factorize A as U*D*U**T using the upper triangle of A
-         * k decreases from n-1 to 0 in steps of 1 or 2 */
+         *
+         * K is the main loop index, decreasing from n-1 to 0 in steps of
+         * 1 or 2 */
 
         INT k = n - 1;
         while (k >= 0) {
             INT kstep = 1;
             f64 absakk = fabs(A[k + k * lda]);
 
-            /* Find largest off-diagonal element in column k */
+            /* IMAX is the row-index of the largest off-diagonal element in
+             * column K, and COLMAX is its absolute value.
+             * Determine both COLMAX and IMAX. */
             INT imax = 0;
             f64 colmax = 0.0;
             if (k > 0) {
@@ -206,9 +209,14 @@ void dsytf2(
                 /* Update the leading submatrix */
                 if (kstep == 1) {
                     /* 1-by-1 pivot block D(k): column k now holds
-                     * W(k) = U(k)*D(k), where U(k) is the k-th column of U.
-                     * Perform a rank-1 update of A(0:k-1, 0:k-1) as
-                     * A := A - U(k)*D(k)*U(k)**T = A - W(k)*(1/D(k))*W(k)**T */
+                     *
+                     * W(k) = U(k)*D(k)
+                     *
+                     * where U(k) is the k-th column of U
+                     *
+                     * Perform a rank-1 update of A(0:k-1,0:k-1) as
+                     *
+                     * A := A - U(k)*D(k)*U(k)**T = A - W(k)*1/D(k)*W(k)**T */
                     if (k > 0) {
                         f64 r1 = 1.0 / A[k + k * lda];
                         cblas_dsyr(CblasColMajor, CblasUpper, k, -r1,
@@ -217,9 +225,16 @@ void dsytf2(
                     }
                 } else {
                     /* 2-by-2 pivot block D(k): columns k and k-1 now hold
-                     * (W(k-1) W(k)) = (U(k-1) U(k))*D(k).
-                     * Perform a rank-2 update of A(0:k-2, 0:k-2) as
-                     * A := A - (W(k-1) W(k))*inv(D(k))*(W(k-1) W(k))**T */
+                     *
+                     * ( W(k-1) W(k) ) = ( U(k-1) U(k) )*D(k)
+                     *
+                     * where U(k) and U(k-1) are the k-th and (k-1)-th columns
+                     * of U
+                     *
+                     * Perform a rank-2 update of A(0:k-2,0:k-2) as
+                     *
+                     * A := A - ( U(k-1) U(k) )*D(k)*( U(k-1) U(k) )**T
+                     *    = A - ( W(k-1) W(k) )*inv(D(k))*( W(k-1) W(k) )**T */
                     if (k > 1) {
                         f64 d12 = A[(k - 1) + k * lda];
                         f64 d22 = A[(k - 1) + (k - 1) * lda] / d12;
@@ -253,14 +268,18 @@ void dsytf2(
 
     } else {
         /* Factorize A as L*D*L**T using the lower triangle of A
-         * k increases from 0 to n-1 in steps of 1 or 2 */
+         *
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2 */
 
         INT k = 0;
         while (k < n) {
             INT kstep = 1;
             f64 absakk = fabs(A[k + k * lda]);
 
-            /* Find largest off-diagonal element in column k */
+            /* IMAX is the row-index of the largest off-diagonal element in
+             * column K, and COLMAX is its absolute value.
+             * Determine both COLMAX and IMAX. */
             INT imax = k;
             f64 colmax = 0.0;
             if (k < n - 1) {
@@ -333,8 +352,13 @@ void dsytf2(
                 /* Update the trailing submatrix */
                 if (kstep == 1) {
                     /* 1-by-1 pivot block D(k): column k now holds
-                     * W(k) = L(k)*D(k), where L(k) is the k-th column of L.
-                     * Perform a rank-1 update of A(k+1:n-1, k+1:n-1) as
+                     *
+                     * W(k) = L(k)*D(k)
+                     *
+                     * where L(k) is the k-th column of L
+                     *
+                     * Perform a rank-1 update of A(k+1:n-1,k+1:n-1) as
+                     *
                      * A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T */
                     if (k < n - 1) {
                         f64 d11 = 1.0 / A[k + k * lda];
@@ -343,10 +367,14 @@ void dsytf2(
                         cblas_dscal(n - k - 1, d11, &A[(k + 1) + k * lda], 1);
                     }
                 } else {
-                    /* 2-by-2 pivot block D(k): columns k and k+1 now hold
-                     * (W(k) W(k+1)) = (L(k) L(k+1))*D(k).
-                     * Perform a rank-2 update of A(k+2:n-1, k+2:n-1) as
-                     * A := A - (W(k) W(k+1))*inv(D(k))*(W(k) W(k+1))**T */
+                    /* 2-by-2 pivot block D(k)
+                     *
+                     * Perform a rank-2 update of A(k+2:n-1,k+2:n-1) as
+                     *
+                     * A := A - ( (A(k) A(k+1))*D(k)**(-1) ) * (A(k) A(k+1))**T
+                     *
+                     * where L(k) and L(k+1) are the k-th and (k+1)-th
+                     * columns of L */
                     if (k < n - 2) {
                         f64 d21 = A[(k + 1) + k * lda];
                         f64 d11 = A[(k + 1) + (k + 1) * lda] / d21;

@@ -114,19 +114,16 @@ void cpotrf2(
             // Compute the Cholesky factorization A = U**H * U
 
             // Update and scale A12
-            // Fortran: ZTRSM('L', 'U', 'C', 'N', N1, N2, CONE, A(1,1), LDA, A(1,N1+1), LDA)
             cblas_ctrsm(CblasColMajor, CblasLeft, CblasUpper, CblasConjTrans,
                         CblasNonUnit, n1, n2, &CONE,
                         A, lda, &A[n1 * lda], lda);
 
-            // Update A22
-            // Fortran: ZHERK(UPLO, 'C', N2, N1, -ONE, A(1,N1+1), LDA, ONE, A(N1+1,N1+1), LDA)
+            // Update and factor A22
             cblas_cherk(CblasColMajor, CblasUpper, CblasConjTrans,
                         n2, n1, NEG_ONE,
                         &A[n1 * lda], lda,
                         ONE, &A[n1 + n1 * lda], lda);
 
-            // Factor A22
             cpotrf2(uplo, n2, &A[n1 + n1 * lda], lda, &iinfo);
             if (iinfo != 0) {
                 *info = iinfo + n1;
@@ -136,19 +133,16 @@ void cpotrf2(
             // Compute the Cholesky factorization A = L * L**H
 
             // Update and scale A21
-            // Fortran: ZTRSM('R', 'L', 'C', 'N', N2, N1, CONE, A(1,1), LDA, A(N1+1,1), LDA)
             cblas_ctrsm(CblasColMajor, CblasRight, CblasLower, CblasConjTrans,
                         CblasNonUnit, n2, n1, &CONE,
                         A, lda, &A[n1], lda);
 
-            // Update A22
-            // Fortran: ZHERK(UPLO, 'N', N2, N1, -ONE, A(N1+1,1), LDA, ONE, A(N1+1,N1+1), LDA)
+            // Update and factor A22
             cblas_cherk(CblasColMajor, CblasLower, CblasNoTrans,
                         n2, n1, NEG_ONE,
                         &A[n1], lda,
                         ONE, &A[n1 + n1 * lda], lda);
 
-            // Factor A22
             cpotrf2(uplo, n2, &A[n1 + n1 * lda], lda, &iinfo);
             if (iinfo != 0) {
                 *info = iinfo + n1;

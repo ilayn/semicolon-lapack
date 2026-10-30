@@ -82,7 +82,6 @@ void cgttrf(
         DU2[i] = ZERO;
     }
 
-    /* Main elimination loop for columns 0 to n-3 */
     for (i = 0; i < n - 2; i++) {
         if (cabs1f(D[i]) >= cabs1f(DL[i])) {
             /* No row interchange required, eliminate DL[i] */
@@ -105,9 +104,8 @@ void cgttrf(
         }
     }
 
-    /* Handle the last row (n-1) if n > 1 */
     if (n > 1) {
-        i = n - 2;  /* Last pair of rows: i = n-2, i+1 = n-1 */
+        i = n - 2;
         if (cabs1f(D[i]) >= cabs1f(DL[i])) {
             if (cabs1f(D[i]) != 0.0f) {
                 fact = DL[i] / D[i];
@@ -128,7 +126,7 @@ void cgttrf(
     /* Check for a zero on the diagonal of U */
     for (i = 0; i < n; i++) {
         if (cabs1f(D[i]) == 0.0f) {
-            *info = i + 1;  /* 1-based for compatibility with LAPACK convention */
+            *info = i + 1;
             break;
         }
     }

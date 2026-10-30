@@ -63,9 +63,6 @@ void spttrs(
     if (n == 0 || nrhs == 0)
         return;
 
-    /*
-     * ILAENV(1, 'SPTTRS', ...) returns NB=1 (no special case in ilaenv.f).
-     * Therefore, we call sptts2 directly without blocking.
-     */
+    /* ILAENV(1, 'SPTTRS', ...) = 1: ilaenv.f has no PTTRS entry. */
     sptts2(n, nrhs, D, E, B, ldb);
 }

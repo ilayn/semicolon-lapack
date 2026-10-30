@@ -65,7 +65,7 @@ void zgetc2(
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
     bignum = 1.0 / smlnum;
-    (void)bignum;  /* Computed but unused in LAPACK reference */
+    (void)bignum;
 
     // Handle the case n=1 by itself
     if (n == 1) {
@@ -80,12 +80,12 @@ void zgetc2(
 
     // Factorize A using complete pivoting.
     // Set pivots less than SMIN to SMIN.
-    smin = 0.0;  // Will be set on first iteration
+    smin = 0.0;
     ipv = 0;
     jpv = 0;
 
     for (i = 0; i < n - 1; i++) {
-        // Find max element in matrix A[i:n-1, i:n-1]
+        // Find max element in matrix A
         xmax = 0.0;
 
         for (jp = i; jp < n; jp++) {
@@ -98,7 +98,6 @@ void zgetc2(
             }
         }
 
-        // Set SMIN on first iteration
         if (i == 0) {
             smin = (eps * xmax > smlnum) ? eps * xmax : smlnum;
         }
@@ -121,26 +120,22 @@ void zgetc2(
             A[i + i * lda] = CMPLX(smin, 0.0);
         }
 
-        // Compute elements i+1:n-1 of column i (L factor)
         for (j = i + 1; j < n; j++) {
             A[j + i * lda] = A[j + i * lda] / A[i + i * lda];
         }
 
-        // Update trailing submatrix
-        // A[i+1:n-1, i+1:n-1] -= A[i+1:n-1, i] * A[i, i+1:n-1]
         cblas_zgeru(CblasColMajor, n - i - 1, n - i - 1, &NEG_ONE,
-                    &A[i + 1 + i * lda], 1,           // column vector
-                    &A[i + (i + 1) * lda], lda,        // row vector
+                    &A[i + 1 + i * lda], 1,
+                    &A[i + (i + 1) * lda], lda,
                     &A[i + 1 + (i + 1) * lda], lda);
     }
 
-    // Check last pivot
     if (cabs(A[n - 1 + (n - 1) * lda]) < smin) {
         *info = n;
         A[n - 1 + (n - 1) * lda] = CMPLX(smin, 0.0);
     }
 
-    // Set last pivots to n-1 (0-based)
+    // Set last pivots to n-1
     ipiv[n - 1] = n - 1;
     jpiv[n - 1] = n - 1;
 }

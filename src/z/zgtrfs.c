@@ -147,7 +147,8 @@ void zgtrfs(
 
         /* Loop until stopping criterion is satisfied */
         for (;;) {
-            /* Compute residual R = B - op(A) * X */
+            /* Compute residual R = B - op(A) * X,
+             * where op(A) = A, A**T, or A**H, depending on TRANS. */
             cblas_zcopy(n, &B[j * ldb], 1, work, 1);
             {
                 const f64 neg_one = -ONE;
@@ -156,7 +157,8 @@ void zgtrfs(
                         one, work, n);
             }
 
-            /* Compute abs(op(A))*abs(x) + abs(b) for use in backward error bound */
+            /* Compute abs(op(A))*abs(x) + abs(b) for use in the backward
+             * error bound. */
             if (notran) {
                 if (n == 1) {
                     rwork[0] = cabs1(B[j * ldb])
@@ -195,7 +197,14 @@ void zgtrfs(
                 }
             }
 
-            /* Compute componentwise relative backward error */
+            /* Compute componentwise relative backward error from formula
+             *
+             * max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+             *
+             * where abs(Z) is the componentwise absolute value of the matrix
+             * or vector Z.  If the i-th component of the denominator is less
+             * than SAFE2, then SAFE1 is added to the i-th components of the
+             * numerator and denominator before dividing. */
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
@@ -223,7 +232,23 @@ void zgtrfs(
             }
         }
 
-        /* Compute forward error bound using norm estimation */
+        /* Bound error from formula
+         *
+         * norm(X - XTRUE) / norm(X) .le. FERR =
+         * norm( abs(inv(op(A)))*
+         *    ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+         *
+         * where
+         *   norm(Z) is the magnitude of the largest component of Z
+         *   inv(op(A)) is the inverse of op(A)
+         *   abs(Z) is the componentwise absolute value of the matrix or
+         *      vector Z
+         *   NZ is the maximum number of nonzeros in any row of A, plus 1
+         *   EPS is machine epsilon
+         *
+         * The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
+         * is incremented by SAFE1 if the i-th component of
+         * abs(op(A))*abs(X) + abs(B) is less than SAFE2. */
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 rwork[i] = cabs1(work[i]) + nz * eps * rwork[i];

@@ -131,7 +131,7 @@ void dgerfs(
         count = 1;
         lstres = THREE;
 
-        // Iterative refinement loop
+        // Loop until stopping criterion is satisfied.
         while (1) {
             // Compute residual R = B - op(A) * X,
             // where op(A) = A, A**T, or A**H, depending on TRANS
@@ -175,7 +175,11 @@ void dgerfs(
             }
             berr[j] = s;
 
-            // Stop if convergence criterion is met
+            // Test stopping criterion. Continue iterating if
+            // 1) The residual BERR(J) is larger than machine epsilon, and
+            // 2) BERR(J) decreased by at least a factor of 2 during the
+            //    last iteration, and
+            // 3) At most ITMAX iterations tried.
             if (!(berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX)) {
                 break;
             }

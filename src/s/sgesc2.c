@@ -49,7 +49,6 @@ void sgesc2(
     f32 eps, smlnum, bignum, temp;
     INT i, j, imax;
 
-    // Quick return if possible
     if (n == 0) {
         *scale = ONE;
         return;
@@ -59,10 +58,9 @@ void sgesc2(
     eps = slamch("P");
     smlnum = slamch("S") / eps;
     bignum = ONE / smlnum;
-    (void)bignum;  /* Computed but unused in LAPACK reference */
+    (void)bignum;
 
-    // Apply permutations IPIV to RHS (forward direction)
-    // Apply swaps for indices 0 to n-2
+    // Apply permutations IPIV to RHS
     for (i = 0; i < n - 1; i++) {
         if (ipiv[i] != i) {
             temp = rhs[i];
@@ -71,17 +69,17 @@ void sgesc2(
         }
     }
 
-    // Solve for L part (forward substitution)
+    // Solve for L part
     for (i = 0; i < n - 1; i++) {
         for (j = i + 1; j < n; j++) {
             rhs[j] = rhs[j] - A[j + i * lda] * rhs[i];
         }
     }
 
-    // Solve for U part (backward substitution)
+    // Solve for U part
     *scale = ONE;
 
-    // Check for scaling to prevent overflow
+    // Check for scaling
     imax = cblas_isamax(n, rhs, 1);
     if (TWO * smlnum * fabsf(rhs[imax]) > fabsf(A[n - 1 + (n - 1) * lda])) {
         temp = (ONE / TWO) / fabsf(rhs[imax]);
@@ -89,7 +87,6 @@ void sgesc2(
         *scale = (*scale) * temp;
     }
 
-    // Backward substitution for U
     for (i = n - 1; i >= 0; i--) {
         temp = ONE / A[i + i * lda];
         rhs[i] = rhs[i] * temp;
@@ -98,7 +95,7 @@ void sgesc2(
         }
     }
 
-    // Apply permutations JPIV to the solution (RHS) in reverse direction
+    // Apply permutations JPIV to the solution (RHS)
     for (i = n - 2; i >= 0; i--) {
         if (jpiv[i] != i) {
             temp = rhs[i];

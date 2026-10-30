@@ -96,7 +96,7 @@ void sgttrs(
         itrans = 1;
     }
 
-    /* For tridiagonal systems, LAPACK's ilaenv returns NB=1 (unblocked).
-       Simply call sgtts2 directly for all right-hand sides. */
+    /* Determine the number of right-hand sides to solve at a time.
+       NB = 1 from ilaenv for SGTTRS. */
     sgtts2(itrans, n, nrhs, DL, D, DU, DU2, ipiv, B, ldb);
 }

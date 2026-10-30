@@ -66,21 +66,14 @@ void slauu2(
         for (INT i = 0; i < n; i++) {
             f32 aii = A[i + i * lda];
             if (i < n - 1) {
-                // A(i,i) = dot(row i from col i to n-1)
-                // Fortran: DDOT(N-I+1, A(I,I), LDA, A(I,I), LDA)
-                // In 0-based: length = n - i, stride = lda
                 A[i + i * lda] = cblas_sdot(n - i, &A[i + i * lda], lda,
                                             &A[i + i * lda], lda);
-                // Fortran: DGEMV('N', I-1, N-I, ONE, A(1,I+1), LDA, A(I,I+1), LDA, AII, A(1,I), 1)
-                // 0-based: m = i, n_cols = n-i-1
                 cblas_sgemv(CblasColMajor, CblasNoTrans,
                             i, n - i - 1, ONE,
                             &A[(i + 1) * lda], lda,
                             &A[i + (i + 1) * lda], lda,
                             aii, &A[i * lda], 1);
             } else {
-                // Fortran: DSCAL(I, AII, A(1,I), 1)
-                // 0-based: length = i+1 (scale the entire column up to and including diagonal)
                 cblas_sscal(i + 1, aii, &A[i * lda], 1);
             }
         }
@@ -89,21 +82,14 @@ void slauu2(
         for (INT i = 0; i < n; i++) {
             f32 aii = A[i + i * lda];
             if (i < n - 1) {
-                // A(i,i) = dot(column i from row i to n-1)
-                // Fortran: DDOT(N-I+1, A(I,I), 1, A(I,I), 1)
-                // 0-based: length = n - i, stride = 1
                 A[i + i * lda] = cblas_sdot(n - i, &A[i + i * lda], 1,
                                             &A[i + i * lda], 1);
-                // Fortran: DGEMV('T', N-I, I-1, ONE, A(I+1,1), LDA, A(I+1,I), 1, AII, A(I,1), LDA)
-                // 0-based: m = n-i-1, n_cols = i
                 cblas_sgemv(CblasColMajor, CblasTrans,
                             n - i - 1, i, ONE,
                             &A[(i + 1)], lda,
                             &A[(i + 1) + i * lda], 1,
                             aii, &A[i], lda);
             } else {
-                // Fortran: DSCAL(I, AII, A(I,1), LDA)
-                // 0-based: length = i+1 (scale the entire row up to and including diagonal)
                 cblas_sscal(i + 1, aii, &A[i], lda);
             }
         }
