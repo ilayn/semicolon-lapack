@@ -258,25 +258,25 @@ void dgeqp3rk(
 
     done = 0;
 
-    j = 1;
+    j = 0;
 
     jmaxb = (kmax < minmn - nx) ? kmax : (minmn - nx);
 
     if (nb >= nbmin && nb < jmax && jmaxb > 0) {
 
-        while (j <= jmaxb) {
+        while (j < jmaxb) {
 
-            jb = (nb < jmaxb - j + 1) ? nb : (jmaxb - j + 1);
-            n_sub = n - j + 1;
-            ioffset = j - 1;
+            jb = (nb < jmaxb - j) ? nb : (jmaxb - j);
+            n_sub = n - j;
+            ioffset = j;
 
             dlaqp3rk(m, n_sub, nrhs, ioffset, &jb, abstol,
-                     reltol, kp1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
+                     reltol, kp1, maxc2nrm, &A[0 + j * lda], lda,
                      &done, &jbf, maxc2nrmk, relmaxc2nrmk,
-                     &jpiv[j - 1], &tau[j - 1],
-                     &work[j - 1], &work[n + j - 1],
+                     &jpiv[j], &tau[j],
+                     &work[j], &work[n + j],
                      &work[2 * n], &work[2 * n + jb],
-                     n + nrhs - j + 1, iwork, &iinfo);
+                     n + nrhs - j, iwork, &iinfo);
 
             if (iinfo > n_sub && *info == 0) {
                 *info = 2 * ioffset + iinfo;
@@ -302,18 +302,18 @@ void dgeqp3rk(
 
     }
 
-    if (j <= jmax) {
+    if (j < jmax) {
 
-        n_sub = n - j + 1;
-        ioffset = j - 1;
+        n_sub = n - j;
+        ioffset = j;
 
-        dlaqp2rk(m, n_sub, nrhs, ioffset, jmax - j + 1,
-                 abstol, reltol, kp1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
-                 &kf, maxc2nrmk, relmaxc2nrmk, &jpiv[j - 1],
-                 &tau[j - 1], &work[j - 1], &work[n + j - 1],
+        dlaqp2rk(m, n_sub, nrhs, ioffset, jmax - j,
+                 abstol, reltol, kp1, maxc2nrm, &A[0 + j * lda], lda,
+                 &kf, maxc2nrmk, relmaxc2nrmk, &jpiv[j],
+                 &tau[j], &work[j], &work[n + j],
                  &work[2 * n], &iinfo);
 
-        *K = j - 1 + kf;
+        *K = j + kf;
 
         if (iinfo > n_sub && *info == 0) {
             *info = 2 * ioffset + iinfo;
