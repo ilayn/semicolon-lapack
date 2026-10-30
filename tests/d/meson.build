@@ -106,6 +106,7 @@ lapack_tests_d = {
   'dlaexc_bounds': ['test_dlaexc_bounds.c', 'eigen'],
   'dtrsyl3_swork': ['test_dtrsyl3_swork.c', 'eigen'],
   'dgesvj_emptsw': ['test_dgesvj_emptsw.c', 'eigen'],
+  'dbdsvdx_split': ['test_dbdsvdx_split.c', 'svd'],
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
