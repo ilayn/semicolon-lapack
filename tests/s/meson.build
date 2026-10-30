@@ -106,6 +106,7 @@ lapack_tests_s = {
   'sgesvd_lwork': ['test_sgesvd_lwork.c', 'svd'],
   'sgelsy_nan': ['test_sgelsy_nan.c', 'ls'],
   'sgeqrf_work': ['test_sgeqrf_work.c', 'qr'],
+  'sgeqp3rk_lwork': ['test_sgeqp3rk_lwork.c', 'qr'],
   'sgesvj_emptsw': ['test_sgesvj_emptsw.c', 'eigen'],
   'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
   'sstein_unconverged': ['test_sstein_unconverged.c', 'eigen'],

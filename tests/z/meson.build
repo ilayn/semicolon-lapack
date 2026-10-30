@@ -121,6 +121,7 @@ lapack_tests_z = {
   'zbbcsd_restart': ['test_zbbcsd_restart.c', 'eigen'],
   'zcgesv_nrhs0': ['test_zcgesv_nrhs0.c', 'solve'],
   'zgeqrf_work': ['test_zgeqrf_work.c', 'qr'],
+  'zgeqp3rk_lwork': ['test_zgeqp3rk_lwork.c', 'qr'],
   'zdrgev': ['test_zdrgev.c', 'eigen'],
   'zdrgev3': ['test_zdrgev3.c', 'eigen'],
   'zdrgsx': ['test_zdrgsx.c', 'eigen'],

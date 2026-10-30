@@ -116,6 +116,7 @@ lapack_tests_d = {
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
   'dgeqp3_fixed': ['test_dgeqp3_fixed.c', 'qr'],
+  'dgeqp3rk_lwork': ['test_dgeqp3rk_lwork.c', 'qr'],
   'dtgsen_lwork': ['test_dtgsen_lwork.c', 'eigen'],
   'dsytrf_bounds': ['test_dsytrf_bounds.c', 'symmetric'],
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],

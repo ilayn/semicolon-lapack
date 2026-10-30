@@ -248,7 +248,7 @@ void sgeqp3rk(
 
             if (lwork < lwkopt) {
 
-                nb = (lwork - 2 * n) / (n + 1);
+                nb = (lwork - 2 * n) / (n + nrhs + 1);
                 nbmin = lapack_get_nbmin("GEQP3RK");
                 if (nbmin < 2) nbmin = 2;
 

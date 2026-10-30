@@ -107,6 +107,7 @@ lapack_tests_c = {
   'cgesvdq_zero': ['test_cgesvdq_zero.c', 'svd'],
   'cgelsy_nan': ['test_cgelsy_nan.c', 'ls'],
   'cgeqrf_work': ['test_cgeqrf_work.c', 'qr'],
+  'cgeqp3rk_lwork': ['test_cgeqp3rk_lwork.c', 'qr'],
   'ctrsyl3_swork': ['test_ctrsyl3_swork.c', 'eigen'],
   'cgesvj_emptsw': ['test_cgesvj_emptsw.c', 'eigen'],
   'cstein_unconverged': ['test_cstein_unconverged.c', 'eigen'],
