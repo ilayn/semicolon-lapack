@@ -107,6 +107,7 @@ lapack_tests_z = {
   'zsytrf_bounds': ['test_zsytrf_bounds.c', 'symmetric'],
   'ztrsyl3_swork': ['test_ztrsyl3_swork.c', 'eigen'],
   'zgesvj_emptsw': ['test_zgesvj_emptsw.c', 'eigen'],
+  'zgsvj0_sweeps': ['test_zgsvj0_sweeps.c', 'svd'],
   'zstein_unconverged': ['test_zstein_unconverged.c', 'eigen'],
   'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],
