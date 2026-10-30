@@ -111,7 +111,7 @@ void dsgesv(
     }
 
     // Quick return if (N.EQ.0).
-    if (n == 0 || nrhs == 0) {
+    if (n == 0) {
         return;
     }
 
