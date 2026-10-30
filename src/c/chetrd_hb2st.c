@@ -155,7 +155,6 @@ void chetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     sizea = lda * n;
     inda = 0;
     indw = inda + sizea;
-    (void)1;  /* nthreads = 1; unused OpenMP placeholder */
 
     if (upper) {
         apos = inda + kd;
@@ -251,7 +250,6 @@ void chetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     thgrsiz = n;
     grsiz = 1;
     shift = 3;
-    (void)ceilf((f32)n / (f32)kd);  /* nbtiles: unused OpenMP placeholder */
     stepercol = (INT)ceilf((f32)shift / (f32)grsiz);
     thgrnb = (INT)ceilf((f32)(n - 1) / (f32)thgrsiz);
 
@@ -293,7 +291,7 @@ void chetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
                         }
 
                         chb2st_kernels(uplo, wantq, ttype,
-                                       stind, edind, sweepid, n, kd, ib,
+                                       stind - 1, edind - 1, sweepid - 1, n, kd, ib,
                                        &work[inda], lda,
                                        &hous[indv], &hous[indtau], ldv,
                                        &work[indw]);

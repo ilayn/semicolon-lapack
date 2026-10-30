@@ -276,15 +276,24 @@ INDEX_RULES = {
 
     # laqz1/laqz2: real and complex have different signatures, use full-name overrides
     'dlaqz2': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
-               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi'),
+               ('in_scalar_idx', 'qstart'), ('in_scalar_idx', 'zstart')],
     'slaqz2': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
-               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi'),
+               ('in_scalar_idx', 'qstart'), ('in_scalar_idx', 'zstart')],
     'zlaqz2': [('in_scalar_idx', 'ilo'), ('in_scalar_idx', 'ihi')],
     'claqz2': [('in_scalar_idx', 'ilo'), ('in_scalar_idx', 'ihi')],
     'zlaqz1': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
-               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi'),
+               ('in_scalar_idx', 'qstart'), ('in_scalar_idx', 'zstart')],
     'claqz1': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
-               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi'),
+               ('in_scalar_idx', 'qstart'), ('in_scalar_idx', 'zstart')],
+
+    # --- Hessenberg panel and Schur block swaps ---
+    'lahr2':  [('in_scalar_idx', 'k')],
+    'laexc':  [('in_scalar_idx', 'j1')],
+    'tgex2':  [('in_scalar_idx', 'j1')],
 
     'geevx':  [('out_scalar_idx', 'ilo'), ('out_scalar_idx', 'ihi')],
     'ggevx':  [('out_scalar_idx', 'ilo'), ('out_scalar_idx', 'ihi')],
@@ -367,15 +376,41 @@ INDEX_RULES = {
                ('out_idx_arr', 'iblock', '*m'),
                ('out_idx_arr', 'isplit', '*nsplit'),
                ('out_idx_arr', 'indexw', '*m')],
-    'larrv':  [('in_idx_arr', 'isplit', '*n'),
+    'larrv':  [('in_scalar_idx', 'dol'), ('in_scalar_idx', 'dou'),
+               ('in_idx_arr', 'isplit', '*n'),
                ('in_idx_arr', 'iblock', '*m'),
                ('in_idx_arr', 'indexw', '*m'),
                ('out_idx_arr', 'isuppz', '2 * (*m)')],
 
     # --- Internal eigenvalue helpers ---
-    'lar1v':  [('io_scalar_idx', 'r'),
+    'lar1v':  [('in_scalar_idx', 'b1'), ('in_scalar_idx', 'bn'),
+               ('io_scalar_idx', 'r'),
                ('out_idx_arr', 'isuppz', '2')],
     'larra':  [('out_idx_arr', 'isplit', '*nsplit')],
+    'larrb':  [('in_scalar_idx', 'ifirst'), ('in_scalar_idx', 'ilast'),
+               ('in_scalar_idx', 'twist')],
+    'larrj':  [('in_scalar_idx', 'ifirst'), ('in_scalar_idx', 'ilast')],
+    'larrf':  [('in_scalar_idx', 'clstrt'), ('in_scalar_idx', 'clend')],
+    'larrk':  [('in_scalar_idx', 'iw')],
+
+    # --- Aasen panel and 2-stage bulge-chasing kernels ---
+    'lasyf_aa': [('in_scalar_idx', 'j1')],
+    'lahef_aa': [('in_scalar_idx', 'j1')],
+    'sb2st_kernels': [('in_scalar_idx', 'st'), ('in_scalar_idx', 'ed'),
+                      ('in_scalar_idx', 'sweep')],
+    'hb2st_kernels': [('in_scalar_idx', 'st'), ('in_scalar_idx', 'ed'),
+                      ('in_scalar_idx', 'sweep')],
+
+    # --- dqds ---
+    'lasq3':  [('in_scalar_idx', 'i0'), ('io_scalar_idx', 'n0')],
+    'lasq4':  [('in_scalar_idx', 'i0'), ('in_scalar_idx', 'n0'),
+               ('in_scalar_idx', 'n0in')],
+    'lasq5':  [('in_scalar_idx', 'i0'), ('in_scalar_idx', 'n0')],
+    'lasq6':  [('in_scalar_idx', 'i0'), ('in_scalar_idx', 'n0')],
+
+    # --- Symmetric row/column swap ---
+    'syswapr': [('in_scalar_idx', 'i1'), ('in_scalar_idx', 'i2')],
+    'heswapr': [('in_scalar_idx', 'i1'), ('in_scalar_idx', 'i2')],
 
     # --- Eigenvector failure arrays ---
     # xHSEIN sets IFAILL/IFAILR(1:M) (C: -1 converged, else 0-based index) and
@@ -386,6 +421,10 @@ INDEX_RULES = {
     # --- Secular equation eigenvalue index ---
     'lasd4':  [('in_scalar_idx', 'i')],
     'lasd5':  [('in_scalar_idx', 'i')],
+    'laed4':  [('in_scalar_idx', 'i')],
+    'laed5':  [('in_scalar_idx', 'i')],
+    # C kstop is 0-based exclusive, which equals the Fortran 1-based inclusive KSTOP.
+    'laed9':  [('in_scalar_idx', 'kstart')],
 
     # --- Cholesky pivoted (unblocked) ---
     'pstf2':  [('out_pivot', 'piv', '*n')],

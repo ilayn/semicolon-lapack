@@ -137,7 +137,7 @@ void chetrf_aa(
             jb = ((n - j1) < nb) ? (n - j1) : nb;
             k1 = ((1 > j) ? 1 : j) - j - 1;
 
-            clahef_aa(uplo, 2 - k1 - 1, n - j, jb,
+            clahef_aa(uplo, -k1, n - j, jb,
                       &A[((0 > j - 1) ? 0 : j - 1) + j * lda], lda,
                       &ipiv[j], work, n, &work[n * nb]);
 
@@ -205,7 +205,7 @@ void chetrf_aa(
             jb = ((n - j1) < nb) ? (n - j1) : nb;
             k1 = ((1 > j) ? 1 : j) - j - 1;
 
-            clahef_aa(uplo, 2 - k1 - 1, n - j, jb,
+            clahef_aa(uplo, -k1, n - j, jb,
                       &A[j + ((0 > j - 1) ? 0 : j - 1) * lda], lda,
                       &ipiv[j], work, n, &work[n * nb]);
 

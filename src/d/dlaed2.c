@@ -203,8 +203,6 @@ void dlaed2(INT* K, const INT n, const INT n1, f64* D, f64* Q,
             goto L80;
         }
     }
-    /* If we reach here, all eigenvalues were deflated via small Z */
-    goto L100;
 L80:
     j = j + 1;
     if (j > n - 1) {

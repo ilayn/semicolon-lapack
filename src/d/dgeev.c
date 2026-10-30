@@ -105,7 +105,6 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
         } else {
             nb_gehrd = lapack_get_nb("GEHRD");
             nb_orghr = lapack_get_nb("ORGHR");
-            if (nb_orghr == 1) nb_orghr = 32;  /* Default for ORGHR from ilaenv */
 
             maxwrk = 2 * n + n * nb_gehrd;
             if (wantvl) {

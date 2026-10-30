@@ -186,11 +186,8 @@ void dlasq2(const INT n, f64* restrict Z, INT* info)
         return;
     }
 
-    /*
-     * Check whether the machine is IEEE conformable.
-     * In this project, we assume IEEE=1 (all modern platforms are IEEE 754).
-     */
-    ieee = 1;
+    /* Check whether the machine is IEEE conformable. */
+    ieee = (ieeeck(1, 0.0f, 1.0f) == 1);
 
     /*
      * Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).

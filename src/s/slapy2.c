@@ -21,9 +21,8 @@ f32 slapy2(const f32 x, const f32 y)
 {
     f32 xabs, yabs, w, z;
 
-    /* Handle NaN propagation */
-    if (isnan(x)) return x;
     if (isnan(y)) return y;
+    if (isnan(x)) return x;
 
     xabs = fabsf(x);
     yabs = fabsf(y);

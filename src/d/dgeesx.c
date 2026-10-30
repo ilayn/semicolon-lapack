@@ -135,7 +135,6 @@ void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
         } else {
             nb_gehrd = lapack_get_nb("GEHRD");
             nb_orghr = lapack_get_nb("ORGHR");
-            if (nb_orghr == 1) nb_orghr = 32;  /* Default for ORGHR */
 
             maxwrk = 2 * n + n * nb_gehrd;
             minwrk = 3 * n;

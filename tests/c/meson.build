@@ -102,6 +102,8 @@ lapack_tests_c = {
   'cdrges': ['test_cdrges.c', 'eigen'],
   'cdrges3': ['test_cdrges3.c', 'eigen'],
   'cgges3_scaling': ['test_cgges3_scaling.c', 'eigen'],
+  'csytrf_bounds': ['test_csytrf_bounds.c', 'symmetric'],
+  'ctrsyl3_swork': ['test_ctrsyl3_swork.c', 'eigen'],
   'cgesvj_emptsw': ['test_cgesvj_emptsw.c', 'eigen'],
   'cstein_unconverged': ['test_cstein_unconverged.c', 'eigen'],
   'cgeqp3_fixed': ['test_cgeqp3_fixed.c', 'qr'],

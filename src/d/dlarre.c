@@ -330,7 +330,7 @@ void dlarre(const char* range, const INT n, f64* vl, f64* vu,
         if (((irange == ALLRNG) && (!forceb)) || usedqd) {
             /* Case of DQDS */
             /* Find approximations to the extremal eigenvalues of the block */
-            dlarrk(in, 1, gl, gu, &D[ibegin],
+            dlarrk(in, 0, gl, gu, &D[ibegin],
                    &E2[ibegin], *pivmin, rtl, &tmp, &tmp1, &iinfo);
             if (iinfo != 0) {
                 *info = -1;
@@ -339,7 +339,7 @@ void dlarre(const char* range, const INT n, f64* vl, f64* vu,
             isleft = gl > (tmp - tmp1 - HNDRD * eps * fabs(tmp - tmp1)) ?
                      gl : (tmp - tmp1 - HNDRD * eps * fabs(tmp - tmp1));
 
-            dlarrk(in, in, gl, gu, &D[ibegin],
+            dlarrk(in, in - 1, gl, gu, &D[ibegin],
                    &E2[ibegin], *pivmin, rtl, &tmp, &tmp1, &iinfo);
             if (iinfo != 0) {
                 *info = -1;

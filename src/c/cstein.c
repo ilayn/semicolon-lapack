@@ -346,10 +346,5 @@ store_eigenvector:
             /* Save the shift to check eigenvalue spacing at next iteration. */
             xjm = xj;
         }
-
-        /* If we exhausted all m eigenvalues without breaking, update j1. */
-        if (j >= m) {
-            j1 = m;
-        }
     }
 }

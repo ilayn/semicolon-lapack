@@ -107,9 +107,6 @@ void ssytri2x(
     if (upper) {
 
         strtri(uplo, "U", n, A, lda, info);
-        if (*info != 0) {
-            return;
-        }
 
         k = 0;
         while (k < n) {
@@ -256,9 +253,6 @@ void ssytri2x(
     } else {
 
         strtri(uplo, "U", n, A, lda, info);
-        if (*info != 0) {
-            return;
-        }
 
         k = n - 1;
         while (k >= 0) {

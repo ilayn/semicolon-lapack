@@ -92,7 +92,7 @@ void zheevr(
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
-    ieeeok = 1;
+    ieeeok = ieeeck(1, 0.0f, 1.0f);
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

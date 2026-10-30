@@ -103,9 +103,6 @@ void chetri2x(
     if (upper) {
 
         ctrtri(uplo, "U", n, A, lda, info);
-        if (*info != 0) {
-            return;
-        }
 
         k = 0;
         while (k < n) {
@@ -252,9 +249,6 @@ void chetri2x(
     } else {
 
         ctrtri(uplo, "U", n, A, lda, info);
-        if (*info != 0) {
-            return;
-        }
 
         k = n - 1;
         while (k >= 0) {

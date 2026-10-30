@@ -134,8 +134,7 @@ void sstevr(const char* jobz, const char* range, const INT n,
     /* Workspace indices for fallback path (SSTEBZ/SSTEIN) */
     INT indibl, indisp, indifl, indiwo;
 
-    /* ILAENV(10, 'SSTEVR', ...) = 1: IEEE arithmetic is trusted */
-    INT ieee = 1;
+    INT ieee = ieeeck(1, 0.0f, 1.0f);
 
     /* Decode JOBZ */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -203,8 +203,6 @@ void slaed2(INT* K, const INT n, const INT n1, f32* D, f32* Q,
             goto L80;
         }
     }
-    /* If we reach here, all eigenvalues were deflated via small Z */
-    goto L100;
 L80:
     j = j + 1;
     if (j > n - 1) {

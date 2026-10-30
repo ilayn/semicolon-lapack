@@ -159,7 +159,6 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
         } else {
             nb_gehrd = lapack_get_nb("GEHRD");
             nb_orghr = lapack_get_nb("ORGHR");
-            if (nb_orghr == 1) nb_orghr = 32;  /* Default for ORGHR */
 
             maxwrk = n + n * nb_gehrd;
 

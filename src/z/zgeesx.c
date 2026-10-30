@@ -138,7 +138,6 @@ void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
         } else {
             nb_gehrd = lapack_get_nb("GEHRD");
             nb_unghr = lapack_get_nb("UNGHR");
-            if (nb_unghr == 1) nb_unghr = 32;
 
             maxwrk = n + n * nb_gehrd;
             minwrk = 2 * n;
