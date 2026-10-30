@@ -39,6 +39,7 @@ VERIFY_HEADER = os.path.join(TESTUTILS_Z, "verify.h")
 EXCLUDE_FILES = {
     "test_zdrvab.c",   # ZCGESV mixed-precision solver
     "test_zdrvac.c",   # ZCPOSV mixed-precision solver
+    "test_zcgesv_nrhs0.c",  # ZCGESV/ZCPOSV NRHS = 0 (mixed-precision)
     "test_zwq_rwork.c",  # TESTING/EIG/test_wq_rwork.f exists for z only
 }
 
@@ -672,6 +673,7 @@ def transform_meson_build(src_path, dst_path, is_testutils=False):
     # Remove mixed-precision test entries
     text = re.sub(r"^\s*'cdrvab'.*\n", "", text, flags=re.MULTILINE)
     text = re.sub(r"^\s*'cdrvac'.*\n", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^\s*'\w*cgesv_nrhs0'.*\n", "", text, flags=re.MULTILINE)
 
     with open(dst_path, "w") as f:
         f.write(text)
