@@ -9,7 +9,7 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
-/* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
+/* SMLSIZ = ILAENV(9, 'SGELSD', ...) = 25 */
 #define SMLSIZ LAPACK_SMLSIZ
 
 /**
@@ -124,7 +124,12 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
 
     smlsiz = SMLSIZ;
 
-    /* Compute workspace */
+    /* Compute workspace.
+     * (Note: Comments in the code beginning "Workspace:" describe the
+     * minimal amount of workspace needed at that point in the code,
+     * as well as the preferred amount for good performance.
+     * NB refers to the optimal block size for the immediately
+     * following subroutine, as returned by ILAENV.) */
     minwrk = 1;
     liwork = 1;
     if (minmn > 0) {
@@ -177,7 +182,8 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
                 nb = lapack_get_nb("ORMLQ");
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + wlalsd > maxwrk) maxwrk = m * m + 4 * m + wlalsd;
-                /* Ensure the Path 2a case below is triggered */
+                /* XXX: Ensure the Path 2a case below is triggered.  The workspace
+                 * calculation should use queries for all routines eventually. */
                 INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
                 temp = temp > nrhs ? temp : nrhs;
                 temp = temp > n - 3 * m ? temp : n - 3 * m;
@@ -270,10 +276,12 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
             itau = 0;
             nwork = itau + n;
 
-            /* Compute A=Q*R */
+            /* Compute A=Q*R.
+             * (Workspace: need 2*N, prefer N+N*NB) */
             sgeqrf(m, n, A, lda, &work[itau], &work[nwork], lwork - nwork, &iinfo);
 
-            /* Multiply B by transpose(Q) */
+            /* Multiply B by transpose(Q).
+             * (Workspace: need N+NRHS, prefer N+NRHS*NB) */
             sormqr("L", "T", m, nrhs, n, A, lda, &work[itau], B, ldb,
                    &work[nwork], lwork - nwork, &iinfo);
 
@@ -288,11 +296,13 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
         itaup = itauq + n;
         nwork = itaup + n;
 
-        /* Bidiagonalize R in A */
+        /* Bidiagonalize R in A.
+         * (Workspace: need 3*N+MM, prefer 3*N+(MM+N)*NB) */
         sgebrd(mm, n, A, lda, S, &work[ie], &work[itauq], &work[itaup],
                &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors of R */
+        /* Multiply B by transpose of left bidiagonalizing vectors of R.
+         * (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB) */
         sormbr("Q", "L", "T", mm, nrhs, n, A, lda, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 
@@ -327,7 +337,8 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
         itau = 0;
         nwork = m;
 
-        /* Compute A=L*Q */
+        /* Compute A=L*Q.
+         * (Workspace: need 2*M, prefer M+M*NB) */
         sgelqf(m, n, A, lda, &work[itau], &work[nwork], lwork - nwork, &iinfo);
         il = nwork;
 
@@ -339,11 +350,13 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
         itaup = itauq + m;
         nwork = itaup + m;
 
-        /* Bidiagonalize L in WORK(IL) */
+        /* Bidiagonalize L in WORK(IL).
+         * (Workspace: need M*M+5*M, prefer M*M+4*M+2*M*NB) */
         sgebrd(m, m, &work[il], ldwork, S, &work[ie], &work[itauq],
                &work[itaup], &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors of L */
+        /* Multiply B by transpose of left bidiagonalizing vectors of L.
+         * (Workspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB) */
         sormbr("Q", "L", "T", m, nrhs, m, &work[il], ldwork, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 
@@ -362,7 +375,8 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
         slaset("F", n - m, nrhs, ZERO, ZERO, &B[m], ldb);
         nwork = itau + m;
 
-        /* Multiply transpose(Q) by B */
+        /* Multiply transpose(Q) by B.
+         * (Workspace: need M+NRHS, prefer M+NRHS*NB) */
         sormlq("L", "T", n, nrhs, m, A, lda, &work[itau], B, ldb,
                &work[nwork], lwork - nwork, &iinfo);
 
@@ -373,11 +387,13 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
         itaup = itauq + m;
         nwork = itaup + m;
 
-        /* Bidiagonalize A */
+        /* Bidiagonalize A.
+         * (Workspace: need 3*M+N, prefer 3*M+(M+N)*NB) */
         sgebrd(m, n, A, lda, S, &work[ie], &work[itauq], &work[itaup],
                &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors */
+        /* Multiply B by transpose of left bidiagonalizing vectors.
+         * (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB) */
         sormbr("Q", "L", "T", m, nrhs, n, A, lda, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 
