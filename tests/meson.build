@@ -38,3 +38,15 @@ test('rng_validation',
   protocol: 'tap',
   env: test_env,
 )
+
+test('iparmq_case',
+  executable('test_iparmq_case', 'test_iparmq_case.c',
+    include_directories: include_directories('.'),
+    dependencies: [semilapack_dep, cmocka_dep],
+  ),
+  suite: 'auxiliary',
+  timeout: 60,
+  is_parallel: true,
+  protocol: 'tap',
+  env: test_env,
+)
