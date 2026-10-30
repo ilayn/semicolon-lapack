@@ -177,7 +177,7 @@ void dhseqr(const char* job, const char* compz, const INT n,
                      * tiny matrices must be copied into a larger
                      * array before calling DLAQR0. */
                     dlacpy("A", n, n, H, ldh, hl, nl);
-                    hl[n + n * nl] = zero;
+                    hl[n + (n - 1) * nl] = zero;
                     dlaset("A", nl, nl - n, zero, zero, &hl[n * nl], nl);
                     dlaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr,
                            wi, ilo, ihi, Z, ldz, workl, nl, info);
