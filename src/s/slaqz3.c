@@ -141,7 +141,6 @@ void slaqz3(
                 }
             }
         }
-        return;
     }
 
     /* Store window in case of convergence failure */
