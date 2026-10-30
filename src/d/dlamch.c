@@ -31,7 +31,7 @@ f64 dlamch(const char* cmach)
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    f64 eps, sfmin, small, rmach;
+    f64 eps, sfmin, small, hugeval, rmach;
 
     // Assume rounding, not chopping. Always.
     eps = DBL_EPSILON * 0.5;
@@ -40,8 +40,9 @@ f64 dlamch(const char* cmach)
         rmach = eps;
     } else if (cmach[0] == 'S' || cmach[0] == 's') {
         sfmin = DBL_MIN;
-        small = ONE / DBL_MAX;
-        if (small >= sfmin) {
+        hugeval = DBL_MAX;
+        if (hugeval * sfmin <= ONE) {
+            small = ONE / hugeval;
             // Use SMALL plus a bit, to avoid the possibility of rounding
             // causing overflow when computing 1/sfmin.
             sfmin = small * (ONE + eps);
