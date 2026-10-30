@@ -211,7 +211,7 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
         return;
     }
 
-    /* Set singular value indices according to RANGE */
+    /* Set singular values indices accord to RANGE='A'. */
     if (alls) {
         rngtgk = 'I';
         iltgk = 0;
@@ -243,12 +243,14 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     if (m >= n) {
-        /* A has at least as many rows as columns */
+        /* A has at least as many rows as columns. If A has sufficiently
+         * more rows than columns, first reduce A using the QR
+         * decomposition. */
         if (m >= mnthr) {
             /* Path 1 (M much larger than N):
-             * A = Q * R = Q * ( QB * B * PB**H )
-             *           = Q * ( QB * ( UB * S * VB**H ) * PB**H )
-             * U = Q * QB * UB; V**H = VB**H * PB**H
+             * A = Q * R = Q * ( QB * B * PB**T )
+             *           = Q * ( QB * ( UB * S * VB**T ) * PB**T )
+             * U = Q * QB * UB; V**T = VB**T * PB**T
              *
              * Compute A=Q*R */
             itau = 0;
@@ -310,7 +312,7 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
                     k += n;
                 }
 
-                /* Call ZUNMBR to compute VB**H * PB**H */
+                /* Call ZUNMBR to compute VB**T * PB**T */
                 zunmbr("P", "R", "C", *ns, n, n, &work[iqrf], n,
                        &work[itaup], VT, ldvt, &work[itemp],
                        lwork - itemp, &ierr);
@@ -364,18 +366,19 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
                     k += n;
                 }
 
-                /* Call ZUNMBR to compute VB**H * PB**H */
+                /* Call ZUNMBR to compute VB**T * PB**T */
                 zunmbr("P", "R", "C", *ns, n, n, A, lda, &work[itaup],
                        VT, ldvt, &work[itemp], lwork - itemp, &ierr);
             }
         }
     } else {
-        /* A has more columns than rows */
+        /* A has more columns than rows. If A has sufficiently more
+         * columns than rows, first reduce A using the LQ decomposition. */
         if (n >= mnthr) {
             /* Path 1t (N much larger than M):
-             * A = L * Q = ( QB * B * PB**H ) * Q
-             *           = ( QB * ( UB * S * VB**H ) * PB**H ) * Q
-             * U = QB * UB ; V**H = VB**H * PB**H * Q
+             * A = L * Q = ( QB * B * PB**T ) * Q
+             *           = ( QB * ( UB * S * VB**T ) * PB**T ) * Q
+             * U = QB * UB ; V**T = VB**T * PB**T * Q
              *
              * Compute A=L*Q */
             itau = 0;
@@ -433,12 +436,12 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
                 }
                 zlaset("A", *ns, n - m, CZERO, CZERO, &VT[m * ldvt], ldvt);
 
-                /* Call ZUNMBR to compute (VB**H)*(PB**H) */
+                /* Call ZUNMBR to compute (VB**T)*(PB**T) */
                 zunmbr("P", "R", "C", *ns, m, m, &work[ilqf], m,
                        &work[itaup], VT, ldvt, &work[itemp],
                        lwork - itemp, &ierr);
 
-                /* Call ZUNMLQ to compute ((VB**H)*(PB**H))*Q */
+                /* Call ZUNMLQ to compute ((VB**T)*(PB**T))*Q */
                 zunmlq("R", "N", *ns, n, m, A, lda, &work[itau],
                        VT, ldvt, &work[itemp], lwork - itemp, &ierr);
             }
@@ -491,7 +494,7 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
                 }
                 zlaset("A", *ns, n - m, CZERO, CZERO, &VT[m * ldvt], ldvt);
 
-                /* Call ZUNMBR to compute VB**H * PB**H */
+                /* Call ZUNMBR to compute VB**T * PB**T */
                 zunmbr("P", "R", "C", *ns, n, m, A, lda, &work[itaup],
                        VT, ldvt, &work[itemp], lwork - itemp, &ierr);
             }

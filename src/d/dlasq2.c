@@ -57,7 +57,6 @@
  */
 void dlasq2(const INT n, f64* restrict Z, INT* info)
 {
-    /* Constants from the Fortran source */
     const f64 CBIAS  = 1.50;
     const f64 ZERO   = 0.0;
     const f64 HALF   = 0.5;
@@ -66,7 +65,6 @@ void dlasq2(const INT n, f64* restrict Z, INT* info)
     const f64 FOUR   = 4.0;
     const f64 HUNDRD = 100.0;
 
-    /* Local scalars */
     INT ieee;
     INT i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
         k, kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype;
@@ -416,7 +414,6 @@ L100:
                 }
             }
         }
-        /* IWHILB loop exhausted */
 
         *info = 2;
 
@@ -457,10 +454,9 @@ L145:
         return;
 
 L150:
-        ; /* end IWHILB: successfully converged this block */
+        ; /* end IWHILB */
     }
 
-    /* IWHILA loop exhausted without convergence. */
     *info = 3;
     return;
 

@@ -115,7 +115,7 @@ void cgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
 
     emptsw = n1 * (n - n1);
 
-    /* Tuning parameters */
+    /* Row-cyclic pivot strategy with de Rijk's pivoting */
     kbl = (8 < n) ? 8 : n;
     nblr = n1 / kbl;
     if (nblr * kbl != n1) nblr = nblr + 1;
@@ -127,30 +127,31 @@ void cgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
     rowskip = (5 < kbl) ? 5 : kbl;
     swband = 0;
 
-    /* Main sweep loop */
+    /* .. go go go ... */
     for (i = 0; i < nsweep; i++) {
         mxaapq = ZERO;
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
 
-        /* Block loop over row blocks */
+        /* Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
+         * 1 <= p < q <= N. This is the first step toward a blocked implementation
+         * of the rotations. New implementation, based on block transformations,
+         * is under development. */
         for (ibr = 0; ibr < nblr; ibr++) {
             igl = ibr * kbl;
 
-            /* Loop over column blocks (off-diagonal) */
+            /* ... go to the off diagonal blocks */
             for (jbc = 0; jbc < nblc; jbc++) {
                 jgl = n1 + jbc * kbl;
                 ijblsk = 0;
 
-                /* p-loop within row block */
                 for (p = igl; p < ((igl + kbl < n1) ? igl + kbl : n1); p++) {
                     aapp = SVA[p];
 
                     if (aapp > ZERO) {
                         pskipped = 0;
 
-                        /* q-loop within column block */
                         for (q = jgl; q < ((jgl + kbl < n) ? jgl + kbl : n); q++) {
                             aaqq = SVA[q];
 
@@ -244,7 +245,7 @@ void cgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                         D[p] = -D[q] * ompq;
 
                                     } else {
-                                        /* Modified Gram-Schmidt */
+                                        /* .. have to use modified Gram-Schmidt like transformation */
                                         if (aapp > aaqq) {
                                             cblas_ccopy(m, &A[p * lda], 1, work, 1);
                                             clascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
@@ -268,7 +269,8 @@ void cgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                         }
                                     }
 
-                                    /* Recompute SVA if needed */
+                                    /* In the case of cancellation in updating SVA(q), SVA(p)
+                                     * .. recompute SVA(q), SVA(p) */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_scnrm2(m, &A[q * lda], 1);
@@ -311,7 +313,7 @@ void cgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                 notrot = 0;
                                 goto L2203;
                             }
-                        } /* end q-loop */
+                        } /* end of the q-loop */
 L2203:
                         SVA[p] = aapp;
                     } else {
@@ -320,17 +322,17 @@ L2203:
                         }
                         if (aapp < ZERO) notrot = 0;
                     }
-                } /* end p-loop */
-            } /* end jbc-loop */
+                } /* end of the p-loop */
+            } /* end of the jbc-loop */
 
 L2011:
-            /* Make SVA positive */
+            /* bailed out of the jbc-loop */
             for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
                 SVA[p] = fabsf(SVA[p]);
             }
-        } /* end ibr-loop */
+        } /* end of the ibr-loop */
 
-        /* Update SVA(n) */
+        /* .. update SVA(n-1) */
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_scnrm2(m, &A[(n - 1) * lda], 1);
         } else {
@@ -340,7 +342,7 @@ L2011:
             SVA[n - 1] = t * sqrtf(aapp);
         }
 
-        /* Additional steering */
+        /* Additional steering devices */
         if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
             swband = i;
         }
@@ -350,18 +352,19 @@ L2011:
         }
 
         if (notrot >= emptsw) goto L1994;
-    } /* end sweep loop */
+    } /* end i=0:NSWEEP-1 loop */
 
-    /* Procedure completed given number of iterations */
+    /* Reaching this point means that the procedure has not converged. */
     *info = nsweep - 1;
     goto L1995;
 
 L1994:
-    /* Early exit - all pivots below threshold */
+    /* Reaching this point means numerical convergence after the i-th
+     * sweep. */
     *info = 0;
 
 L1995:
-    /* Sort the vector D */
+    /* Sort the vector SVA() of column norms. */
     for (p = 0; p < n - 1; p++) {
         q = cblas_isamax(n - p, &SVA[p], 1) + p;
         if (p != q) {

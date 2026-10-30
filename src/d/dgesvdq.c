@@ -292,7 +292,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     INT ascaled;
     f64 big, epsln, sconda, sfmin, rtmp;
 
-    /* Decode job parameters */
+    /* Test the input arguments */
     wntus = (jobu[0] == 'S' || jobu[0] == 's' || jobu[0] == 'U' || jobu[0] == 'u');
     wntur = (jobu[0] == 'R' || jobu[0] == 'r');
     wntua = (jobu[0] == 'A' || jobu[0] == 'a');
@@ -314,7 +314,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     rowprm = (jobp[0] == 'P' || jobp[0] == 'p');
     rtrans = (jobr[0] == 'T' || jobr[0] == 't');
 
-    /* Workspace requirements */
     if (rowprm) {
         iminwrk = conda ? (n + m - 1 + n) : (n + m - 1);
         iminwrk = (iminwrk > 1) ? iminwrk : 1;
@@ -327,7 +326,13 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     lquery = (liwork == -1 || lwork == -1 || lrwork == -1);
 
-    /* Workspace sizes */
+    /*
+     * .. compute the minimal and the optimal workspace lengths
+     * [[The expressions for computing the minimal and the optimal
+     * values of LWORK are written with a lot of redundancy and
+     * can be simplified. However, this detailed form is easier for
+     * maintenance and modifications of the code.]]
+     */
     lwqp3 = 3 * n + 1;
     if (wntus || wntur) {
         lworq = (n > 1) ? n : 1;
@@ -340,25 +345,37 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     lwsvd = (5 * n > 1) ? 5 * n : 1;
 
     if (!lsvec && !rsvec) {
-        /* only the singular values are requested */
+        /*
+         * .. minimal and optimal sizes of the workspace if
+         * only the singular values are requested
+         */
         minwrk = n + lwqp3;
         if (conda && minwrk < lwcon) minwrk = lwcon;
         if (minwrk < lwsvd) minwrk = lwsvd;
     } else if (lsvec && !rsvec) {
-        /* singular values and the left singular vectors are requested */
+        /*
+         * .. minimal and optimal sizes of the workspace if the
+         * singular values and the left singular vectors are requested
+         */
         INT t = lwqp3;
         if (t < lwsvd) t = lwsvd;
         if (t < lworq) t = lworq;
         if (conda && t < lwcon) t = lwcon;
         minwrk = n + t;
     } else if (rsvec && !lsvec) {
-        /* singular values and the right singular vectors are requested */
+        /*
+         * .. minimal and optimal sizes of the workspace if the
+         * singular values and the right singular vectors are requested
+         */
         INT t = lwqp3;
         if (t < lwsvd) t = lwsvd;
         if (conda && t < lwcon) t = lwcon;
         minwrk = n + t;
     } else {
-        /* full SVD is requested */
+        /*
+         * .. minimal and optimal sizes of the workspace if the
+         * full SVD is requested
+         */
         INT t = lwqp3;
         if (t < lwsvd) t = lwsvd;
         if (t < lworq) t = lworq;
@@ -370,7 +387,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             if (lwsvd2 < 1) lwsvd2 = 1;
             INT minwrk2;
             if (rtrans) {
-                /* minimal workspace for N x N/2 DGEQRF */
+                /* .. minimal workspace length for N x N/2 DGEQRF */
                 INT lwqrf = (half > 1) ? half : 1;
                 INT lworq2 = (n > 1) ? n : 1;
                 minwrk2 = lwqp3;
@@ -379,7 +396,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 if (minwrk2 < half + lworq2) minwrk2 = half + lworq2;
                 if (minwrk2 < lworq) minwrk2 = lworq;
             } else {
-                /* minimal workspace for N/2 x N DGELQF */
+                /* .. minimal workspace length for N/2 x N DGELQF */
                 INT lwlqf = (half > 1) ? half : 1;
                 INT lworlq = (n > 1) ? n : 1;
                 minwrk2 = lwqp3;
@@ -396,7 +413,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     if (minwrk < 2) minwrk = 2;
     optwrk = minwrk;
 
-    /* Check input arguments */
     *info = 0;
     if (!accla && !acclm && !acclh) {
         *info = -1;
@@ -446,39 +462,37 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
         return;
     }
 
-    /* Quick return */
+    /* Quick return if the matrix is void. */
     if (m == 0 || n == 0) {
         *numrank = 0;
         return;
     }
 
-    /* Get machine parameters */
     big = dlamch("O");
     epsln = dlamch("E");
     sfmin = dlamch("S");
 
-    /* Initialize */
     ascaled = 0;
     iwoff = 1;
     sconda = -ONE;
     n1 = n;
 
-    /*
-     * Row pivoting
-     */
     if (rowprm) {
         iwoff = m;
-        /* Compute row infinity norms */
+        /*
+         * .. reordering the rows in decreasing sequence in the
+         * ell-infinity norm - this enhances numerical robustness in
+         * the case of differently scaled rows.
+         */
         for (p = 0; p < m; p++) {
             rwork[p] = dlange("M", 1, n, &A[p], lda, NULL);
-            /* Check for NaN/Inf */
+            /* .. check for NaN's and Inf's */
             if (rwork[p] != rwork[p] || (rwork[p] * ZERO) != ZERO) {
                 *info = -8;
                 xerbla("DGESVDQ", -(*info));
                 return;
             }
         }
-        /* Sort rows by decreasing infinity norm */
         for (p = 0; p < m - 1; p++) {
             q = cblas_idamax(m - p, &rwork[p], 1) + p;
             iwork[n + p] = q;
@@ -489,7 +503,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
         }
 
-        /* Quick return for zero matrix */
+        /* Quick return: A is the M x N zero matrix. */
         if (rwork[0] == ZERO) {
             *numrank = 0;
             dlaset("G", n, 1, ZERO, ZERO, S, n);
@@ -513,23 +527,32 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             return;
         }
 
-        /* Scale if needed to prevent overflow */
+        /*
+         * .. to prevent overflow in the QR factorization, scale the
+         * matrix by 1/sqrt(M) if too large entry detected
+         */
         if (rwork[0] > big / sqrt((f64)m)) {
             dlascl("G", 0, 0, sqrt((f64)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
         }
-        /* Apply row permutation */
         dlaswp(n, A, lda, 0, m - 2, &iwork[n], 1);
     } else {
-        /* No row pivoting */
+        /*
+         * .. At this stage, preemptive scaling is done only to avoid column
+         * norms overflows during the QR factorization. The SVD procedure should
+         * have its own scaling to save the singular values from overflows and
+         * underflows. That depends on the SVD procedure.
+         */
         rtmp = dlange("M", m, n, A, lda, NULL);
-        /* Check for NaN/Inf */
         if (rtmp != rtmp || (rtmp * ZERO) != ZERO) {
             *info = -8;
             xerbla("DGESVDQ", -(*info));
             return;
         }
-        /* Scale if needed to prevent overflow */
+        /*
+         * .. to prevent overflow in the QR factorization, scale the
+         * matrix by 1/sqrt(M) if too large entry detected
+         */
         if (rtmp > big / sqrt((f64)m)) {
             dlascl("G", 0, 0, sqrt((f64)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
@@ -537,7 +560,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     }
 
     /*
-     * QR factorization with column pivoting: A * P = Q * R
+     * .. QR factorization with column pivoting
+     *
+     * A * P = Q * [ R ]
+     *             [ 0 ]
      */
     for (p = 0; p < n; p++) {
         iwork[p] = 0;
@@ -545,18 +571,32 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     dgeqp3(m, n, A, lda, iwork, work, &work[n], lwork - n, &ierr);
 
     /*
-     * Numerical rank determination
+     * If the user requested accuracy level allows truncation in the
+     * computed upper triangular factor, the matrix R is examined and,
+     * if possible, replaced with its leading upper trapezoidal part.
      */
     nr = 1;
     if (accla) {
-        /* Aggressive truncation: |R(i,i)| < sqrt(n)*eps*|R(1,1)| */
+        /*
+         * Standard absolute error bound suffices. All sigma_i with
+         * sigma_i < N*EPS*||A||_F are flushed to zero. This is an
+         * aggressive enforcement of lower numerical rank by introducing a
+         * backward error of the order of N*EPS*||A||_F.
+         */
         rtmp = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) < rtmp * fabs(A[0])) break;
             nr++;
         }
     } else if (acclm) {
-        /* Medium truncation: sudden drop or underflow */
+        /*
+         * .. similarly as above, only slightly more gentle (less aggressive).
+         * Sudden drop on the diagonal of R is used as the criterion for being
+         * close-to-rank-deficient. The threshold is set to EPSLN=DLAMCH('E').
+         * [[This can be made more flexible by replacing this hard-coded value
+         * with a user specified threshold.]] Also, the values that underflow
+         * will be truncated.
+         */
         nr = 1;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) < epsln * fabs(A[(p-1) + (p-1) * lda]) ||
@@ -564,14 +604,22 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             nr++;
         }
     } else {
-        /* High accuracy: only exact zeros */
+        /*
+         * .. RRQR not authorized to determine numerical rank except in the
+         * obvious case of zero pivots.
+         * .. inspect R for exact zeros on the diagonal;
+         * R(i,i)=0 => R(i:n-1,i:n-1)=0.
+         */
         nr = 1;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) == ZERO) break;
             nr++;
         }
 
-        /* Condition number estimation for ACCLH with CONDA */
+        /*
+         * Estimate the scaled condition number of A. Use the fact that it is
+         * the same as the scaled condition number of R.
+         */
         if (conda) {
             dlacpy("U", n, n, A, lda, V, ldv);
             for (p = 0; p < nr; p++) {
@@ -587,9 +635,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
         }
     }
 
-    /*
-     * Compute N1: dimension for left singular vectors output
-     */
     if (wntur) {
         n1 = nr;
     } else if (wntus || wntuf) {
@@ -598,15 +643,16 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
         n1 = m;
     }
 
-    /*
-     * Main computation branches
-     */
     if (!rsvec && !lsvec) {
         /*
-         * Singular values only
+         * .. only the singular values are requested
          */
         if (rtrans) {
-            /* Compute SVD of R^T */
+            /*
+             * .. compute the singular values of R**T = [A](0:nr-1,0:n-1)**T
+             * .. set the lower triangle of [A] to [A](0:nr-1,0:n-1)**T and
+             * the upper triangle of [A] to zero.
+             */
             INT minmn = (n < nr) ? n : nr;
             for (p = 0; p < minmn; p++) {
                 for (q = p + 1; q < n; q++) {
@@ -616,7 +662,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
             dgesvd("N", "N", n, nr, A, lda, S, U, ldu, V, ldv, work, lwork, info);
         } else {
-            /* Compute SVD of R */
+            /* .. compute the singular values of R = [A](0:nr-1,0:n-1) */
             if (nr > 1) {
                 dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &A[1], lda);
             }
@@ -625,10 +671,14 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     } else if (lsvec && !rsvec) {
         /*
-         * Left singular vectors requested
+         * .. the singular values and the left singular vectors requested
          */
         if (rtrans) {
-            /* Apply DGESVD to R^T */
+            /*
+             * .. apply DGESVD to R**T
+             * .. copy R**T into [U] and overwrite [U] with the right singular
+             * vectors of R
+             */
             for (p = 0; p < nr; p++) {
                 for (q = p; q < n; q++) {
                     U[q + p * ldu] = A[p + q * lda];
@@ -637,9 +687,12 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             if (nr > 1) {
                 dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &U[ldu], ldu);
             }
-            /* JOBU='N': U not referenced; JOBVT='O': overwrites A */
+            /*
+             * .. the left singular vectors not computed, the NR right singular
+             * vectors overwrite [U](0:nr-1,0:nr-1) as transposed. These
+             * will be pre-multiplied by Q to build the left singular vectors of A.
+             */
             dgesvd("N", "O", n, nr, U, ldu, S, NULL, 1, NULL, 1, &work[n], lwork - n, info);
-            /* Transpose result */
             for (p = 0; p < nr; p++) {
                 for (q = p + 1; q < nr; q++) {
                     rtmp = U[q + p * ldu];
@@ -648,16 +701,25 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 }
             }
         } else {
-            /* Apply DGESVD to R */
+            /*
+             * .. apply DGESVD to R
+             * .. copy R into [U] and overwrite [U] with the left singular vectors
+             */
             dlacpy("U", nr, n, A, lda, U, ldu);
             if (nr > 1) {
                 dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &U[1], ldu);
             }
-            /* JOBU='O': overwrites A; JOBVT='N': VT not referenced */
+            /*
+             * .. the right singular vectors not computed, the NR left singular
+             * vectors overwrite [U](0:nr-1,0:nr-1)
+             */
             dgesvd("O", "N", nr, n, U, ldu, S, NULL, 1, NULL, 1, &work[n], lwork - n, info);
         }
 
-        /* Assemble left singular vectors */
+        /*
+         * .. assemble the left singular vector matrix U of dimensions
+         * (M x NR) or (M x N) or (M x M).
+         */
         if (nr < m && !wntuf) {
             dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
             if (nr < n1) {
@@ -666,21 +728,26 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
         }
 
-        /* Apply Q factor */
+        /*
+         * The Q matrix from the first QRF is built into the left singular
+         * vectors matrix U.
+         */
         if (!wntuf) {
             dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
         }
-        /* Undo row pivoting */
         if (rowprm && !wntuf) {
             dlaswp(n1, U, ldu, 0, m - 2, &iwork[n], -1);
         }
 
     } else if (rsvec && !lsvec) {
         /*
-         * Right singular vectors requested
+         * .. the singular values and the right singular vectors requested
          */
         if (rtrans) {
-            /* Apply DGESVD to R^T */
+            /*
+             * .. apply DGESVD to R**T
+             * .. copy R**T into V and overwrite V with the left singular vectors
+             */
             for (p = 0; p < nr; p++) {
                 for (q = p; q < n; q++) {
                     V[q + p * ldv] = A[p + q * lda];
@@ -691,9 +758,11 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
 
             if (wntvr || nr == n) {
-                /* JOBU='O': overwrites A; JOBVT='N': VT not referenced */
+                /*
+                 * .. the left singular vectors of R**T overwrite V, the right singular
+                 * vectors not computed
+                 */
                 dgesvd("O", "N", n, nr, V, ldv, S, U, ldu, NULL, ldu, &work[n], lwork - n, info);
-                /* Transpose */
                 for (p = 0; p < nr; p++) {
                     for (q = p + 1; q < nr; q++) {
                         rtmp = V[q + p * ldv];
@@ -710,11 +779,15 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 }
                 dlapmt(0, nr, n, V, ldv, iwork);
             } else {
-                /* Need all N right vectors, NR < N */
+                /*
+                 * .. need all N right singular vectors and NR < N
+                 * [!] This is simple implementation that augments [V](0:n-1,0:nr-1)
+                 * by padding a zero block. In the case NR << N, a more efficient
+                 * way is to first use the QR factorization. For more details
+                 * how to implement this, see the " FULL SVD " branch.
+                 */
                 dlaset("G", n, n - nr, ZERO, ZERO, &V[nr * ldv], ldv);
-                /* JOBU='O': overwrites A; JOBVT='N': VT not referenced */
                 dgesvd("O", "N", n, n, V, ldv, S, U, ldu, NULL, ldu, &work[n], lwork - n, info);
-                /* Transpose */
                 for (p = 0; p < n; p++) {
                     for (q = p + 1; q < n; q++) {
                         rtmp = V[q + p * ldv];
@@ -725,20 +798,31 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 dlapmt(0, n, n, V, ldv, iwork);
             }
         } else {
-            /* Apply DGESVD to R */
+            /*
+             * .. aply DGESVD to R
+             * .. copy R into V and overwrite V with the right singular vectors
+             */
             dlacpy("U", nr, n, A, lda, V, ldv);
             if (nr > 1) {
                 dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &V[1], ldv);
             }
 
             if (wntvr || nr == n) {
-                /* JOBU='N': U not referenced; JOBVT='O': overwrites A */
+                /*
+                 * .. the right singular vectors overwrite V, the NR left singular
+                 * vectors stored in U(0:nr-1,0:nr-1)
+                 */
                 dgesvd("N", "O", nr, n, V, ldv, S, NULL, 1, NULL, 1, &work[n], lwork - n, info);
                 dlapmt(0, nr, n, V, ldv, iwork);
             } else {
-                /* Need all N right vectors, NR < N */
+                /*
+                 * .. need all N right singular vectors and NR < N
+                 * [!] This is simple implementation that augments [V](0:nr-1,0:n-1)
+                 * by padding a zero block. In the case NR << N, a more efficient
+                 * way is to first use the LQ factorization. For more details
+                 * how to implement this, see the " FULL SVD " branch.
+                 */
                 dlaset("G", n - nr, n, ZERO, ZERO, &V[nr], ldv);
-                /* JOBU='N': U not referenced; JOBVT='O': overwrites A */
                 dgesvd("N", "O", n, n, V, ldv, S, NULL, 1, NULL, 1, &work[n], lwork - n, info);
                 dlapmt(0, n, n, V, ldv, iwork);
             }
@@ -746,14 +830,17 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     } else {
         /*
-         * Full SVD: both left and right singular vectors
+         * .. FULL SVD requested
          */
         if (rtrans) {
             /*
-             * Apply DGESVD to R^T
+             * .. apply DGESVD to R**T [[this option is left for R&D&T]]
              */
             if (wntvr || nr == n) {
-                /* Copy R^T to V */
+                /*
+                 * .. copy R**T into [V] and overwrite [V] with the left singular
+                 * vectors of R**T
+                 */
                 for (p = 0; p < nr; p++) {
                     for (q = p; q < n; q++) {
                         V[q + p * ldv] = A[p + q * lda];
@@ -765,7 +852,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
 
                 dgesvd("O", "A", n, nr, V, ldv, S, NULL, 1, U, ldu, &work[n], lwork - n, info);
 
-                /* Transpose V */
+                /* .. assemble V */
                 for (p = 0; p < nr; p++) {
                     for (q = p + 1; q < nr; q++) {
                         rtmp = V[q + p * ldv];
@@ -782,7 +869,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 }
                 dlapmt(0, nr, n, V, ldv, iwork);
 
-                /* Transpose U */
                 for (p = 0; p < nr; p++) {
                     for (q = p + 1; q < nr; q++) {
                         rtmp = U[q + p * ldu];
@@ -791,7 +877,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     }
                 }
 
-                /* Assemble U */
                 if (nr < m && !wntuf) {
                     dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                     if (nr < n1) {
@@ -800,10 +885,16 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     }
                 }
             } else {
-                /* Need all N right vectors, NR < N */
+                /*
+                 * .. need all N right singular vectors and NR < N
+                 * .. copy R**T into [V] and overwrite [V] with the left singular
+                 * vectors of R**T
+                 * [[The optimal ratio N/NR for using QRF instead of padding
+                 *   with zeros. Here hard coded to 2; it must be at least
+                 *   two due to work space constraints.]]
+                 */
                 optratio = 2;
                 if (optratio * nr > n) {
-                    /* Padding approach */
                     for (p = 0; p < nr; p++) {
                         for (q = p; q < n; q++) {
                             V[q + p * ldv] = A[p + q * lda];
@@ -816,7 +907,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
 
                     dgesvd("O", "A", n, n, V, ldv, S, NULL, 1, U, ldu, &work[n], lwork - n, info);
 
-                    /* Transpose V */
                     for (p = 0; p < n; p++) {
                         for (q = p + 1; q < n; q++) {
                             rtmp = V[q + p * ldv];
@@ -826,7 +916,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     }
                     dlapmt(0, n, n, V, ldv, iwork);
 
-                    /* Transpose U */
                     for (p = 0; p < n; p++) {
                         for (q = p + 1; q < n; q++) {
                             rtmp = U[q + p * ldu];
@@ -835,7 +924,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                         }
                     }
 
-                    /* Assemble U */
+                    /*
+                     * .. assemble the left singular vector matrix U of dimensions
+                     * (M x N1), i.e. (M x N) or (M x M).
+                     */
                     if (n < m && !wntuf) {
                         dlaset("A", m - n, n, ZERO, ZERO, &U[n], ldu);
                         if (n < n1) {
@@ -844,7 +936,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                         }
                     }
                 } else {
-                    /* QR optimization */
+                    /*
+                     * .. copy R**T into [U] and overwrite [U] with the right
+                     * singular vectors of R
+                     */
                     for (p = 0; p < nr; p++) {
                         for (q = p; q < n; q++) {
                             U[q + (nr + p) * ldu] = A[p + q * lda];
@@ -867,7 +962,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     dormqr("R", "C", n, n, nr, &U[nr * ldu], ldu, &work[n], V, ldv, &work[n + nr], lwork - n - nr, &ierr);
                     dlapmt(0, n, n, V, ldv, iwork);
 
-                    /* Assemble U */
+                    /*
+                     * .. assemble the left singular vector matrix U of dimensions
+                     * (M x NR) or (M x N) or (M x M).
+                     */
                     if (nr < m && !wntuf) {
                         dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                         if (nr < n1) {
@@ -879,10 +977,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
         } else {
             /*
-             * Apply DGESVD to R (recommended option)
+             * .. apply DGESVD to R [[this is the recommended option]]
              */
             if (wntvr || nr == n) {
-                /* Copy R to V */
+                /* .. copy R into [V] and overwrite V with the right singular vectors */
                 dlacpy("U", nr, n, A, lda, V, ldv);
                 if (nr > 1) {
                     dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &V[1], ldv);
@@ -891,7 +989,11 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                 dgesvd("S", "O", nr, n, V, ldv, S, U, ldu, NULL, 1, &work[n], lwork - n, info);
                 dlapmt(0, nr, n, V, ldv, iwork);
 
-                /* Assemble U */
+                /*
+                 * .. now [V](0:nr-1,0:n-1) contains V(0:n-1,0:nr-1)**T
+                 * .. assemble the left singular vector matrix U of dimensions
+                 * (M x NR) or (M x N) or (M x M).
+                 */
                 if (nr < m && !wntuf) {
                     dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                     if (nr < n1) {
@@ -900,10 +1002,16 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     }
                 }
             } else {
-                /* Need all N right vectors, NR < N */
+                /*
+                 * .. need all N right singular vectors and NR < N
+                 * .. the requested number of the left singular vectors
+                 *  is then N1 (N or M)
+                 * [[The optimal ratio N/NR for using LQ instead of padding
+                 *   with zeros. Here hard coded to 2; it must be at least
+                 *   two due to work space constraints.]]
+                 */
                 optratio = 2;
                 if (optratio * nr > n) {
-                    /* Padding approach */
                     dlacpy("U", nr, n, A, lda, V, ldv);
                     if (nr > 1) {
                         dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &V[1], ldv);
@@ -913,7 +1021,13 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     dgesvd("S", "O", n, n, V, ldv, S, U, ldu, NULL, 1, &work[n], lwork - n, info);
                     dlapmt(0, n, n, V, ldv, iwork);
 
-                    /* Assemble U */
+                    /*
+                     * .. now [V] contains the transposed matrix of the right
+                     * singular vectors of A. The leading N left singular vectors
+                     * are in [U](0:n-1,0:n-1)
+                     * .. assemble the left singular vector matrix U of dimensions
+                     * (M x N1), i.e. (M x N) or (M x M).
+                     */
                     if (n < m && !wntuf) {
                         dlaset("A", m - n, n, ZERO, ZERO, &U[n], ldu);
                         if (n < n1) {
@@ -922,7 +1036,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                         }
                     }
                 } else {
-                    /* LQ optimization */
                     dlacpy("U", nr, n, A, lda, &U[nr], ldu);
                     if (nr > 1) {
                         dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &U[nr + 1], ldu);
@@ -939,7 +1052,10 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     dormlq("R", "N", n, n, nr, &U[nr], ldu, &work[n], V, ldv, &work[n + nr], lwork - n - nr, &ierr);
                     dlapmt(0, n, n, V, ldv, iwork);
 
-                    /* Assemble U */
+                    /*
+                     * .. assemble the left singular vector matrix U of dimensions
+                     * (M x NR) or (M x N) or (M x M).
+                     */
                     if (nr < m && !wntuf) {
                         dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                         if (nr < n1) {
@@ -951,18 +1067,21 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
         }
 
-        /* Apply Q factor */
+        /*
+         * The Q matrix from the first QRF is built into the left singular
+         * vectors matrix U.
+         */
         if (!wntuf) {
             dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
         }
-        /* Undo row pivoting */
         if (rowprm && !wntuf) {
             dlaswp(n1, U, ldu, 0, m - 2, &iwork[n], -1);
         }
     }
 
     /*
-     * Check for zeros in S and update rank
+     * Check whether some singular values are returned as zeros, e.g.
+     * due to underflow, and update the numerical rank.
      */
     p = nr;
     for (q = nr - 1; q >= 0; q--) {
@@ -970,12 +1089,18 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
         nr--;
     }
 
-    /* Zero truncated singular values */
+    /*
+     * .. if numerical rank deficiency is detected, the truncated
+     * singular values are set to zero.
+     */
     if (nr < n) {
         dlaset("G", n - nr, 1, ZERO, ZERO, &S[nr], n);
     }
 
-    /* Undo scaling */
+    /*
+     * .. undo scaling; this may cause overflow in the largest singular
+     * values.
+     */
     if (ascaled) {
         dlascl("G", 0, 0, ONE, sqrt((f64)m), nr, 1, S, n, &ierr);
     }

@@ -108,7 +108,7 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
     /* Row-cyclic Jacobi SVD algorithm with column pivoting */
     emptsw = (n / 2) * (n - 1 + n % 2);
 
-    /* Tuning parameters */
+    /* Row-cyclic pivot strategy with de Rijk's pivoting */
     kbl = (8 < n) ? 8 : n;
     nbl = n / kbl;
     if (nbl * kbl != n) nbl = nbl + 1;
@@ -117,20 +117,22 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
     lkahead = 1;
     swband = 0;
 
-    /* Main sweep loop */
+    /* .. go go go ... */
     for (i = 0; i < nsweep; i++) {
         mxaapq = ZERO;
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
 
-        /* Block loop */
+        /* Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
+         * 1 <= p < q <= N. This is the first step toward a blocked implementation
+         * of the rotations. New implementation, based on block transformations,
+         * is under development. */
         for (ibr = 0; ibr < nbl; ibr++) {
 
             for (ir1 = 0; ir1 <= (lkahead < nbl - ibr - 1 ? lkahead : nbl - ibr - 1); ir1++) {
                 igl = ibr * kbl + ir1 * kbl;
 
-                /* p-loop within diagonal block */
                 for (p = igl; p < ((igl + kbl < n - 1) ? (igl + kbl) : (n - 1)); p++) {
                     /* de Rijk's pivoting */
                     q = cblas_isamax(n - p, &SVA[p], 1) + p;
@@ -164,7 +166,6 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                     if (aapp > ZERO) {
                         pskipped = 0;
 
-                        /* q-loop within diagonal block */
                         for (q = p + 1; q < ((igl + kbl < n) ? igl + kbl : n); q++) {
                             aaqq = SVA[q];
 
@@ -199,7 +200,7 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                                 aapq1 = -cabsf(aapq);
                                 mxaapq = (mxaapq > -aapq1) ? mxaapq : -aapq1;
 
-                                /* TO rotate or NOT to rotate */
+                                /* TO rotate or NOT to rotate, THAT is the question ... */
                                 if (fabsf(aapq1) > tol) {
                                     ompq = aapq / cabsf(aapq);
 
@@ -253,7 +254,7 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                                         D[p] = -D[q] * ompq;
 
                                     } else {
-                                        /* Modified Gram-Schmidt transformation */
+                                        /* .. have to use modified Gram-Schmidt like transformation */
                                         cblas_ccopy(m, &A[p * lda], 1, work, 1);
                                         clascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
                                         clascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
@@ -265,7 +266,8 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                                         mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                     }
 
-                                    /* Recompute SVA if needed due to cancellation */
+                                    /* In the case of cancellation in updating SVA(q), SVA(p)
+                                     * recompute SVA(q), SVA(p). */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_scnrm2(m, &A[q * lda], 1);
@@ -288,7 +290,7 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                                         SVA[p] = aapp;
                                     }
                                 } else {
-                                    /* Already numerically orthogonal */
+                                    /* A(:,p) and A(:,q) already numerically orthogonal */
                                     if (ir1 == 0) notrot++;
                                     pskipped++;
                                 }
@@ -303,7 +305,7 @@ void cgsvj0(const char* jobv, const INT m, const INT n,
                                 notrot = 0;
                                 goto L2103;
                             }
-                        } /* end q-loop */
+                        } /* END q-LOOP */
 L2103:
                         SVA[p] = aapp;
                     } else {
@@ -312,10 +314,10 @@ L2103:
                             notrot += ((igl + kbl < n) ? (igl + kbl) : n) - 1 - p;
                         }
                     }
-                } /* end p-loop */
-            } /* end ir1-loop */
+                } /* end of the p-loop */
+            } /* end of ir1-loop */
 
-            /* Off-diagonal blocks */
+            /* ... go to the off diagonal blocks */
             igl = ibr * kbl;
             for (INT jbc = ibr + 1; jbc < nbl; jbc++) {
                 INT jgl = jbc * kbl;
@@ -420,7 +422,7 @@ L2103:
                                         D[p] = -D[q] * ompq;
 
                                     } else {
-                                        /* Modified Gram-Schmidt */
+                                        /* .. have to use modified Gram-Schmidt like transformation */
                                         if (aapp > aaqq) {
                                             cblas_ccopy(m, &A[p * lda], 1, work, 1);
                                             clascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
@@ -444,7 +446,8 @@ L2103:
                                         }
                                     }
 
-                                    /* Recompute SVA if needed */
+                                    /* In the case of cancellation in updating SVA(q), SVA(p)
+                                     * .. recompute SVA(q), SVA(p) */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_scnrm2(m, &A[q * lda], 1);
@@ -487,7 +490,7 @@ L2103:
                                 notrot = 0;
                                 goto L2203;
                             }
-                        } /* end q-loop */
+                        } /* end of the q-loop */
 L2203:
                         SVA[p] = aapp;
                     } else {
@@ -496,17 +499,17 @@ L2203:
                         }
                         if (aapp < ZERO) notrot = 0;
                     }
-                } /* end p-loop */
-            } /* end jbc-loop */
+                } /* end of the p-loop */
+            } /* end of the jbc-loop */
 
 L2011:
-            /* Make SVA positive */
+            /* bailed out of the jbc-loop */
             for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
                 SVA[p] = fabsf(SVA[p]);
             }
-        } /* end ibr-loop */
+        } /* end of the ibr-loop */
 
-        /* Update SVA(n) */
+        /* .. update SVA(n-1) */
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_scnrm2(m, &A[(n - 1) * lda], 1);
         } else {
@@ -516,7 +519,7 @@ L2011:
             SVA[n - 1] = t * sqrtf(aapp);
         }
 
-        /* Additional steering */
+        /* Additional steering devices */
         if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
             swband = i;
         }
@@ -526,18 +529,19 @@ L2011:
         }
 
         if (notrot >= emptsw) goto L1994;
-    } /* end sweep loop */
+    } /* end i=0:NSWEEP-1 loop */
 
-    /* Procedure completed given number of iterations */
+    /* Reaching this point means that the procedure has not converged. */
     *info = nsweep - 1;
     goto L1995;
 
 L1994:
-    /* Early exit - all pivots below threshold */
+    /* Reaching this point means numerical convergence after the i-th
+     * sweep. */
     *info = 0;
 
 L1995:
-    /* Sort the vector D */
+    /* Sort the vector SVA() of column norms. */
     for (p = 0; p < n - 1; p++) {
         q = cblas_isamax(n - p, &SVA[p], 1) + p;
         if (p != q) {

@@ -12,7 +12,6 @@ static const f64 ZERO = 0.0;
 static const f64 ONE = 1.0;
 
 /** @cond */
-/* Helper: max of 3 integers */
 static inline INT max3i(INT a, INT b, INT c) {
     INT m = (a > b) ? a : b;
     return (m > c) ? m : c;
@@ -361,7 +360,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             f64* restrict work, const INT lwork,
             INT* restrict iwork, INT* info)
 {
-    /* Local variables */
     f64 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f64 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
     f64 sconda, sfmin, small, temp1, uscal1, uscal2, xsc, tbig;
@@ -370,9 +368,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     INT l2aber, l2kill, l2pert, l2rank, l2tran;
     INT noscal, rowpiv, rsvec, transp;
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 1: Parse boolean flags from CHARACTER*1 job parameters         */
-    /* -------------------------------------------------------------------- */
+    /* Test the input arguments */
 
     lsvec  = (jobu[0] == 'U' || jobu[0] == 'u' || jobu[0] == 'F' || jobu[0] == 'f');
     jracc  = (jobv[0] == 'J' || jobv[0] == 'j');
@@ -386,37 +382,27 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     defr   = (jobr[0] == 'N' || jobr[0] == 'n');
     l2pert = (jobp[0] == 'P' || jobp[0] == 'p');
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 2: Parameter validation                                        */
-    /* -------------------------------------------------------------------- */
-
     *info = 0;
 
-    /* JOBA must be one of: C, E, F, G, A, R */
     if (!(rowpiv || l2rank || l2aber || errest ||
           joba[0] == 'C' || joba[0] == 'c')) {
         *info = -1;
     }
-    /* JOBU must be one of: U, F, W, N */
     else if (!(lsvec || jobu[0] == 'N' || jobu[0] == 'n' ||
                         jobu[0] == 'W' || jobu[0] == 'w')) {
         *info = -2;
     }
-    /* JOBV must be one of: V, J, W, N; and if J then JOBU must not be N */
     else if (!(rsvec || jobv[0] == 'N' || jobv[0] == 'n' ||
                         jobv[0] == 'W' || jobv[0] == 'w') ||
              (jracc && !lsvec)) {
         *info = -3;
     }
-    /* JOBR must be one of: R, N */
     else if (!(l2kill || defr)) {
         *info = -4;
     }
-    /* JOBT must be one of: T, N */
     else if (!(l2tran || jobt[0] == 'N' || jobt[0] == 'n')) {
         *info = -5;
     }
-    /* JOBP must be one of: P, N */
     else if (!(l2pert || jobp[0] == 'N' || jobp[0] == 'n')) {
         *info = -6;
     }
@@ -435,19 +421,12 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     else if (rsvec && ldv < n) {
         *info = -15;
     }
-    /* Workspace validation: 6-case OR condition */
     else if (
-        /* Case 1: Only SVals, no ERREST */
         (!lsvec && !rsvec && !errest && lwork < max3i(7, 4*n+1, 2*m+n)) ||
-        /* Case 2: Only SVals + ERREST */
         (!lsvec && !rsvec && errest && lwork < max3i(7, 4*n+n*n, 2*m+n)) ||
-        /* Case 3: U only */
         (lsvec && !rsvec && lwork < max3i(7, 2*m+n, 4*n+1)) ||
-        /* Case 4: V only */
         (rsvec && !lsvec && lwork < max3i(7, 2*m+n, 4*n+1)) ||
-        /* Case 5: Full SVD, no Jacobi accumulation */
         (lsvec && rsvec && !jracc && lwork < (2*m+n > 6*n+2*n*n ? 2*m+n : 6*n+2*n*n)) ||
-        /* Case 6: Full SVD + Jacobi accumulation */
         (lsvec && rsvec && jracc && lwork < max3i(2*m+n, 4*n+n*n, 2*n+n*n+6))
     ) {
         *info = -17;
@@ -458,10 +437,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 3: Quick returns                                               */
-    /* -------------------------------------------------------------------- */
-
     /* Quick return for void matrix */
     if (m == 0 || n == 0) {
         iwork[0] = 0;
@@ -471,7 +446,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Determine whether U should be M x N or M x M */
+    /* Determine whether the matrix U should be M x N or M x M */
     n1 = n;
     if (lsvec && (jobu[0] == 'F' || jobu[0] == 'f')) {
         n1 = m;
@@ -483,9 +458,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     small = sfmin / epsln;
     big   = dlamch("O");
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 4: Initialize SVA = ||A e_i||_2, with scaling                  */
-    /* -------------------------------------------------------------------- */
+    /* Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N */
 
     scalem = ONE / sqrt((f64)m * (f64)n);
     noscal = 1;
@@ -517,7 +490,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
 
     if (noscal) scalem = ONE;
 
-    /* Find max and min of SVA */
     aapp = ZERO;
     aaqq = big;
     for (p = 0; p < n; p++) {
@@ -525,7 +497,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         if (SVA[p] != ZERO) aaqq = (aaqq < SVA[p]) ? aaqq : SVA[p];
     }
 
-    /* Quick return for zero matrix */
+    /* Quick return for zero M x N matrix */
     if (aapp == ZERO) {
         if (lsvec) dlaset("G", m, n1, ZERO, ONE, U, ldu);
         if (rsvec) dlaset("G", n, n, ZERO, ONE, V, ldv);
@@ -546,7 +518,9 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Warning if denormalized column norms detected */
+    /* Issue warning if denormalized column norms detected. Override the
+     * high relative accuracy request. Issue licence to kill columns
+     * (set them to zero) whose norm is less than sigma_max / BIG (roughly). */
     warning = 0;
     if (aaqq <= sfmin) {
         l2rank = 1;
@@ -559,7 +533,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         if (lsvec) {
             dlascl("G", 0, 0, SVA[0], scalem, m, 1, A, lda, &ierr);
             dlacpy("A", m, 1, A, lda, U, ldu);
-            /* Computing all M left singular vectors of the M x 1 matrix */
+            /* computing all M left singular vectors of the M x 1 matrix */
             if (n1 != n) {
                 dgeqrf(m, n, U, ldu, work, &work[n], lwork - n, &ierr);
                 dorgqr(m, n1, 1, U, ldu, work, &work[n], lwork - n, &ierr);
@@ -602,24 +576,24 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 5: Transpose decision (Shannon entropy) - L2TRAN               */
-    /* -------------------------------------------------------------------- */
-
     transp = 0;
-    l2tran = l2tran && (m == n);  /* Only for square matrices */
+    l2tran = l2tran && (m == n);
 
     aatmax = -ONE;
     aatmin = big;
 
     if (rowpiv || l2tran) {
-        /* Compute row norms */
+        /* Compute the row norms, needed to determine row pivoting sequence
+         * (in the case of heavily row weighted A, row pivoting is strongly
+         * advised) and to collect information needed to compare the
+         * structures of A * A^t and A^t * A (in the case L2TRAN.EQ..TRUE.). */
         if (l2tran) {
             for (p = 0; p < m; p++) {
                 xsc = ZERO;
                 temp1 = ONE;
                 dlassq(n, &A[p], lda, &xsc, &temp1);
-                /* DLASSQ gets both the ell_2 and ell_infinity norm */
+                /* DLASSQ gets both the ell_2 and the ell_infinity norm
+                 * in one pass through the vector */
                 work[m + n + p] = xsc * scalem;
                 work[n + p] = xsc * (scalem * sqrt(temp1));
                 aatmax = (aatmax > work[n + p]) ? aatmax : work[n + p];
@@ -634,7 +608,12 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* Shannon entropy computation for transpose decision */
+    /* For square matrix A try to determine whether A^t  would be  better
+     * input for the preconditioned Jacobi SVD, with faster convergence.
+     * The decision is based on an O(N) function of the vector of column
+     * and row norms of A, based on the Shannon entropy. This should give
+     * the right choice in most cases when the difference actually matters.
+     * It may fail and pick the slower converging side. */
     entra = ZERO;
     entrat = ZERO;
 
@@ -651,7 +630,11 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
         entra = -entra / log((f64)n);
 
-        /* Same for row norms (A * A^t diagonal) */
+        /* Now, SVA().^2/Trace(A^t * A) is a point in the probability simplex.
+         * It is derived from the diagonal of  A^t * A.  Do the same with the
+         * diagonal of A * A^t, compute the entropy of the corresponding
+         * probability distribution. Note that A * A^t and A^t * A have the
+         * same trace. */
         entrat = ZERO;
         for (p = 0; p < m; p++) {
             big1 = ((work[n + p] / xsc) * (work[n + p] / xsc)) * temp1;
@@ -659,11 +642,13 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
         entrat = -entrat / log((f64)m);
 
-        /* Decide: if row entropy < column entropy, use transpose */
+        /* Analyze the entropies and decide A or A^t. Smaller entropy
+         * usually means better input for the algorithm. */
         transp = (entrat < entra);
 
         if (transp) {
-            /* Transpose A in-place (only for square N x N) */
+            /* In an optimal implementation, this trivial transpose
+             * should be replaced with faster transpose. */
             for (p = 0; p < n - 1; p++) {
                 for (q = p + 1; q < n; q++) {
                     temp1 = A[q + p * lda];
@@ -671,17 +656,14 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     A[p + q * lda] = temp1;
                 }
             }
-            /* Swap SVA with row norms */
             for (p = 0; p < n; p++) {
                 work[m + n + p] = SVA[p];
                 SVA[p] = work[n + p];
             }
-            /* Swap aapp/aatmax, aaqq/aatmin */
             temp1 = aapp;
             aapp = aatmax;
             temp1 = aaqq;
             aaqq = aatmin;
-            /* Swap lsvec/rsvec */
             kill = lsvec;
             lsvec = rsvec;
             rsvec = kill;
@@ -690,13 +672,15 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 6: Matrix scaling                                              */
-    /* -------------------------------------------------------------------- */
-
     /* Scale the matrix so that its maximal singular value remains less
-     * than sqrt(BIG) -- the matrix is scaled so that its maximal column
-     * has Euclidean norm equal to sqrt(BIG/N). */
+     * than DSQRT(BIG) -- the matrix is scaled so that its maximal column
+     * has Euclidean norm equal to DSQRT(BIG/N). The only reason to keep
+     * DSQRT(BIG) instead of BIG is the fact that DGEJSV uses LAPACK and
+     * BLAS routines that, in some implementations, are not capable of
+     * working in the full interval [SFMIN,BIG] and that they may provoke
+     * overflows in the intermediate results. If the singular values spread
+     * from SFMIN to BIG, then DGESVJ will compute them. So, in that case,
+     * one should use DGESVJ instead of DGEJSV. */
 
     big1 = sqrt(big);
     temp1 = sqrt(big / (f64)n);
@@ -711,22 +695,28 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     temp1 = temp1 * scalem;
     dlascl("G", 0, 0, aapp, temp1, m, n, A, lda, &ierr);
 
-    /* Store for later unscaling */
+    /* To undo scaling at the end of this procedure, multiply the
+     * computed singular values with USCAL2 / USCAL1. */
     uscal1 = temp1;
     uscal2 = aapp;
 
-    /* Determine kill threshold XSC */
     if (l2kill) {
         xsc = sqrt(sfmin);
     } else {
         xsc = small;
-        /* If matrix is very ill-conditioned, set JRACC flag */
+        /* Now, if the condition number of A is too big,
+         * sigma_max(A) / sigma_min(A) .GT. DSQRT(BIG/N) * EPSLN / SFMIN,
+         * as a precaution measure, the full SVD is computed using DGESVJ
+         * with accumulated Jacobi rotations. This provides numerically
+         * more robust computation, at the cost of slightly increased run
+         * time. Depending on the concrete implementation of BLAS and LAPACK
+         * (i.e. how they behave in presence of extreme ill-conditioning) the
+         * implementor may decide to remove this switch. */
         if (aaqq < sqrt(sfmin) && lsvec && rsvec) {
             jracc = 1;
         }
     }
 
-    /* Kill columns with SVA[p] < XSC */
     if (aaqq < xsc) {
         for (p = 0; p < n; p++) {
             if (SVA[p] < xsc) {
@@ -736,42 +726,61 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 7: Row pivoting + first QR factorization                       */
-    /* -------------------------------------------------------------------- */
+    /* Preconditioning using QR factorization with pivoting */
 
     if (rowpiv) {
-        /* Bjoerck row pivoting: find max-norm rows */
+        /* Optional row permutation (Bjoerck row pivoting):
+         * A result by Cox and Higham shows that the Bjoerck's
+         * row pivoting combined with standard column pivoting
+         * has similar effect as Powell-Reid complete pivoting.
+         * The ell-infinity norms of A are made nonincreasing. */
         for (p = 0; p < m - 1; p++) {
             q = cblas_idamax(m - p, &work[m + n + p], 1) + p;
-            iwork[2 * n + p] = q;  /* Store pivot index (0-based) */
+            iwork[2 * n + p] = q;
             if (p != q) {
                 temp1 = work[m + n + p];
                 work[m + n + p] = work[m + n + q];
                 work[m + n + q] = temp1;
             }
         }
-        /* Apply row pivots to A */
         dlaswp(n, A, lda, 0, m - 2, &iwork[2 * n], 1);
     }
 
-    /* Initialize IWORK[0:n-1] = 0 (all columns free for DGEQP3) */
+    /* End of the preparation phase (scaling, optional sorting and
+     * transposing, optional flushing of small columns).
+     *
+     * Preconditioning
+     *
+     * If the full SVD is needed, the right singular vectors are computed
+     * from a matrix equation, and for that we need theoretical analysis
+     * of the Businger-Golub pivoting. So we use DGEQP3 as the first RR QRF.
+     * In all other cases the first RR QRF can be chosen by other criteria
+     * (eg speed by replacing global with restricted window pivoting, such
+     * as in SGEQPX from TOMS # 782). Good results will be obtained using
+     * SGEQPX with properly (!) chosen numerical parameters.
+     * Any improvement of DGEQP3 improves overall performance of DGEJSV.
+     *
+     * A * P1 = Q1 * [ R1^t 0]^t: */
     for (p = 0; p < n; p++) {
         iwork[p] = 0;
     }
 
-    /* First QR factorization with column pivoting */
     dgeqp3(m, n, A, lda, iwork, work, &work[n], lwork - n, &ierr);
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 8: Rank detection                                              */
-    /* -------------------------------------------------------------------- */
-
-    /* Detect numerical rank based on R factor diagonal */
+    /* The upper triangular matrix R1 from the first QRF is inspected for
+     * rank deficiency and possibilities for deflation, or possible
+     * ill-conditioning. Depending on the user specified flag L2RANK,
+     * the procedure explores possibilities to reduce the numerical
+     * rank by inspecting the computed upper triangular factor. If
+     * L2RANK or L2ABER are up, then DGEJSV will compute the SVD of
+     * A + dA, where ||dA|| <= f(M,N)*EPSLN. */
     nr = 1;
 
     if (l2aber) {
-        /* JOBA='A': Aggressive - treat small singular values as noise */
+        /* Standard absolute error bound suffices. All sigma_i with
+         * sigma_i < N*EPSLN*||A|| are flushed to zero. This is an
+         * aggressive enforcement of lower numerical rank by introducing a
+         * backward error of the order of N*EPSLN*||A||. */
         temp1 = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) >= temp1 * fabs(A[0])) {
@@ -781,7 +790,9 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
         }
     } else if (l2rank) {
-        /* JOBA='R': Rank-revealing - look for gap in diagonal */
+        /* .. similarly as above, only slightly more gentle (less aggressive).
+         * Sudden drop on the diagonal of R1 is used as the criterion for
+         * close-to-rank-deficient. */
         temp1 = sqrt(sfmin);
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) < epsln * fabs(A[(p-1) + (p-1) * lda]) ||
@@ -792,7 +803,13 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             nr++;
         }
     } else {
-        /* Default: High relative accuracy, gentle underflow cleanup */
+        /* The goal is high relative accuracy. However, if the matrix
+         * has high scaled condition number the relative accuracy is in
+         * general not feasible. Later on, a condition number estimator
+         * will be deployed to estimate the scaled condition number.
+         * Here we just remove the underflowed part of the triangular
+         * factor. This prevents the situation in which the code is
+         * working hard to get the accuracy not warranted by the data. */
         temp1 = sqrt(sfmin);
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) < small ||
@@ -802,10 +819,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             nr++;
         }
     }
-
-    /* -------------------------------------------------------------------- */
-    /* Chunk 9: ALMORT check + SCONDA computation                           */
-    /* -------------------------------------------------------------------- */
 
     almort = 0;
     if (nr == n) {
@@ -819,15 +832,13 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* Initialize condition estimates */
     sconda = -ONE;
     condr1 = -ONE;
     condr2 = -ONE;
 
-    /* SCONDA computation (if ERREST and full rank) */
     if (errest && nr == n) {
         if (rsvec) {
-            /* Use V as workspace */
+            /* .. V is available as workspace */
             dlacpy("U", n, n, A, lda, V, ldv);
             for (p = 0; p < n; p++) {
                 temp1 = SVA[iwork[p]];
@@ -835,7 +846,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             dpocon("U", n, V, ldv, ONE, &temp1, &work[n], &iwork[2*n + m], &ierr);
         } else if (lsvec) {
-            /* Use U as workspace */
+            /* .. U is available as workspace */
             dlacpy("U", n, n, A, lda, U, ldu);
             for (p = 0; p < n; p++) {
                 temp1 = SVA[iwork[p]];
@@ -843,7 +854,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             dpocon("U", n, U, ldu, ONE, &temp1, &work[n], &iwork[2*n + m], &ierr);
         } else {
-            /* Use WORK as workspace */
             dlacpy("U", n, n, A, lda, &work[n], n);
             for (p = 0; p < n; p++) {
                 temp1 = SVA[iwork[p]];
@@ -857,26 +867,30 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     /* If there is no violent scaling, artificial perturbation is not needed */
     l2pert = l2pert && (fabs(A[0] / A[(nr-1) + (nr-1) * lda]) > sqrt(big1));
 
-    /* -------------------------------------------------------------------- */
-    /* Phase 4: SVD computation branches                                    */
-    /* -------------------------------------------------------------------- */
+    /* Phase 3: */
 
 
     if (!rsvec && !lsvec) {
-        /* ============================================================== */
-        /* Branch A: Singular values only                                 */
-        /* ============================================================== */
+        /* Singular Values only */
 
-        /* Transpose R1 to lower triangular form */
+        /* .. transpose A(1:NR,1:N) */
         for (p = 0; p < (n - 1 < nr ? n - 1 : nr); p++) {
             cblas_dcopy(n - p - 1, &A[p + (p + 1) * lda], lda, &A[(p + 1) + p * lda], 1);
         }
 
-        /* Clear upper triangle */
+        /* The following two DO-loops introduce small relative perturbation
+         * into the strict upper triangle of the lower triangular matrix.
+         * Small entries below the main diagonal are also changed.
+         * This modification is useful if the computing environment does not
+         * provide/allow FLUSH TO ZERO underflow, for it prevents many
+         * annoying denormalized numbers in case of strongly scaled matrices.
+         * The perturbation is structured so that it does not introduce any
+         * new perturbation of the singular values, and it does not destroy
+         * the job done by the preconditioner.
+         * The licence for this perturbation is in the variable L2PERT, which
+         * should be .FALSE. if FLUSH TO ZERO underflow is active. */
         if (!almort) {
-            /* Apply perturbation if L2PERT */
             if (l2pert) {
-                /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
                 xsc = epsln / (f64)n;
                 for (q = 0; q < nr; q++) {
                     temp1 = xsc * fabs(A[q + q * lda]);
@@ -890,18 +904,20 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &A[1 * lda], lda);
             }
 
-            /* Second QR factorization */
+            /* .. second preconditioning using the QR factorization */
             dgeqrf(n, nr, A, lda, work, &work[n], lwork - n, &ierr);
 
-            /* Transpose to lower triangular */
+            /* .. and transpose upper to lower triangular */
             for (p = 0; p < nr - 1; p++) {
                 cblas_dcopy(nr - p - 1, &A[p + (p + 1) * lda], lda, &A[(p + 1) + p * lda], 1);
             }
         }
 
-        /* Final perturbation */
+        /* Row-cyclic Jacobi SVD algorithm with column pivoting
+         *
+         * .. again some perturbation (a "background noise") is added
+         * to drown denormals */
         if (l2pert) {
-            /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
             xsc = epsln / (f64)n;
             for (q = 0; q < nr; q++) {
                 temp1 = xsc * fabs(A[q + q * lda]);
@@ -915,19 +931,19 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &A[1 * lda], lda);
         }
 
-        /* Call DGESVJ for singular values only */
+        /* .. and one-sided Jacobi rotations are started on a lower
+         * triangular matrix (plus perturbation which is ignored in
+         * the part which destroys triangular form (confusing?!)) */
         dgesvj("L", "N", "N", nr, nr, A, lda, SVA, n, V, ldv,
                work, lwork, info);
         scalem = work[0];
         numrank = (INT)(work[1] + 0.5);
 
     } else if (rsvec && !lsvec) {
-        /* ============================================================== */
-        /* Branch B: Right singular vectors only                          */
-        /* ============================================================== */
+        /* -> Singular Values and Right Singular Vectors <- */
 
         if (almort) {
-            /* In this case NR equals N */
+            /* .. in this case NR equals N */
             for (p = 0; p < nr; p++) {
                 cblas_dcopy(n - p, &A[p + p * lda], lda, &V[p + p * ldv], 1);
             }
@@ -939,7 +955,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             numrank = (INT)(work[1] + 0.5);
 
         } else {
-            /* Two more QR factorizations */
+            /* .. two more QR factorizations ( one QRF is not enough, two require
+             * accumulated product of Jacobi rotations, three are perfect ) */
             dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &A[1], lda);
             dgelqf(nr, n, A, lda, work, &work[n], lwork - n, &ierr);
             dlacpy("L", nr, nr, A, lda, V, ldv);
@@ -964,7 +981,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             dormlq("L", "T", n, n, nr, A, lda, work, V, ldv, &work[n], lwork - n, &ierr);
         }
 
-        /* Permute rows of V by first QRP column pivots */
         for (p = 0; p < n; p++) {
             cblas_dcopy(n, &V[p], ldv, &A[iwork[p]], lda);
         }
@@ -975,32 +991,27 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
 
     } else if (lsvec && !rsvec) {
-        /* ============================================================== */
-        /* Branch C: Left singular vectors only                           */
-        /* ============================================================== */
+        /* .. Singular Values and Left Singular Vectors .. */
 
-        /* Copy R1 to U */
+        /* .. second preconditioning step to avoid need to accumulate
+         * Jacobi rotations in the Jacobi iterations. */
         for (p = 0; p < nr; p++) {
             cblas_dcopy(n - p, &A[p + p * lda], lda, &U[p + p * ldu], 1);
         }
         dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &U[1 * ldu], ldu);
 
-        /* Second QRF preconditioning */
         dgeqrf(n, nr, U, ldu, &work[n], &work[2 * n], lwork - 2 * n, &ierr);
 
-        /* Transpose to lower triangular */
         for (p = 0; p < nr - 1; p++) {
             cblas_dcopy(nr - p - 1, &U[p + (p + 1) * ldu], ldu, &U[(p + 1) + p * ldu], 1);
         }
         dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &U[1 * ldu], ldu);
 
-        /* Jacobi SVD on lower triangular */
         dgesvj("L", "U", "N", nr, nr, U, ldu, SVA, nr, A, lda,
                &work[n], lwork - n, info);
         scalem = work[n];
         numrank = (INT)(work[n + 1] + 0.5);
 
-        /* Pad U if needed */
         if (nr < m) {
             dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
             if (nr < n1) {
@@ -1009,15 +1020,12 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
         }
 
-        /* Apply Q from first QRF */
         dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
-        /* Undo row pivoting */
         if (rowpiv) {
             dlaswp(n1, U, ldu, 0, m - 2, &iwork[2 * n], -1);
         }
 
-        /* Normalize columns of U */
         for (p = 0; p < n1; p++) {
             xsc = ONE / cblas_dnrm2(m, &U[p * ldu], 1);
             cblas_dscal(m, xsc, &U[p * ldu], 1);
@@ -1028,22 +1036,26 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
 
     } else {
-        /* ============================================================== */
-        /* Branch D: Full SVD (both U and V)                              */
-        /* ============================================================== */
+        /* .. Full SVD .. */
 
         if (!jracc) {
-            /* ---------------------------------------------------------- */
-            /* Branch D.1: Non-JRACC path                                 */
-            /* ---------------------------------------------------------- */
-
             if (!almort) {
-                /* Copy R1 to V */
+                /* Second Preconditioning Step (QRF [with pivoting]) */
                 for (p = 0; p < nr; p++) {
                     cblas_dcopy(n - p, &A[p + p * lda], lda, &V[p + p * ldv], 1);
                 }
 
-                /* Perturbation */
+                /* .. the following two loops perturb small entries to avoid
+                 * denormals in the second QR factorization, where they are
+                 * as good as zeros. This is done to avoid painfully slow
+                 * computation with denormals. The relative size of the perturbation
+                 * is a parameter that can be changed by the implementer.
+                 * This perturbation device will be obsolete on machines with
+                 * properly implemented arithmetic.
+                 * To switch it off, set L2PERT=.FALSE. To remove it from  the
+                 * code, remove the action under L2PERT=.TRUE., leave the ELSE part.
+                 * The following two loops should be blocked and fused with the
+                 * transposed copy above. */
                 if (l2pert) {
                     xsc = sqrt(small);
                     for (q = 0; q < nr; q++) {
@@ -1059,7 +1071,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &V[1 * ldv], ldv);
                 }
 
-                /* Estimate condition number of R1 */
+                /* Estimate the row scaled condition number of R1 */
                 dlacpy("L", nr, nr, V, ldv, &work[2 * n], nr);
                 for (p = 0; p < nr; p++) {
                     temp1 = cblas_dnrm2(nr - p, &work[2 * n + p * nr + p], 1);
@@ -1072,7 +1084,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 cond_ok = sqrt((f64)nr);
 
                 if (condr1 < cond_ok) {
-                    /* R1 is well-conditioned: second QRF without pivoting */
+                    /* .. the second QRF without pivoting. */
                     dgeqrf(n, nr, V, ldv, &work[n], &work[2 * n], lwork - 2 * n, &ierr);
 
                     if (l2pert) {
@@ -1092,7 +1104,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                         dlacpy("A", n, nr, V, ldv, &work[2 * n], n);
                     }
 
-                    /* Transpose upper to lower triangular */
+                    /* .. this transposed copy should be better than naive */
                     for (p = 0; p < nr - 1; p++) {
                         cblas_dcopy(nr - p - 1, &V[p + (p + 1) * ldv], ldv, &V[(p + 1) + p * ldv], 1);
                     }
@@ -1100,7 +1112,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     condr2 = condr1;
 
                 } else {
-                    /* Ill-conditioned: second QRF with pivoting */
+                    /* .. ill-conditioned case: second QRF with pivoting */
                     for (p = 0; p < nr; p++) {
                         iwork[n + p] = 0;
                     }
@@ -1134,11 +1146,11 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                         dlaset("L", nr - 1, nr - 1, ZERO, ZERO, &V[1], ldv);
                     }
 
-                    /* LQ factorization for R2 */
+                    /* Now, compute R2 = L3 * Q3, the LQ factorization. */
                     dgelqf(nr, nr, V, ldv, &work[2 * n + n * nr],
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
-                    /* Estimate condition number */
+                    /* .. and estimate the condition number */
                     dlacpy("L", nr, nr, V, ldv, &work[2 * n + n * nr + nr], nr);
                     for (p = 0; p < nr; p++) {
                         temp1 = cblas_dnrm2(p + 1, &work[2 * n + n * nr + nr + p], nr);
@@ -1149,12 +1161,11 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     condr2 = ONE / sqrt(temp1);
 
                     if (condr2 >= cond_ok) {
-                        /* Save Householder vectors for Q3 */
+                        /* .. save the Householder vectors used for Q3 */
                         dlacpy("U", nr, nr, V, ldv, &work[2 * n], n);
                     }
                 }
 
-                /* Clear upper triangle and add perturbation */
                 if (l2pert) {
                     xsc = sqrt(small);
                     for (q = 1; q < nr; q++) {
@@ -1167,9 +1178,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     dlaset("U", nr - 1, nr - 1, ZERO, ZERO, &V[1 * ldv], ldv);
                 }
 
-                /* SVD computation based on condition numbers */
+                /* Second preconditioning finished; continue with Jacobi SVD */
                 if (condr1 < cond_ok) {
-                    /* Case D.1a: CONDR1 < COND_OK */
                     dgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
@@ -1196,7 +1206,12 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     }
 
                 } else if (condr2 < cond_ok) {
-                    /* Case D.1b: CONDR2 < COND_OK */
+                    /* :)           .. the input matrix A is very likely a relative of
+                     *              the Kahan matrix :)
+                     *              The matrix R2 is inverted. The solution of the matrix equation
+                     *              is Q3^T*V3 = the product of the Jacobi rotations (applied to
+                     *              the lower triangular L3 from the LQ factorization of
+                     *              R2=L3*Q3), pre-multiplied with the transposed Q3. */
                     dgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
@@ -1210,7 +1225,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
                                 nr, nr, ONE, &work[2 * n], n, U, ldu);
 
-                    /* Apply permutation from second QRP */
+                    /* .. apply the permutation from the second QR factorization */
                     for (q = 0; q < nr; q++) {
                         for (p = 0; p < nr; p++) {
                             work[2 * n + n * nr + nr + iwork[n + p]] = U[p + q * ldu];
@@ -1229,7 +1244,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                            V, ldv, &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
                 } else {
-                    /* Case D.1c: Last line of defense */
+                    /* Last line of defense. */
                     dgesvj("L", "U", "V", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
@@ -1247,7 +1262,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                            &work[2 * n + n * nr], U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
-                    /* Apply permutation from second QRP */
                     for (q = 0; q < nr; q++) {
                         for (p = 0; p < nr; p++) {
                             work[2 * n + n * nr + nr + iwork[n + p]] = U[p + q * ldu];
@@ -1258,7 +1272,9 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     }
                 }
 
-                /* Permute rows of V by first QRP column pivots and normalize */
+                /* Permute the rows of V using the (column) permutation from the
+                 * first QRF. Also, scale the columns to make them unit in
+                 * Euclidean norm. This applies to all cases. */
                 temp1 = sqrt((f64)n) * epsln;
                 for (q = 0; q < n; q++) {
                     for (p = 0; p < n; p++) {
@@ -1273,7 +1289,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     }
                 }
 
-                /* Assemble U */
+                /* At this moment, V contains the right singular vectors of A.
+                 * Next, assemble the left singular vector matrix U (M x N). */
                 if (nr < m) {
                     dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                     if (nr < n1) {
@@ -1284,7 +1301,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
 
                 dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
-                /* Normalize U columns */
+                /* The columns of U are normalized. */
                 temp1 = sqrt((f64)m) * epsln;
                 for (p = 0; p < nr; p++) {
                     xsc = ONE / cblas_dnrm2(m, &U[p * ldu], 1);
@@ -1293,26 +1310,23 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     }
                 }
 
-                /* Undo row pivoting */
+                /* If the initial QRF is computed with row pivoting, the left
+                 * singular vectors must be adjusted. */
                 if (rowpiv) {
                     dlaswp(n1, U, ldu, 0, m - 2, &iwork[2 * n], -1);
                 }
 
             } else {
-                /* -------------------------------------------------------- */
-                /* Branch D.1 ALMORT: columns almost orthogonal             */
-                /* -------------------------------------------------------- */
+                /* .. the initial matrix A has almost orthogonal columns and
+                 * the second QRF is not needed */
 
                 dlacpy("U", n, n, A, lda, &work[n], n);
 
                 if (l2pert) {
                     xsc = sqrt(small);
                     for (p = 1; p < n; p++) {
-                        /* NOTE: Fortran WORK(N+(p-1)*N+p) = element (p,p) = diagonal
-                         * In C 0-based: work[n + p*n + p] for diagonal (p,p) */
                         temp1 = xsc * work[n + p * n + p];
                         for (q = 0; q < p; q++) {
-                            /* LHS: element (p, q), RHS: element (q, p) */
                             work[n + q * n + p] = -copysign(temp1, work[n + p * n + q]);
                         }
                     }
@@ -1345,7 +1359,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     }
                 }
 
-                /* Assemble U */
+                /* Assemble the left singular vector matrix U (M x N). */
                 if (n < m) {
                     dlaset("A", m - n, n, ZERO, ZERO, &U[n], ldu);
                     if (n < n1) {
@@ -1370,9 +1384,15 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
 
         } else {
-            /* ---------------------------------------------------------- */
-            /* Branch D.2: JRACC path - explicit Jacobi accumulation      */
-            /* ---------------------------------------------------------- */
+            /* This branch deploys a preconditioned Jacobi SVD with explicitly
+             * accumulated rotations. It is included as optional, mainly for
+             * experimental purposes. It does perform well, and can also be used.
+             * In this implementation, this branch will be automatically activated
+             * if the  condition number sigma_max(A) / sigma_min(A) is predicted
+             * to be greater than the overflow threshold. This is because the
+             * a posteriori computation of the singular vectors assumes robust
+             * implementation of BLAS and some LAPACK procedures, capable of working
+             * in presence of extreme values. Since that is not always the case, ... */
 
             for (p = 0; p < nr; p++) {
                 cblas_dcopy(n - p, &A[p + p * lda], lda, &V[p + p * ldv], 1);
@@ -1427,7 +1447,9 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             dormqr("L", "N", n, n, nr, &work[2 * n], n, &work[n],
                    V, ldv, &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
-            /* Permute rows and normalize */
+            /* Permute the rows of V using the (column) permutation from the
+             * first QRF. Also, scale the columns to make them unit in
+             * Euclidean norm. This applies to all cases. */
             temp1 = sqrt((f64)n) * epsln;
             for (q = 0; q < n; q++) {
                 for (p = 0; p < n; p++) {
@@ -1442,7 +1464,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 }
             }
 
-            /* Assemble U */
+            /* At this moment, V contains the right singular vectors of A.
+             * Next, assemble the left singular vector matrix U (M x N). */
             if (nr < m) {
                 dlaset("A", m - nr, nr, ZERO, ZERO, &U[nr], ldu);
                 if (nr < n1) {
@@ -1458,7 +1481,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             }
         }
 
-        /* Swap U and V if we worked on A^t */
+        /* .. swap U and V because the procedure worked on A^t */
         if (transp) {
             for (p = 0; p < n; p++) {
                 cblas_dswap(n, &U[p * ldu], 1, &V[p * ldv], 1);
@@ -1466,23 +1489,19 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* -------------------------------------------------------------------- */
-    /* Chunk 15: Post-processing                                            */
-    /* -------------------------------------------------------------------- */
+    /* end of the full SVD */
 
-    /* Undo scaling if possible */
+    /* Undo scaling, if necessary (and possible) */
     if (uscal2 <= (big / SVA[0]) * uscal1) {
         dlascl("G", 0, 0, uscal1, uscal2, nr, 1, SVA, n, &ierr);
         uscal1 = ONE;
         uscal2 = ONE;
     }
 
-    /* Zero SVA beyond NR */
     for (p = nr; p < n; p++) {
         SVA[p] = ZERO;
     }
 
-    /* Fill output arrays */
     work[0] = uscal2 * scalem;
     work[1] = uscal1;
     if (errest) work[2] = sconda;

@@ -7,7 +7,6 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
-/* Macro for min/max */
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
@@ -141,10 +140,10 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
 
         /*
          * Wherever possible, plane rotations are generated and applied in
-         * vector operations of length nr over the index set j1:j2:kb1.
+         * vector operations of length NR over the index set J1:J2:KLU1.
          *
-         * The sines of the plane rotations are stored in work[0:mn-1]
-         * and the cosines in work[mn:2*mn-1].
+         * The sines of the plane rotations are stored in WORK(0:max(m,n)-1)
+         * and the cosines in WORK(max(m,n):2*max(m,n)-1).
          */
         INT mn = MAX(m, n);
         INT klm = MIN(m - 1, kl);
@@ -153,8 +152,8 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
         INT kb1 = kb + 1;
         INT inca = kb1 * ldab;
         INT nr = 0;
-        INT j1 = klm + 1;   /* 0-indexed: Fortran klm+2 becomes klm+1 */
-        INT j2 = -kun;      /* 0-indexed: Fortran 1-kun becomes -kun */
+        INT j1 = klm + 1;
+        INT j2 = -kun;
 
         for (INT i = 0; i < minmn; i++) {
             /* Reduce i-th column and i-th row of matrix to bidiagonal form */
@@ -171,7 +170,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                  * which have been created below the band
                  */
                 if (nr > 0) {
-                    /* AB[klu1-1 + (j1-klm-1)*ldab] in 0-indexed */
                     slargv(nr, &AB[(klu1 - 1) + (j1 - klm - 1) * ldab], inca,
                            &work[j1], kb1, &work[mn + j1], kb1);
                 }
@@ -185,7 +183,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                         nrt = nr;
                     }
                     if (nrt > 0) {
-                        /* AB[klu1-l-2 + (j1-klm+l)*ldab] and AB[klu1-l-1 + (j1-klm+l)*ldab] */
                         slartv(nrt, &AB[(klu1 - l - 2) + (j1 - klm + l) * ldab], inca,
                                &AB[(klu1 - l - 1) + (j1 - klm + l) * ldab], inca,
                                &work[mn + j1], &work[j1], kb1);
@@ -199,12 +196,10 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                          * within the band, and apply rotation from the left
                          */
                         f32 ra;
-                        /* AB[ku+ml-2 + i*ldab] and AB[ku+ml-1 + i*ldab] in 0-indexed */
                         slartg(AB[(ku + ml - 2) + i * ldab], AB[(ku + ml - 1) + i * ldab],
                                &work[mn + i + ml - 1], &work[i + ml - 1], &ra);
                         AB[(ku + ml - 2) + i * ldab] = ra;
                         if (i < n - 1) {
-                            /* AB[ku+ml-3 + (i+1)*ldab] and AB[ku+ml-2 + (i+1)*ldab] */
                             cblas_srot(MIN(ku + ml - 2, n - i - 1),
                                        &AB[(ku + ml - 3) + (i + 1) * ldab], ldab - 1,
                                        &AB[(ku + ml - 2) + (i + 1) * ldab], ldab - 1,
@@ -218,7 +213,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                 if (wantq) {
                     /* Accumulate product of plane rotations in Q */
                     for (INT j = j1; j <= j2; j += kb1) {
-                        /* Q columns j-1 and j (0-indexed: j-1 and j become j-1 and j) */
                         cblas_srot(m, &Q[(j - 1) * ldq], 1, &Q[j * ldq], 1,
                                    work[mn + j], work[j]);
                     }
@@ -227,7 +221,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                 if (wantc) {
                     /* Apply plane rotations to C */
                     for (INT j = j1; j <= j2; j += kb1) {
-                        /* C rows j-1 and j */
                         cblas_srot(ncc, &C[(j - 1)], ldc, &C[j], ldc,
                                    work[mn + j], work[j]);
                     }
@@ -242,9 +235,8 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                 for (INT j = j1; j <= j2; j += kb1) {
                     /*
                      * Create nonzero element a(j-1,j+ku) above the band
-                     * and store it in work[0:n-1]
+                     * and store it in WORK(0:n-1)
                      */
-                    /* AB[0 + (j+kun)*ldab] in 0-indexed */
                     work[j + kun] = work[j] * AB[(j + kun) * ldab];
                     AB[(j + kun) * ldab] = work[mn + j] * AB[(j + kun) * ldab];
                 }
@@ -254,7 +246,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                  * which have been generated above the band
                  */
                 if (nr > 0) {
-                    /* AB[0 + (j1+kun-1)*ldab] in 0-indexed */
                     slargv(nr, &AB[(j1 + kun - 1) * ldab], inca,
                            &work[j1 + kun], kb1, &work[mn + j1 + kun], kb1);
                 }
@@ -268,7 +259,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                         nrt = nr;
                     }
                     if (nrt > 0) {
-                        /* AB[l+1 + (j1+kun-1)*ldab] and AB[l + (j1+kun)*ldab] */
                         slartv(nrt, &AB[(l + 1) + (j1 + kun - 1) * ldab], inca,
                                &AB[l + (j1 + kun) * ldab], inca,
                                &work[mn + j1 + kun], &work[j1 + kun], kb1);
@@ -282,12 +272,10 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                          * within the band, and apply rotation from the right
                          */
                         f32 ra;
-                        /* AB[ku-mu+2 + (i+mu-2)*ldab] and AB[ku-mu+1 + (i+mu-1)*ldab] */
                         slartg(AB[(ku - mu + 2) + (i + mu - 2) * ldab],
                                AB[(ku - mu + 1) + (i + mu - 1) * ldab],
                                &work[mn + i + mu - 1], &work[i + mu - 1], &ra);
                         AB[(ku - mu + 2) + (i + mu - 2) * ldab] = ra;
-                        /* AB[ku-mu+3 + (i+mu-2)*ldab] and AB[ku-mu+2 + (i+mu-1)*ldab] */
                         cblas_srot(MIN(kl + mu - 2, m - i - 1),
                                    &AB[(ku - mu + 3) + (i + mu - 2) * ldab], 1,
                                    &AB[(ku - mu + 2) + (i + mu - 1) * ldab], 1,
@@ -300,7 +288,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                 if (wantpt) {
                     /* Accumulate product of plane rotations in P**T */
                     for (INT j = j1; j <= j2; j += kb1) {
-                        /* PT rows j+kun-1 and j+kun (0-indexed) */
                         cblas_srot(n, &PT[j + kun - 1], ldpt,
                                    &PT[j + kun], ldpt,
                                    work[mn + j + kun], work[j + kun]);
@@ -318,7 +305,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                      * Create nonzero element a(j+kl+ku,j+ku-1) below the
                      * band and store it in work[0:n-1]
                      */
-                    /* AB[klu1-1 + (j+kun)*ldab] in 0-indexed */
                     work[j + kb] = work[j + kun] * AB[(klu1 - 1) + (j + kun) * ldab];
                     AB[(klu1 - 1) + (j + kun) * ldab] = work[mn + j + kun] * AB[(klu1 - 1) + (j + kun) * ldab];
                 }
@@ -342,7 +328,6 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
          */
         for (INT i = 0; i < MIN(m - 1, n); i++) {
             f32 rc, rs, ra;
-            /* AB[0 + i*ldab] and AB[1 + i*ldab] */
             slartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
             D[i] = ra;
             if (i < n - 1) {
@@ -369,10 +354,9 @@ void sgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
              * right, storing diagonal elements in D and off-diagonal
              * elements in E
              */
-            f32 rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
+            f32 rb = AB[(ku - 1) + m * ldab];
             for (INT i = m - 1; i >= 0; i--) {
                 f32 rc, rs, ra;
-                /* AB[ku + i*ldab] = diagonal element */
                 slartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
                 D[i] = ra;
                 if (i > 0) {

@@ -33,7 +33,6 @@ void dlasq4(const INT i0, const INT n0, const f64* restrict Z,
             const f64 dn1, const f64 dn2, f64* tau,
             INT* ttype, f64* g)
 {
-    /* Constants from the Fortran source: CNST1 = 9/16 = 0.5630 (approx) */
     const f64 CNST1 = 0.5630;
     const f64 CNST2 = 1.010;
     const f64 CNST3 = 1.050;

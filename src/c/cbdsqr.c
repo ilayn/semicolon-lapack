@@ -83,7 +83,6 @@ void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru,
             c64* restrict C, const INT ldc,
             f32* restrict rwork, INT* info)
 {
-    /* Constants from LAPACK */
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 NEGONE = -1.0f;
@@ -93,7 +92,6 @@ void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru,
     const f32 MEIGTH = -0.125f;
     const INT MAXITR = 6;
 
-    /* Local variables */
     INT lower, rotate;
     INT i, idir, isub, iter, iterdivn, j, ll, lll, m;
     INT maxitdivn, nm1, nm12, nm13, oldll, oldm;
@@ -216,7 +214,7 @@ void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru,
     }
 
     /* Prepare for main iteration loop for the singular values
-     * (MAXITDIVN is the maximum number of passes through the inner
+     * (MAXIT is the maximum number of passes through the inner
      * loop permitted before nonconvergence signalled.) */
     maxitdivn = MAXITR * n;
     iterdivn = 0;
@@ -245,7 +243,7 @@ L60:
     smax = fabsf(D[m - 1]);
 
     for (lll = 1; lll <= m - 1; lll++) {
-        ll = m - lll - 1;  /* 0-based: ll = m - lll - 1 maps to Fortran LL = M - LLL */
+        ll = m - lll - 1;
         abss = fabsf(D[ll]);
         abse = fabsf(E[ll]);
         if (tol < ZERO && abss <= thresh) {
@@ -255,7 +253,7 @@ L60:
         smax = (smax > abss) ? smax : abss;
         smax = (smax > abse) ? smax : abse;
     }
-    ll = -1;  /* Fortran LL = 0, so 0-based ll = -1 means we use ll+1 = 0 */
+    ll = -1;
     goto L90;
 
 L80:
@@ -269,9 +267,9 @@ L80:
     }
 
 L90:
-    ll = ll + 1;  /* Now ll is 0-based index of first element in block */
+    ll = ll + 1;
 
-    /* E(LL) through E(M-1) are nonzero, E(LL-1) is zero (or LL=0) */
+    /* E(LL) through E(M-1) are nonzero, E(LL-1) is zero */
     if (ll == m - 2) {
         /* 2 by 2 block, handle separately */
         slasv2(D[m - 2], E[m - 2], D[m - 1], &sigmn, &sigmx, &sinr,

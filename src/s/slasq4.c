@@ -33,7 +33,6 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
             const f32 dn1, const f32 dn2, f32* tau,
             INT* ttype, f32* g)
 {
-    /* Constants from the Fortran source: CNST1 = 9/16 = 0.5630 (approx) */
     const f32 CNST1 = 0.5630f;
     const f32 CNST2 = 1.010f;
     const f32 CNST3 = 1.050f;

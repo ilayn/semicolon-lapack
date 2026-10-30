@@ -724,7 +724,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                 break;
                             }
 
-                        } /* end q-loop */
+                        } /* END q-LOOP */
 
                         SVA[p] = aapp;
 
@@ -734,9 +734,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                             notrot += (((igl + kbl - 1) < (n - 1)) ? (igl + kbl - 1) : (n - 1)) - p;
                     }
 
-                } /* end p-loop */
+                } /* end of the p-loop */
 
-            } /* end ir1-loop */
+            } /* end of ir1-loop */
 
             igl = ibr * kbl;
 
@@ -921,7 +921,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                 break;
                             }
 
-                        } /* end q-loop */
+                        } /* end of the q-loop */
 
                         SVA[p] = aapp;
 
@@ -933,9 +933,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
 
                     }
 
-                } /* end p-loop */
+                } /* end of the p-loop */
 
-            } /* end jbc-loop */
+            } /* end of the jbc-loop */
 
             offdiag_cleanup:
             {
@@ -945,7 +945,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                 }
             }
 
-        } /* end ibr-loop */
+        } /* end of the ibr-loop */
 
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_dznrm2(m, &A[(n - 1) * lda], 1);
@@ -966,7 +966,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
 
         if (notrot >= emptsw) break;
 
-    } /* end sweep loop */
+    } /* end i=0:NSWEEP-1 loop */
 
     if (i >= NSWEEP) {
         *info = NSWEEP - 1;

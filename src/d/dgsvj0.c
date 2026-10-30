@@ -108,7 +108,7 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
     emptsw = (n / 2) * (n - 1 + n % 2);
     fastr[0] = ZERO;
 
-    /* Tuning parameters */
+    /* Row-cyclic pivot strategy with de Rijk's pivoting */
     kbl = (8 < n) ? 8 : n;
     nbl = n / kbl;
     if (nbl * kbl != n) nbl = nbl + 1;
@@ -117,20 +117,18 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
     lkahead = 1;
     swband = 0;
 
-    /* Main sweep loop */
+    /* .. go go go ... */
     for (i = 0; i < nsweep; i++) {
         mxaapq = ZERO;
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
 
-        /* Block loop */
         for (ibr = 0; ibr < nbl; ibr++) {
 
             for (ir1 = 0; ir1 <= (lkahead < nbl - ibr - 1 ? lkahead : nbl - ibr - 1); ir1++) {
                 igl = ibr * kbl + ir1 * kbl;
 
-                /* p-loop within diagonal block */
                 for (p = igl; p < ((igl + kbl < n - 1) ? (igl + kbl) : (n - 1)); p++) {
                     /* de Rijk's pivoting */
                     q = cblas_idamax(n - p, &SVA[p], 1) + p;
@@ -148,7 +146,17 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                     }
 
                     if (ir1 == 0) {
-                        /* Periodically recompute column norms */
+                        /* Column norms are periodically updated by explicit
+                         * norm computation.
+                         * Caveat:
+                         * Some BLAS implementations compute DNRM2(M,A(1,p),1)
+                         * as DSQRT(DDOT(M,A(1,p),1,A(1,p),1)), which may result in
+                         * overflow for ||A(:,p)||_2 > DSQRT(overflow_threshold), and
+                         * underflow for ||A(:,p)||_2 < DSQRT(underflow_threshold).
+                         * Hence, DNRM2 cannot be trusted, not even in the case when
+                         * the true norm is far from the under(over)flow boundaries.
+                         * If properly implemented DNRM2 is available, the IF-THEN-ELSE
+                         * below should read "AAPP = DNRM2( M, A(1,p), 1 ) * D(p)". */
                         if (SVA[p] < rootbig && SVA[p] > rootsfmin) {
                             SVA[p] = cblas_dnrm2(m, &A[p * lda], 1) * D[p];
                         } else {
@@ -165,7 +173,6 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                     if (aapp > ZERO) {
                         pskipped = 0;
 
-                        /* q-loop within diagonal block */
                         for (q = p + 1; q < ((igl + kbl < n) ? igl + kbl : n); q++) {
                             aaqq = SVA[q];
 
@@ -197,7 +204,7 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
 
                                 mxaapq = (mxaapq > fabs(aapq)) ? mxaapq : fabs(aapq);
 
-                                /* TO rotate or NOT to rotate */
+                                /* TO rotate or NOT to rotate, THAT is the question ... */
                                 if (fabs(aapq) > tol) {
                                     if (ir1 == 0) {
                                         notrot = 0;
@@ -293,7 +300,7 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                             }
                                         }
                                     } else {
-                                        /* Modified Gram-Schmidt transformation */
+                                        /* .. have to use modified Gram-Schmidt like transformation */
                                         cblas_dcopy(m, &A[p * lda], 1, work, 1);
                                         dlascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
                                         dlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
@@ -305,7 +312,8 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                         mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                     }
 
-                                    /* Recompute SVA if needed due to cancellation */
+                                    /* In the case of cancellation in updating SVA(q), SVA(p)
+                                     * recompute SVA(q), SVA(p). */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_dnrm2(m, &A[q * lda], 1) * D[q];
@@ -328,7 +336,7 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                         SVA[p] = aapp;
                                     }
                                 } else {
-                                    /* Already numerically orthogonal */
+                                    /* A(:,p) and A(:,q) already numerically orthogonal */
                                     if (ir1 == 0) notrot++;
                                     pskipped++;
                                 }
@@ -343,7 +351,7 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                 notrot = 0;
                                 goto L2103;
                             }
-                        } /* end q-loop */
+                        } /* END q-LOOP */
 L2103:
                         SVA[p] = aapp;
                     } else {
@@ -352,10 +360,10 @@ L2103:
                             notrot += ((igl + kbl < n) ? (igl + kbl) : n) - 1 - p;
                         }
                     }
-                } /* end p-loop */
-            } /* end ir1-loop */
+                } /* end of the p-loop */
+            } /* end of ir1-loop */
 
-            /* Off-diagonal blocks */
+            /* ... go to the off diagonal blocks */
             igl = ibr * kbl;
             for (INT jbc = ibr + 1; jbc < nbl; jbc++) {
                 INT jgl = jbc * kbl;
@@ -500,7 +508,6 @@ L2103:
                                             }
                                         }
                                     } else {
-                                        /* Modified Gram-Schmidt */
                                         if (aapp > aaqq) {
                                             cblas_dcopy(m, &A[p * lda], 1, work, 1);
                                             dlascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
@@ -524,7 +531,8 @@ L2103:
                                         }
                                     }
 
-                                    /* Recompute SVA if needed */
+                                    /* In the case of cancellation in updating SVA(q)
+                                     * .. recompute SVA(q) */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_dnrm2(m, &A[q * lda], 1) * D[q];
@@ -567,7 +575,7 @@ L2103:
                                 notrot = 0;
                                 goto L2203;
                             }
-                        } /* end q-loop */
+                        } /* end of the q-loop */
 L2203:
                         SVA[p] = aapp;
                     } else {
@@ -576,17 +584,17 @@ L2203:
                         }
                         if (aapp < ZERO) notrot = 0;
                     }
-                } /* end p-loop */
-            } /* end jbc-loop */
+                } /* end of the p-loop */
+            } /* end of the jbc-loop */
 
 L2011:
-            /* Make SVA positive */
+            /* bailed out of the jbc-loop */
             for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
                 SVA[p] = fabs(SVA[p]);
             }
-        } /* end ibr-loop */
+        } /* end of the ibr-loop */
 
-        /* Update SVA(n) */
+        /* .. update SVA(n-1) */
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_dnrm2(m, &A[(n - 1) * lda], 1) * D[n - 1];
         } else {
@@ -596,7 +604,7 @@ L2011:
             SVA[n - 1] = t * sqrt(aapp) * D[n - 1];
         }
 
-        /* Additional steering */
+        /* Additional steering devices */
         if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
             swband = i;
         }
@@ -606,14 +614,16 @@ L2011:
         }
 
         if (notrot >= emptsw) goto L1994;
-    } /* end sweep loop */
+    } /* end i=0:NSWEEP-1 loop */
 
-    /* Procedure completed given number of iterations */
+    /* Reaching this point means that the procedure has completed the given
+     * number of iterations. */
     *info = nsweep - 1;
     goto L1995;
 
 L1994:
-    /* Early exit - all pivots below threshold */
+    /* Reaching this point means that during the i-th sweep all pivots were
+     * below the given tolerance, causing early exit. */
     *info = 0;
 
 L1995:

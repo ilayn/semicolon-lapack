@@ -7,8 +7,6 @@
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
-/* slaed6 is declared in semicolon_lapack_double.h */
-
 static const f32 ZERO = 0.0f;
 static const f32 ONE = 1.0f;
 static const f32 TWO = 2.0f;
@@ -42,7 +40,6 @@ void slasd4(const INT n, const INT i, const f32* restrict D,
             const f32 rho, f32* sigma, f32* restrict work,
             INT* info)
 {
-    /* Local variables */
     INT orgati, swtch, swtch3, geomavg;
     INT ii, iim1, iip1, ip1, iter, j, niter;
     f32 a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
@@ -52,10 +49,10 @@ void slasd4(const INT n, const INT i, const f32* restrict D,
     f32 dd[3], zz[3];
     INT iinfo;
 
-    /* Quick return for n=1 and n=2 */
+    /* Quick return for n=1 and 2. */
     *info = 0;
     if (n == 1) {
-        /* Presumably i=0 upon entry */
+        /* Presumably, i=0 upon entry */
         *sigma = sqrtf(D[0] * D[0] + rho * Z[0] * Z[0]);
         delta[0] = ONE;
         work[0] = ONE;
@@ -70,10 +67,10 @@ void slasd4(const INT n, const INT i, const f32* restrict D,
     eps = slamch("Epsilon");
     rhoinv = ONE / rho;
 
-    /* The case i == n-1 (last eigenvalue) */
+    /* The case i = n-1 */
     if (i == n - 1) {
         /* Initialize some basic variables */
-        ii = n - 1;  /* 0-based index for n-1 */
+        ii = n - 1;
         niter = 1;
 
         /* Calculate initial guess */
@@ -277,7 +274,7 @@ void slasd4(const INT n, const INT i, const f32* restrict D,
         return;
 
     } else {
-        /* The case for i < n */
+        /* The case for i < n-1 */
         niter = 1;
         ip1 = i + 1;
 
@@ -665,7 +662,8 @@ void slasd4(const INT n, const INT i, const f32* restrict D,
                 slaed6(niter, orgati, c, dd, zz, w, &eta, &iinfo);
 
                 if (iinfo != 0) {
-                    /* If INFO is not 0, switch back to two pole interpolation */
+                    /* If INFO is not 0, i.e., SLAED6 failed, switch
+                     * back to two pole interpolation */
                     swtch3 = 0;
                     dtipsq = work[ip1] * delta[ip1];
                     dtisq = work[i] * delta[i];

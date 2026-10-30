@@ -94,14 +94,11 @@ void dgesvd(const char* jobu, const char* jobvt,
             f64* restrict work, const INT lwork,
             INT* info)
 {
-    /* Constants */
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    /* Helper macro for 3-way max (matches Fortran MAX(a,b,c)) */
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
-    /* Local variables */
     INT wntua, wntus, wntuas, wntuo, wntun;
     INT wntva, wntvs, wntvas, wntvo, wntvn;
     INT lquery, minmn, mnthr;
@@ -115,7 +112,6 @@ void dgesvd(const char* jobu, const char* jobvt,
     f64 anrm, bignum, eps, smlnum;
     f64 dum[1];
 
-    /* Parse job options */
     wntua = (jobu[0] == 'A' || jobu[0] == 'a');
     wntus = (jobu[0] == 'S' || jobu[0] == 's');
     wntuas = wntua || wntus;
@@ -149,17 +145,17 @@ void dgesvd(const char* jobu, const char* jobvt,
         *info = -11;
     }
 
-    /* Compute workspace requirements */
+    /* Compute workspace */
     if (*info == 0) {
         minwrk = 1;
         maxwrk = 1;
 
         if (m >= n && minmn > 0) {
-            /* Space needed for DBDSQR */
+            /* Compute space needed for DBDSQR */
             mnthr = lapack_get_mnthr("GESVD", m, n);
             bdspac = 5 * n;
 
-            /* Query workspace for subroutines - pass NULL for unused arrays */
+            /* Compute space needed for DGEQRF */
             dgeqrf(m, n, NULL, lda, NULL, dum, -1, &ierr);
             lwork_dgeqrf = (INT)dum[0];
             dorgqr(m, n, n, NULL, lda, NULL, dum, -1, &ierr);
@@ -184,7 +180,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (maxwrk > bdspac) ? maxwrk : bdspac;
                     minwrk = (4*n > bdspac) ? 4*n : bdspac;
                 } else if (wntuo && wntvn) {
-                    /* Path 2 */
+                    /* Path 2 (M much larger than N, JOBU='O', JOBVT='N') */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_n) ? wrkbl : n + lwork_dorgqr_n;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -193,7 +189,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (n*n + wrkbl > n*n + m*n + n) ? n*n + wrkbl : n*n + m*n + n;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntuo && wntvas) {
-                    /* Path 3 */
+                    /*
+                     * Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_n) ? wrkbl : n + lwork_dorgqr_n;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -203,7 +202,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (n*n + wrkbl > n*n + m*n + n) ? n*n + wrkbl : n*n + m*n + n;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntus && wntvn) {
-                    /* Path 4 */
+                    /* Path 4 (M much larger than N, JOBU='S', JOBVT='N') */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_n) ? wrkbl : n + lwork_dorgqr_n;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -212,7 +211,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntus && wntvo) {
-                    /* Path 5 */
+                    /* Path 5 (M much larger than N, JOBU='S', JOBVT='O') */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_n) ? wrkbl : n + lwork_dorgqr_n;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -222,7 +221,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*n*n + wrkbl;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntus && wntvas) {
-                    /* Path 6 */
+                    /*
+                     * Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_n) ? wrkbl : n + lwork_dorgqr_n;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -232,7 +234,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntua && wntvn) {
-                    /* Path 7 */
+                    /* Path 7 (M much larger than N, JOBU='A', JOBVT='N') */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_m) ? wrkbl : n + lwork_dorgqr_m;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -241,7 +243,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntua && wntvo) {
-                    /* Path 8 */
+                    /* Path 8 (M much larger than N, JOBU='A', JOBVT='O') */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_m) ? wrkbl : n + lwork_dorgqr_m;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -251,7 +253,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*n*n + wrkbl;
                     minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
                 } else if (wntua && wntvas) {
-                    /* Path 9 */
+                    /*
+                     * Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_dgeqrf;
                     wrkbl = (wrkbl > n + lwork_dorgqr_m) ? wrkbl : n + lwork_dorgqr_m;
                     wrkbl = (wrkbl > 3*n + lwork_dgebrd) ? wrkbl : 3*n + lwork_dgebrd;
@@ -283,11 +288,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                 minwrk = (3*n + m > bdspac) ? 3*n + m : bdspac;
             }
         } else if (minmn > 0) {
-            /* M < N case */
             mnthr = lapack_get_mnthr("GESVD", m, n);
             bdspac = 5 * m;
 
-            /* Query workspace for subroutines - pass NULL for unused arrays */
+            /* Compute space needed for DGELQF */
             dgelqf(m, n, NULL, lda, NULL, dum, -1, &ierr);
             lwork_dgelqf = (INT)dum[0];
             dorglq(n, n, m, NULL, n, NULL, dum, -1, &ierr);
@@ -303,7 +307,7 @@ void dgesvd(const char* jobu, const char* jobvt,
 
             if (n >= mnthr) {
                 if (wntvn) {
-                    /* Path 1t */
+                    /* Path 1t(N much larger than M, JOBVT='N') */
                     maxwrk = m + lwork_dgelqf;
                     maxwrk = (maxwrk > 3*m + lwork_dgebrd) ? maxwrk : 3*m + lwork_dgebrd;
                     if (wntuo || wntuas) {
@@ -312,7 +316,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (maxwrk > bdspac) ? maxwrk : bdspac;
                     minwrk = (4*m > bdspac) ? 4*m : bdspac;
                 } else if (wntvo && wntun) {
-                    /* Path 2t */
+                    /* Path 2t(N much larger than M, JOBU='N', JOBVT='O') */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_m) ? wrkbl : m + lwork_dorglq_m;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -321,7 +325,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (m*m + wrkbl > m*m + m*n + m) ? m*m + wrkbl : m*m + m*n + m;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntvo && wntuas) {
-                    /* Path 3t */
+                    /*
+                     * Path 3t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='O')
+                     */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_m) ? wrkbl : m + lwork_dorglq_m;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -331,7 +338,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (m*m + wrkbl > m*m + m*n + m) ? m*m + wrkbl : m*m + m*n + m;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntvs && wntun) {
-                    /* Path 4t */
+                    /* Path 4t(N much larger than M, JOBU='N', JOBVT='S') */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_m) ? wrkbl : m + lwork_dorglq_m;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -340,7 +347,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntvs && wntuo) {
-                    /* Path 5t */
+                    /* Path 5t(N much larger than M, JOBU='O', JOBVT='S') */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_m) ? wrkbl : m + lwork_dorglq_m;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -350,7 +357,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*m*m + wrkbl;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntvs && wntuas) {
-                    /* Path 6t */
+                    /*
+                     * Path 6t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='S')
+                     */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_m) ? wrkbl : m + lwork_dorglq_m;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -360,7 +370,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntva && wntun) {
-                    /* Path 7t */
+                    /* Path 7t(N much larger than M, JOBU='N', JOBVT='A') */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_n) ? wrkbl : m + lwork_dorglq_n;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -369,7 +379,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntva && wntuo) {
-                    /* Path 8t */
+                    /* Path 8t(N much larger than M, JOBU='O', JOBVT='A') */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_n) ? wrkbl : m + lwork_dorglq_n;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -379,7 +389,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*m*m + wrkbl;
                     minwrk = (3*m + n > bdspac) ? 3*m + n : bdspac;
                 } else if (wntva && wntuas) {
-                    /* Path 9t */
+                    /*
+                     * Path 9t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='A')
+                     */
                     wrkbl = m + lwork_dgelqf;
                     wrkbl = (wrkbl > m + lwork_dorglq_n) ? wrkbl : m + lwork_dorglq_n;
                     wrkbl = (wrkbl > 3*m + lwork_dgebrd) ? wrkbl : 3*m + lwork_dgebrd;
@@ -452,12 +465,15 @@ void dgesvd(const char* jobu, const char* jobvt,
     if (m >= n) {
         /*
          * A has at least as many rows as columns. If A has sufficiently
-         * more rows than columns, first reduce using the QR decomposition
+         * more rows than columns, first reduce using the QR
+         * decomposition (if sufficient workspace available)
          */
         if (m >= mnthr) {
-            /* Paths 1-9: M much larger than N */
             if (wntun) {
-                /* Path 1: No left singular vectors */
+                /*
+                 * Path 1 (M much larger than N, JOBU='N')
+                 * No left singular vectors to be computed
+                 */
                 itau = 0;
                 iwork = itau + n;
 
@@ -478,25 +494,32 @@ void dgesvd(const char* jobu, const char* jobvt,
                        &work[iwork], lwork - iwork, &ierr);
                 ncvt = 0;
                 if (wntvo || wntvas) {
-                    /* Generate P' */
+                    /* If right singular vectors desired, generate P'. */
                     dorgbr("P", n, n, n, A, lda, &work[itaup], &work[iwork],
                            lwork - iwork, &ierr);
                     ncvt = n;
                 }
                 iwork = ie + n;
 
-                /* Perform bidiagonal QR iteration */
+                /*
+                 * Perform bidiagonal QR iteration, computing right
+                 * singular vectors of A in A if desired
+                 */
                 dbdsqr("U", n, ncvt, 0, 0, S, &work[ie], A, lda,
                        NULL, 1, NULL, 1, &work[iwork], info);
 
-                /* Copy to VT if desired */
+                /* If right singular vectors desired in VT, copy them there */
                 if (wntvas) {
                     dlacpy("F", n, n, A, lda, VT, ldvt);
                 }
             } else if (wntuo && wntvn) {
-                /* Path 2: U overwritten on A, no V^T */
+                /*
+                 * Path 2 (M much larger than N, JOBU='O', JOBVT='N')
+                 * N left singular vectors to be overwritten on A and
+                 * no right singular vectors to be computed
+                 */
                 if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
-                    /* Fast algorithm with workspace */
+                    /* Sufficient workspace for a fast algorithm */
                     ir = 0;
                     ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
                     itau = ir + ldwrkr * n;
@@ -532,7 +555,7 @@ void dgesvd(const char* jobu, const char* jobvt,
                         dlacpy("F", chunk, n, &work[iu], ldwrku, &A[i], lda);
                     }
                 } else {
-                    /* Slow algorithm without extra workspace */
+                    /* Insufficient workspace for a fast algorithm */
                     ie = 0;
                     itauq = ie + n;
                     itaup = itauq + n;
@@ -548,7 +571,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                            A, lda, NULL, 1, &work[iwork], info);
                 }
             } else if (wntuo && wntvas) {
-                /* Path 3: U overwritten on A, V^T in VT */
+                /*
+                 * Path 3 (M much larger than N, JOBU='O', JOBVT='S' or 'A')
+                 * N left singular vectors to be overwritten on A and
+                 * N right singular vectors to be computed in VT
+                 */
                 if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                     ir = 0;
                     ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -617,9 +644,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                            A, lda, dum, 1, &work[iwork], info);
                 }
             } else if (wntus) {
-                /* Paths 4, 5, 6: U in U array */
                 if (wntvn) {
-                    /* Path 4: U in U, no V^T */
+                    /*
+                     * Path 4 (M much larger than N, JOBU='S', JOBVT='N')
+                     * N left singular vectors to be computed in U and
+                     * no right singular vectors to be computed
+                     */
                     if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -673,7 +703,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &work[iwork], info);
                     }
                 } else if (wntvo) {
-                    /* Path 5: U in U, V^T overwritten on A */
+                    /*
+                     * Path 5 (M much larger than N, JOBU='S', JOBVT='O')
+                     * N left singular vectors to be computed in U and
+                     * N right singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*n) {
@@ -745,7 +779,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                                U, ldu, dum, 1, &work[iwork], info);
                     }
                 } else if (wntvas) {
-                    /* Path 6: U in U, V^T in VT */
+                    /*
+                     * Path 6 (M much larger than N, JOBU='S', JOBVT='S'
+                     * or 'A')
+                     * N left singular vectors to be computed in U and
+                     * N right singular vectors to be computed in VT
+                     */
                     if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -807,9 +846,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                     }
                 }
             } else if (wntua) {
-                /* Paths 7, 8, 9: Full U */
                 if (wntvn) {
-                    /* Path 7: Full U, no V^T */
+                    /*
+                     * Path 7 (M much larger than N, JOBU='A', JOBVT='N')
+                     * M left singular vectors to be computed in U and
+                     * no right singular vectors to be computed
+                     */
                     if (lwork >= n*n + MAX3(n + m, 4*n, bdspac)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -841,7 +883,10 @@ void dgesvd(const char* jobu, const char* jobvt,
                                &work[iwork], lwork - iwork, &ierr);
                         iwork = ie + n;
 
-                        /* Perform bidiagonal QR iteration */
+                        /*
+                         * Perform bidiagonal QR iteration, computing left
+                         * singular vectors of R in WORK(IR)
+                         */
                         dbdsqr("U", n, 0, n, 0, S, &work[ie], NULL, 1,
                                &work[ir], ldwrkr, NULL, 1, &work[iwork], info);
 
@@ -877,7 +922,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &work[iwork], info);
                     }
                 } else if (wntvo) {
-                    /* Path 8: Full U, V^T overwritten on A */
+                    /*
+                     * Path 8 (M much larger than N, JOBU='A', JOBVT='O')
+                     * M left singular vectors to be computed in U and
+                     * N right singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*n*n + MAX3(n + m, 4*n, bdspac)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*n) {
@@ -926,7 +975,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                &work[iwork], lwork - iwork, &ierr);
                         iwork = ie + n;
 
-                        /* Perform bidiagonal QR iteration */
+                        /*
+                         * Perform bidiagonal QR iteration, computing left
+                         * singular vectors of R in WORK(IU) and computing
+                         * right singular vectors of R in WORK(IR)
+                         */
                         dbdsqr("U", n, n, n, 0, S, &work[ie], &work[ir], ldwrkr,
                                &work[iu], ldwrku, dum, 1, &work[iwork], info);
 
@@ -967,7 +1020,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                                U, ldu, dum, 1, &work[iwork], info);
                     }
                 } else if (wntvas) {
-                    /* Path 9: Full U, V^T in VT */
+                    /*
+                     * Path 9 (M much larger than N, JOBU='A', JOBVT='S'
+                     * or 'A')
+                     * M left singular vectors to be computed in U and
+                     * N right singular vectors to be computed in VT
+                     */
                     if (lwork >= n*n + MAX3(n + m, 4*n, bdspac)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -1004,7 +1062,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                &work[iwork], lwork - iwork, &ierr);
                         iwork = ie + n;
 
-                        /* Perform bidiagonal QR iteration */
+                        /*
+                         * Perform bidiagonal QR iteration, computing left
+                         * singular vectors of R in WORK(IU) and computing
+                         * right singular vectors of R in VT
+                         */
                         dbdsqr("U", n, n, n, 0, S, &work[ie], VT, ldvt,
                                &work[iu], ldwrku, dum, 1, &work[iwork], info);
 
@@ -1046,7 +1108,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                 }
             }
         } else {
-            /* Path 10: M >= N but M < MNTHR - direct bidiagonalization */
+            /*
+             * M .LT. MNTHR
+             *
+             * Path 10 (M at least N, but not much larger)
+             * Reduce to bidiagonal form without QR decomposition
+             */
             ie = 0;
             itauq = ie + n;
             itaup = itauq + n;
@@ -1057,25 +1124,37 @@ void dgesvd(const char* jobu, const char* jobvt,
                    &work[iwork], lwork - iwork, &ierr);
 
             if (wntuas) {
-                /* Copy result to U and generate left bidiagonalizing vectors */
+                /*
+                 * If left singular vectors desired in U, copy result to U
+                 * and generate left bidiagonalizing vectors in U
+                 */
                 dlacpy("L", m, n, A, lda, U, ldu);
                 ncu = wntus ? n : m;
                 dorgbr("Q", m, ncu, n, U, ldu, &work[itauq], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntvas) {
-                /* Copy result to VT and generate right bidiagonalizing vectors */
+                /*
+                 * If right singular vectors desired in VT, copy result to
+                 * VT and generate right bidiagonalizing vectors in VT
+                 */
                 dlacpy("U", n, n, A, lda, VT, ldvt);
                 dorgbr("P", n, n, n, VT, ldvt, &work[itaup], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntuo) {
-                /* Generate left bidiagonalizing vectors in A */
+                /*
+                 * If left singular vectors desired in A, generate left
+                 * bidiagonalizing vectors in A
+                 */
                 dorgbr("Q", m, n, n, A, lda, &work[itauq], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntvo) {
-                /* Generate right bidiagonalizing vectors in A */
+                /*
+                 * If right singular vectors desired in A, generate right
+                 * bidiagonalizing vectors in A
+                 */
                 dorgbr("P", n, n, n, A, lda, &work[itaup], &work[iwork],
                        lwork - iwork, &ierr);
             }
@@ -1085,7 +1164,11 @@ void dgesvd(const char* jobu, const char* jobvt,
             ncvt = (wntvas || wntvo) ? n : 0;
 
             if (!wntuo && !wntvo) {
-                /* Compute SVD of bidiagonal matrix */
+                /*
+                 * Perform bidiagonal QR iteration, if desired, computing
+                 * left singular vectors in U and computing right singular
+                 * vectors in VT
+                 */
                 dbdsqr("U", n, ncvt, nru, 0, S, &work[ie], VT, ldvt,
                        U, ldu, dum, 1, &work[iwork], info);
             } else if (!wntuo && wntvo) {
@@ -1099,12 +1182,15 @@ void dgesvd(const char* jobu, const char* jobvt,
     } else {
         /*
          * A has more columns than rows. If A has sufficiently more
-         * columns than rows, first reduce using the LQ decomposition
+         * columns than rows, first reduce using the LQ decomposition (if
+         * sufficient workspace available)
          */
         if (n >= mnthr) {
-            /* Paths 1t-9t: N much larger than M */
             if (wntvn) {
-                /* Path 1t: No right singular vectors */
+                /*
+                 * Path 1t(N much larger than M, JOBVT='N')
+                 * No right singular vectors to be computed
+                 */
                 itau = 0;
                 iwork = itau + m;
 
@@ -1125,23 +1211,30 @@ void dgesvd(const char* jobu, const char* jobvt,
                        &work[iwork], lwork - iwork, &ierr);
 
                 if (wntuo || wntuas) {
-                    /* Generate Q */
+                    /* If left singular vectors desired, generate Q */
                     dorgbr("Q", m, m, m, A, lda, &work[itauq], &work[iwork],
                            lwork - iwork, &ierr);
                 }
                 iwork = ie + m;
                 nru = (wntuo || wntuas) ? m : 0;
 
-                /* Perform bidiagonal QR iteration */
+                /*
+                 * Perform bidiagonal QR iteration, computing left singular
+                 * vectors of A in A if desired
+                 */
                 dbdsqr("U", m, 0, nru, 0, S, &work[ie], NULL, 1,
                        A, lda, NULL, 1, &work[iwork], info);
 
-                /* Copy to U if desired */
+                /* If left singular vectors desired in U, copy them there */
                 if (wntuas) {
                     dlacpy("F", m, m, A, lda, U, ldu);
                 }
             } else if (wntvo && wntun) {
-                /* Path 2t: V^T overwritten on A, no U */
+                /*
+                 * Path 2t(N much larger than M, JOBU='N', JOBVT='O')
+                 * M right singular vectors to be overwritten on A and
+                 * no left singular vectors to be computed
+                 */
                 if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                     ir = 0;
                     ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1193,7 +1286,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                            NULL, 1, NULL, 1, &work[iwork], info);
                 }
             } else if (wntvo && wntuas) {
-                /* Path 3t: V^T overwritten on A, U in U */
+                /*
+                 * Path 3t(N much larger than M, JOBU='S' or 'A', JOBVT='O')
+                 * M right singular vectors to be overwritten on A and
+                 * M left singular vectors to be computed in U
+                 */
                 if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                     ir = 0;
                     ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1262,9 +1359,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                            U, ldu, dum, 1, &work[iwork], info);
                 }
             } else if (wntvs) {
-                /* Paths 4t, 5t, 6t: V^T in VT */
                 if (wntun) {
-                    /* Path 4t: V^T in VT, no U */
+                    /*
+                     * Path 4t(N much larger than M, JOBU='N', JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * no left singular vectors to be computed
+                     */
                     if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1318,7 +1418,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                NULL, 1, NULL, 1, &work[iwork], info);
                     }
                 } else if (wntuo) {
-                    /* Path 5t: V^T in VT, U overwritten on A */
+                    /*
+                     * Path 5t(N much larger than M, JOBU='O', JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * M left singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*m) {
@@ -1390,7 +1494,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                                A, lda, dum, 1, &work[iwork], info);
                     }
                 } else if (wntuas) {
-                    /* Path 6t: V^T in VT, U in U */
+                    /*
+                     * Path 6t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * M left singular vectors to be computed in U
+                     */
                     if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1452,9 +1561,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                     }
                 }
             } else if (wntva) {
-                /* Paths 7t, 8t, 9t: Full V^T */
                 if (wntun) {
-                    /* Path 7t: Full V^T, no U */
+                    /*
+                     * Path 7t(N much larger than M, JOBU='N', JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * no left singular vectors to be computed
+                     */
                     if (lwork >= m*m + MAX3(n + m, 4*m, bdspac)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1510,7 +1622,11 @@ void dgesvd(const char* jobu, const char* jobvt,
                                NULL, 1, NULL, 1, &work[iwork], info);
                     }
                 } else if (wntuo) {
-                    /* Path 8t: Full V^T, U overwritten on A */
+                    /*
+                     * Path 8t(N much larger than M, JOBU='O', JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * M left singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*m*m + MAX3(n + m, 4*m, bdspac)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*m) {
@@ -1584,7 +1700,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                                A, lda, dum, 1, &work[iwork], info);
                     }
                 } else if (wntuas) {
-                    /* Path 9t: Full V^T, U in U */
+                    /*
+                     * Path 9t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * M left singular vectors to be computed in U
+                     */
                     if (lwork >= m*m + MAX3(n + m, 4*m, bdspac)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1649,7 +1770,12 @@ void dgesvd(const char* jobu, const char* jobvt,
                 }
             }
         } else {
-            /* Path 10t: N > M but N < MNTHR - direct bidiagonalization */
+            /*
+             * N .LT. MNTHR
+             *
+             * Path 10t(N greater than M, but not much larger)
+             * Reduce to bidiagonal form without LQ decomposition
+             */
             ie = 0;
             itauq = ie + m;
             itaup = itauq + m;
@@ -1660,25 +1786,37 @@ void dgesvd(const char* jobu, const char* jobvt,
                    &work[iwork], lwork - iwork, &ierr);
 
             if (wntuas) {
-                /* Copy result to U and generate left bidiagonalizing vectors */
+                /*
+                 * If left singular vectors desired in U, copy result to U
+                 * and generate left bidiagonalizing vectors in U
+                 */
                 dlacpy("L", m, m, A, lda, U, ldu);
                 dorgbr("Q", m, m, n, U, ldu, &work[itauq], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntvas) {
-                /* Copy result to VT and generate right bidiagonalizing vectors */
+                /*
+                 * If right singular vectors desired in VT, copy result to
+                 * VT and generate right bidiagonalizing vectors in VT
+                 */
                 dlacpy("U", m, n, A, lda, VT, ldvt);
                 nrvt = wntva ? n : m;
                 dorgbr("P", nrvt, n, m, VT, ldvt, &work[itaup], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntuo) {
-                /* Generate left bidiagonalizing vectors in A */
+                /*
+                 * If left singular vectors desired in A, generate left
+                 * bidiagonalizing vectors in A
+                 */
                 dorgbr("Q", m, m, n, A, lda, &work[itauq], &work[iwork],
                        lwork - iwork, &ierr);
             }
             if (wntvo) {
-                /* Generate right bidiagonalizing vectors in A */
+                /*
+                 * If right singular vectors desired in A, generate right
+                 * bidiagonalizing vectors in A
+                 */
                 dorgbr("P", m, n, m, A, lda, &work[itaup], &work[iwork],
                        lwork - iwork, &ierr);
             }
@@ -1688,7 +1826,11 @@ void dgesvd(const char* jobu, const char* jobvt,
             ncvt = (wntvas || wntvo) ? n : 0;
 
             if (!wntuo && !wntvo) {
-                /* Compute SVD of bidiagonal matrix */
+                /*
+                 * Perform bidiagonal QR iteration, if desired, computing
+                 * left singular vectors in U and computing right singular
+                 * vectors in VT
+                 */
                 dbdsqr("L", m, ncvt, nru, 0, S, &work[ie], VT, ldvt,
                        U, ldu, dum, 1, &work[iwork], info);
             } else if (!wntuo && wntvo) {
@@ -1701,7 +1843,10 @@ void dgesvd(const char* jobu, const char* jobvt,
         }
     }
 
-    /* If DBDSQR failed to converge, copy unconverged superdiagonals to WORK(2:MINMN) */
+    /*
+     * If DBDSQR failed to converge, copy unconverged superdiagonals
+     * to WORK( 1:minmn-1 )
+     */
     if (*info != 0) {
         if (ie > 1) {
             for (i = 0; i < minmn - 1; i++) {

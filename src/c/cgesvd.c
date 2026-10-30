@@ -87,16 +87,13 @@ void cgesvd(const char* jobu, const char* jobvt,
             c64* restrict work, const INT lwork,
             f32* restrict rwork, INT* info)
 {
-    /* Constants */
     static const f32 ZERO = 0.0f;
     static const f32 ONE = 1.0f;
     static const c64 CZERO = CMPLXF(0.0f, 0.0f);
     static const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    /* Helper macro for 3-way max (matches Fortran MAX(a,b,c)) */
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
-    /* Local variables */
     INT wntua, wntus, wntuas, wntuo, wntun;
     INT wntva, wntvs, wntvas, wntvo, wntvn;
     INT lquery, minmn, mnthr;
@@ -111,7 +108,6 @@ void cgesvd(const char* jobu, const char* jobvt,
     f32 dum[1];
     c64 cdum[1];
 
-    /* Parse job options */
     wntua = (jobu[0] == 'A' || jobu[0] == 'a');
     wntus = (jobu[0] == 'S' || jobu[0] == 's');
     wntuas = wntua || wntus;
@@ -145,7 +141,7 @@ void cgesvd(const char* jobu, const char* jobvt,
         *info = -11;
     }
 
-    /* Compute workspace requirements */
+    /* Compute workspace */
     if (*info == 0) {
         minwrk = 1;
         maxwrk = 1;
@@ -153,7 +149,7 @@ void cgesvd(const char* jobu, const char* jobvt,
         if (m >= n && minmn > 0) {
             mnthr = lapack_get_mnthr("GESVD", m, n);
 
-            /* Query workspace for subroutines */
+            /* Compute space needed for CGEQRF */
             cgeqrf(m, n, NULL, lda, NULL, cdum, -1, &ierr);
             lwork_zgeqrf = (INT)crealf(cdum[0]);
             cungqr(m, n, n, NULL, lda, NULL, cdum, -1, &ierr);
@@ -177,7 +173,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     }
                     minwrk = 3*n;
                 } else if (wntuo && wntvn) {
-                    /* Path 2 */
+                    /* Path 2 (M much larger than N, JOBU='O', JOBVT='N') */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_n) ? wrkbl : n + lwork_zungqr_n;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -185,7 +181,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (n*n + wrkbl > n*n + m*n) ? n*n + wrkbl : n*n + m*n;
                     minwrk = 2*n + m;
                 } else if (wntuo && wntvas) {
-                    /* Path 3 */
+                    /*
+                     * Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_n) ? wrkbl : n + lwork_zungqr_n;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -194,7 +193,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (n*n + wrkbl > n*n + m*n) ? n*n + wrkbl : n*n + m*n;
                     minwrk = 2*n + m;
                 } else if (wntus && wntvn) {
-                    /* Path 4 */
+                    /* Path 4 (M much larger than N, JOBU='S', JOBVT='N') */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_n) ? wrkbl : n + lwork_zungqr_n;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -202,7 +201,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = 2*n + m;
                 } else if (wntus && wntvo) {
-                    /* Path 5 */
+                    /* Path 5 (M much larger than N, JOBU='S', JOBVT='O') */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_n) ? wrkbl : n + lwork_zungqr_n;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -211,7 +210,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*n*n + wrkbl;
                     minwrk = 2*n + m;
                 } else if (wntus && wntvas) {
-                    /* Path 6 */
+                    /*
+                     * Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_n) ? wrkbl : n + lwork_zungqr_n;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -220,7 +222,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = 2*n + m;
                 } else if (wntua && wntvn) {
-                    /* Path 7 */
+                    /* Path 7 (M much larger than N, JOBU='A', JOBVT='N') */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_m) ? wrkbl : n + lwork_zungqr_m;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -228,7 +230,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = n*n + wrkbl;
                     minwrk = 2*n + m;
                 } else if (wntua && wntvo) {
-                    /* Path 8 */
+                    /* Path 8 (M much larger than N, JOBU='A', JOBVT='O') */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_m) ? wrkbl : n + lwork_zungqr_m;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -237,7 +239,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*n*n + wrkbl;
                     minwrk = 2*n + m;
                 } else if (wntua && wntvas) {
-                    /* Path 9 */
+                    /*
+                     * Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
+                     * 'A')
+                     */
                     wrkbl = n + lwork_zgeqrf;
                     wrkbl = (wrkbl > n + lwork_zungqr_m) ? wrkbl : n + lwork_zungqr_m;
                     wrkbl = (wrkbl > 2*n + lwork_zgebrd) ? wrkbl : 2*n + lwork_zgebrd;
@@ -267,10 +272,9 @@ void cgesvd(const char* jobu, const char* jobvt,
                 minwrk = 2*n + m;
             }
         } else if (minmn > 0) {
-            /* M < N case */
             mnthr = lapack_get_mnthr("GESVD", m, n);
 
-            /* Query workspace for subroutines */
+            /* Compute space needed for CGELQF */
             cgelqf(m, n, NULL, lda, NULL, cdum, -1, &ierr);
             lwork_zgelqf = (INT)crealf(cdum[0]);
             cunglq(n, n, m, NULL, n, NULL, cdum, -1, &ierr);
@@ -286,7 +290,7 @@ void cgesvd(const char* jobu, const char* jobvt,
 
             if (n >= mnthr) {
                 if (wntvn) {
-                    /* Path 1t */
+                    /* Path 1t(N much larger than M, JOBVT='N') */
                     maxwrk = m + lwork_zgelqf;
                     maxwrk = (maxwrk > 2*m + lwork_zgebrd) ? maxwrk : 2*m + lwork_zgebrd;
                     if (wntuo || wntuas) {
@@ -294,7 +298,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     }
                     minwrk = 3*m;
                 } else if (wntvo && wntun) {
-                    /* Path 2t */
+                    /* Path 2t(N much larger than M, JOBU='N', JOBVT='O') */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_m) ? wrkbl : m + lwork_zunglq_m;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -302,7 +306,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (m*m + wrkbl > m*m + m*n) ? m*m + wrkbl : m*m + m*n;
                     minwrk = 2*m + n;
                 } else if (wntvo && wntuas) {
-                    /* Path 3t */
+                    /*
+                     * Path 3t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='O')
+                     */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_m) ? wrkbl : m + lwork_zunglq_m;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -311,7 +318,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = (m*m + wrkbl > m*m + m*n) ? m*m + wrkbl : m*m + m*n;
                     minwrk = 2*m + n;
                 } else if (wntvs && wntun) {
-                    /* Path 4t */
+                    /* Path 4t(N much larger than M, JOBU='N', JOBVT='S') */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_m) ? wrkbl : m + lwork_zunglq_m;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -319,7 +326,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = 2*m + n;
                 } else if (wntvs && wntuo) {
-                    /* Path 5t */
+                    /* Path 5t(N much larger than M, JOBU='O', JOBVT='S') */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_m) ? wrkbl : m + lwork_zunglq_m;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -328,7 +335,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*m*m + wrkbl;
                     minwrk = 2*m + n;
                 } else if (wntvs && wntuas) {
-                    /* Path 6t */
+                    /*
+                     * Path 6t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='S')
+                     */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_m) ? wrkbl : m + lwork_zunglq_m;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -337,7 +347,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = 2*m + n;
                 } else if (wntva && wntun) {
-                    /* Path 7t */
+                    /* Path 7t(N much larger than M, JOBU='N', JOBVT='A') */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_n) ? wrkbl : m + lwork_zunglq_n;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -345,7 +355,7 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = m*m + wrkbl;
                     minwrk = 2*m + n;
                 } else if (wntva && wntuo) {
-                    /* Path 8t */
+                    /* Path 8t(N much larger than M, JOBU='O', JOBVT='A') */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_n) ? wrkbl : m + lwork_zunglq_n;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -354,7 +364,10 @@ void cgesvd(const char* jobu, const char* jobvt,
                     maxwrk = 2*m*m + wrkbl;
                     minwrk = 2*m + n;
                 } else if (wntva && wntuas) {
-                    /* Path 9t */
+                    /*
+                     * Path 9t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='A')
+                     */
                     wrkbl = m + lwork_zgelqf;
                     wrkbl = (wrkbl > m + lwork_zunglq_n) ? wrkbl : m + lwork_zunglq_n;
                     wrkbl = (wrkbl > 2*m + lwork_zgebrd) ? wrkbl : 2*m + lwork_zgebrd;
@@ -425,12 +438,15 @@ void cgesvd(const char* jobu, const char* jobvt,
     if (m >= n) {
         /*
          * A has at least as many rows as columns. If A has sufficiently
-         * more rows than columns, first reduce using the QR decomposition
+         * more rows than columns, first reduce using the QR
+         * decomposition (if sufficient workspace available)
          */
         if (m >= mnthr) {
-            /* Paths 1-9: M much larger than N */
             if (wntun) {
-                /* Path 1: No left singular vectors */
+                /*
+                 * Path 1 (M much larger than N, JOBU='N')
+                 * No left singular vectors to be computed
+                 */
                 itau = 0;
                 iwork = itau + n;
 
@@ -461,7 +477,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                     clacpy("F", n, n, A, lda, VT, ldvt);
                 }
             } else if (wntuo && wntvn) {
-                /* Path 2: U overwritten on A, no V^H */
+                /*
+                 * Path 2 (M much larger than N, JOBU='O', JOBVT='N')
+                 * N left singular vectors to be overwritten on A and
+                 * no right singular vectors to be computed
+                 */
                 if (lwork >= n*n + 3*n) {
                     ir = 0;
                     if (lwork >= ((wrkbl > lda*n) ? wrkbl : lda*n) + lda*n) {
@@ -520,7 +540,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                            A, lda, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntuo && wntvas) {
-                /* Path 3: U overwritten on A, V^H in VT */
+                /*
+                 * Path 3 (M much larger than N, JOBU='O', JOBVT='S' or 'A')
+                 * N left singular vectors to be overwritten on A and
+                 * N right singular vectors to be computed in VT
+                 */
                 if (lwork >= n*n + 3*n) {
                     ir = 0;
                     if (lwork >= ((wrkbl > lda*n) ? wrkbl : lda*n) + lda*n) {
@@ -596,9 +620,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                            A, lda, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntus) {
-                /* Paths 4, 5, 6: U in U array */
                 if (wntvn) {
-                    /* Path 4: U in U, no V^H */
+                    /*
+                     * Path 4 (M much larger than N, JOBU='S', JOBVT='N')
+                     * N left singular vectors to be computed in U and
+                     * no right singular vectors to be computed
+                     */
                     if (lwork >= n*n + 3*n) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -652,7 +679,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvo) {
-                    /* Path 5: U in U, V^H overwritten on A */
+                    /*
+                     * Path 5 (M much larger than N, JOBU='S', JOBVT='O')
+                     * N left singular vectors to be computed in U and
+                     * N right singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*n*n + 3*n) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*n) {
@@ -724,7 +755,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvas) {
-                    /* Path 6: U in U, V^H in VT */
+                    /*
+                     * Path 6 (M much larger than N, JOBU='S', JOBVT='S'
+                     * or 'A')
+                     * N left singular vectors to be computed in U and
+                     * N right singular vectors to be computed in VT
+                     */
                     if (lwork >= n*n + 3*n) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -786,9 +822,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                     }
                 }
             } else if (wntua) {
-                /* Paths 7, 8, 9: Full U */
                 if (wntvn) {
-                    /* Path 7: Full U, no V^H */
+                    /*
+                     * Path 7 (M much larger than N, JOBU='A', JOBVT='N')
+                     * M left singular vectors to be computed in U and
+                     * no right singular vectors to be computed
+                     */
                     if (lwork >= n*n + ((n + m > 3*n) ? n + m : 3*n)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -844,7 +883,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvo) {
-                    /* Path 8: Full U, V^H overwritten on A */
+                    /*
+                     * Path 8 (M much larger than N, JOBU='A', JOBVT='O')
+                     * M left singular vectors to be computed in U and
+                     * N right singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*n*n + ((n + m > 3*n) ? n + m : 3*n)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*n) {
@@ -918,7 +961,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                                U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvas) {
-                    /* Path 9: Full U, V^H in VT */
+                    /*
+                     * Path 9 (M much larger than N, JOBU='A', JOBVT='S'
+                     * or 'A')
+                     * M left singular vectors to be computed in U and
+                     * N right singular vectors to be computed in VT
+                     */
                     if (lwork >= n*n + ((n + m > 3*n) ? n + m : 3*n)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*n) ? lda : n;
@@ -983,7 +1031,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                 }
             }
         } else {
-            /* Path 10: M >= N but M < MNTHR - direct bidiagonalization */
+            /*
+             * M .LT. MNTHR
+             *
+             * Path 10 (M at least N, but not much larger)
+             * Reduce to bidiagonal form without QR decomposition
+             */
             ie = 0;
             itauq = 0;
             itaup = itauq + n;
@@ -1030,12 +1083,15 @@ void cgesvd(const char* jobu, const char* jobvt,
     } else {
         /*
          * A has more columns than rows. If A has sufficiently more
-         * columns than rows, first reduce using the LQ decomposition
+         * columns than rows, first reduce using the LQ decomposition (if
+         * sufficient workspace available)
          */
         if (n >= mnthr) {
-            /* Paths 1t-9t: N much larger than M */
             if (wntvn) {
-                /* Path 1t: No right singular vectors */
+                /*
+                 * Path 1t(N much larger than M, JOBVT='N')
+                 * No right singular vectors to be computed
+                 */
                 itau = 0;
                 iwork = itau + m;
 
@@ -1064,7 +1120,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                     clacpy("F", m, m, A, lda, U, ldu);
                 }
             } else if (wntvo && wntun) {
-                /* Path 2t: V^H overwritten on A, no U */
+                /*
+                 * Path 2t(N much larger than M, JOBU='N', JOBVT='O')
+                 * M right singular vectors to be overwritten on A and
+                 * no left singular vectors to be computed
+                 */
                 if (lwork >= m*m + 3*m) {
                     ir = 0;
                     if (lwork >= ((wrkbl > lda*n) ? wrkbl : lda*n) + lda*m) {
@@ -1126,7 +1186,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                            NULL, 1, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntvo && wntuas) {
-                /* Path 3t: V^H overwritten on A, U in U */
+                /*
+                 * Path 3t(N much larger than M, JOBU='S' or 'A', JOBVT='O')
+                 * M right singular vectors to be overwritten on A and
+                 * M left singular vectors to be computed in U
+                 */
                 if (lwork >= m*m + 3*m) {
                     ir = 0;
                     if (lwork >= ((wrkbl > lda*n) ? wrkbl : lda*n) + lda*m) {
@@ -1205,9 +1269,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                            U, ldu, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntvs) {
-                /* Paths 4t, 5t, 6t: V^H in VT */
                 if (wntun) {
-                    /* Path 4t: V^H in VT, no U */
+                    /*
+                     * Path 4t(N much larger than M, JOBU='N', JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * no left singular vectors to be computed
+                     */
                     if (lwork >= m*m + 3*m) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1259,7 +1326,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                                NULL, 1, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuo) {
-                    /* Path 5t: V^H in VT, U overwritten on A */
+                    /*
+                     * Path 5t(N much larger than M, JOBU='O', JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * M left singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*m*m + 3*m) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*m) {
@@ -1329,7 +1400,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                                A, lda, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuas) {
-                    /* Path 6t: V^H in VT, U in U */
+                    /*
+                     * Path 6t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='S')
+                     * M right singular vectors to be computed in VT and
+                     * M left singular vectors to be computed in U
+                     */
                     if (lwork >= m*m + 3*m) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1391,9 +1467,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                     }
                 }
             } else if (wntva) {
-                /* Paths 7t, 8t, 9t: Full V^H */
                 if (wntun) {
-                    /* Path 7t: Full V^H, no U */
+                    /*
+                     * Path 7t(N much larger than M, JOBU='N', JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * no left singular vectors to be computed
+                     */
                     if (lwork >= m*m + ((n + m > 3*m) ? n + m : 3*m)) {
                         ir = 0;
                         ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1447,7 +1526,11 @@ void cgesvd(const char* jobu, const char* jobvt,
                                NULL, 1, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuo) {
-                    /* Path 8t: Full V^H, U overwritten on A */
+                    /*
+                     * Path 8t(N much larger than M, JOBU='O', JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * M left singular vectors to be overwritten on A
+                     */
                     if (lwork >= 2*m*m + ((n + m > 3*m) ? n + m : 3*m)) {
                         iu = 0;
                         if (lwork >= wrkbl + 2*lda*m) {
@@ -1519,7 +1602,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                                A, lda, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuas) {
-                    /* Path 9t: Full V^H, U in U */
+                    /*
+                     * Path 9t(N much larger than M, JOBU='S' or 'A',
+                     * JOBVT='A')
+                     * N right singular vectors to be computed in VT and
+                     * M left singular vectors to be computed in U
+                     */
                     if (lwork >= m*m + ((n + m > 3*m) ? n + m : 3*m)) {
                         iu = 0;
                         ldwrku = (lwork >= wrkbl + lda*m) ? lda : m;
@@ -1584,7 +1672,12 @@ void cgesvd(const char* jobu, const char* jobvt,
                 }
             }
         } else {
-            /* Path 10t: N > M but N < MNTHR - direct bidiagonalization */
+            /*
+             * N .LT. MNTHR
+             *
+             * Path 10t(N greater than M, but not much larger)
+             * Reduce to bidiagonal form without LQ decomposition
+             */
             ie = 0;
             itauq = 0;
             itaup = itauq + m;
