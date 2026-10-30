@@ -75,7 +75,6 @@ void slagtm(
             }
         }
     }
-    /* If beta == 1, B remains unchanged */
 
     if (alpha == ONE) {
         if (trans[0] == 'N' || trans[0] == 'n') {
@@ -84,14 +83,11 @@ void slagtm(
                 if (n == 1) {
                     B[0 + j * ldb] = B[0 + j * ldb] + D[0] * X[0 + j * ldx];
                 } else {
-                    /* First row */
                     B[0 + j * ldb] = B[0 + j * ldb] + D[0] * X[0 + j * ldx]
                                      + DU[0] * X[1 + j * ldx];
-                    /* Last row */
                     B[(n - 1) + j * ldb] = B[(n - 1) + j * ldb]
                                            + DL[n - 2] * X[(n - 2) + j * ldx]
                                            + D[n - 1] * X[(n - 1) + j * ldx];
-                    /* Middle rows */
                     for (i = 1; i < n - 1; i++) {
                         B[i + j * ldb] = B[i + j * ldb]
                                          + DL[i - 1] * X[(i - 1) + j * ldx]
@@ -106,14 +102,11 @@ void slagtm(
                 if (n == 1) {
                     B[0 + j * ldb] = B[0 + j * ldb] + D[0] * X[0 + j * ldx];
                 } else {
-                    /* First row: A^T has D[0] and DL[0] in first row */
                     B[0 + j * ldb] = B[0 + j * ldb] + D[0] * X[0 + j * ldx]
                                      + DL[0] * X[1 + j * ldx];
-                    /* Last row: A^T has DU[n-2] and D[n-1] in last row */
                     B[(n - 1) + j * ldb] = B[(n - 1) + j * ldb]
                                            + DU[n - 2] * X[(n - 2) + j * ldx]
                                            + D[n - 1] * X[(n - 1) + j * ldx];
-                    /* Middle rows */
                     for (i = 1; i < n - 1; i++) {
                         B[i + j * ldb] = B[i + j * ldb]
                                          + DU[i - 1] * X[(i - 1) + j * ldx]
@@ -130,14 +123,11 @@ void slagtm(
                 if (n == 1) {
                     B[0 + j * ldb] = B[0 + j * ldb] - D[0] * X[0 + j * ldx];
                 } else {
-                    /* First row */
                     B[0 + j * ldb] = B[0 + j * ldb] - D[0] * X[0 + j * ldx]
                                      - DU[0] * X[1 + j * ldx];
-                    /* Last row */
                     B[(n - 1) + j * ldb] = B[(n - 1) + j * ldb]
                                            - DL[n - 2] * X[(n - 2) + j * ldx]
                                            - D[n - 1] * X[(n - 1) + j * ldx];
-                    /* Middle rows */
                     for (i = 1; i < n - 1; i++) {
                         B[i + j * ldb] = B[i + j * ldb]
                                          - DL[i - 1] * X[(i - 1) + j * ldx]
@@ -152,14 +142,11 @@ void slagtm(
                 if (n == 1) {
                     B[0 + j * ldb] = B[0 + j * ldb] - D[0] * X[0 + j * ldx];
                 } else {
-                    /* First row */
                     B[0 + j * ldb] = B[0 + j * ldb] - D[0] * X[0 + j * ldx]
                                      - DL[0] * X[1 + j * ldx];
-                    /* Last row */
                     B[(n - 1) + j * ldb] = B[(n - 1) + j * ldb]
                                            - DU[n - 2] * X[(n - 2) + j * ldx]
                                            - D[n - 1] * X[(n - 1) + j * ldx];
-                    /* Middle rows */
                     for (i = 1; i < n - 1; i++) {
                         B[i + j * ldb] = B[i + j * ldb]
                                          - DU[i - 1] * X[(i - 1) + j * ldx]
@@ -170,5 +157,4 @@ void slagtm(
             }
         }
     }
-    /* If alpha == 0, only the beta*B part applies, already done */
 }

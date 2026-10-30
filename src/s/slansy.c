@@ -45,7 +45,6 @@ f32 slansy(
     INT i, j;
     f32 absa, scale, sum, value, temp;
 
-    /* Quick return if possible */
     if (n == 0) {
         return 0.0f;
     }

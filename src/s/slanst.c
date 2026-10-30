@@ -46,7 +46,7 @@ f32 slanst(const char* norm, const INT n,
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1' ||
                norm[0] == 'I' || norm[0] == 'i') {
-        /* Find norm1(A) = normI(A) since A is symmetric */
+        /* Find norm1(A) */
         if (n == 1) {
             anorm = fabsf(D[0]);
         } else {
@@ -60,7 +60,7 @@ f32 slanst(const char* norm, const INT n,
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' ||
                norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) using slassq */
+        /* Find normF(A) */
         f32 scale = 0.0f;
         f32 sum = 1.0f;
         if (n > 1) {

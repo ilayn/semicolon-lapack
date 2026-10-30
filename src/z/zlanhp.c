@@ -67,14 +67,10 @@ f64 zlanhp(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             k = 0;
             for (j = 0; j < n; j++) {
-                // Fortran: DO 10 I = K + 1, K + J - 1 (off-diagonal elements)
-                // 0-based: i = k to k + j - 1 (j elements before diagonal)
                 for (i = k; i < k + j; i++) {
                     sum = cabs(AP[i]);
                     if (value < sum || disnan(sum)) value = sum;
                 }
-                // Fortran: K = K + J, then SUM = ABS( DBLE( AP( K ) ) )
-                // 0-based: diagonal is at k + j
                 sum = fabs(creal(AP[k + j]));
                 if (value < sum || disnan(sum)) value = sum;
                 k = k + (j + 1);
@@ -82,11 +78,8 @@ f64 zlanhp(
         } else {
             k = 0;
             for (j = 0; j < n; j++) {
-                // Fortran: SUM = ABS( DBLE( AP( K ) ) ) — diagonal first
                 sum = fabs(creal(AP[k]));
                 if (value < sum || disnan(sum)) value = sum;
-                // Fortran: DO 30 I = K + 1, K + N - J (off-diagonal elements)
-                // 0-based: i = k + 1 to k + n - j - 1
                 for (i = k + 1; i < k + n - j; i++) {
                     sum = cabs(AP[i]);
                     if (value < sum || disnan(sum)) value = sum;
@@ -104,14 +97,12 @@ f64 zlanhp(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
                 sum = ZERO;
-                // Fortran: DO 50 I = 1, J - 1 (off-diagonal)
                 for (i = 0; i < j; i++) {
                     absa = cabs(AP[k]);
                     sum = sum + absa;
                     work[i] = work[i] + absa;
                     k = k + 1;
                 }
-                // Fortran: WORK( J ) = SUM + ABS( DBLE( AP( K ) ) )
                 work[j] = sum + fabs(creal(AP[k]));
                 k = k + 1;
             }
@@ -124,10 +115,8 @@ f64 zlanhp(
                 work[i] = ZERO;
             }
             for (j = 0; j < n; j++) {
-                // Fortran: SUM = WORK( J ) + ABS( DBLE( AP( K ) ) )
                 sum = work[j] + fabs(creal(AP[k]));
                 k = k + 1;
-                // Fortran: DO 90 I = J + 1, N (off-diagonal)
                 for (i = j + 1; i < n; i++) {
                     absa = cabs(AP[k]);
                     sum = sum + absa;
@@ -147,13 +136,11 @@ f64 zlanhp(
         k = 1;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 1; j < n; j++) {
-                // Fortran: CALL ZLASSQ( J-1, AP( K ), 1, SCALE, SUM )
                 zlassq(j, &AP[k], 1, &scale, &sum);
                 k = k + (j + 1);
             }
         } else {
             for (j = 0; j < n - 1; j++) {
-                // Fortran: CALL ZLASSQ( N-J, AP( K ), 1, SCALE, SUM )
                 zlassq(n - j - 1, &AP[k], 1, &scale, &sum);
                 k = k + (n - j);
             }

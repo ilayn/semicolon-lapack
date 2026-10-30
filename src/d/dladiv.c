@@ -48,9 +48,9 @@ void dladiv(const f64 a, const f64 b, const f64 c, const f64 d,
     cd = fabs(c) > fabs(d) ? fabs(c) : fabs(d);
     s = 1.0;
 
-    ov = dlamch("O");  /* Overflow threshold */
-    un = dlamch("S");  /* Safe minimum */
-    eps = dlamch("E"); /* Epsilon */
+    ov = dlamch("O");
+    un = dlamch("S");
+    eps = dlamch("E");
     be = BS / (eps * eps);
 
     if (ab >= HALF * ov) {

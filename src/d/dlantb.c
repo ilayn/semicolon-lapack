@@ -62,7 +62,6 @@ f64 dlantb(
     f64 scale, sum, value;
     INT udiag;
 
-    /* Quick return if possible */
     if (n == 0) {
         return ZERO;
     }

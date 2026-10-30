@@ -29,7 +29,6 @@
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
-/* LV = max number of uniform random values generated per dlaruv call */
 #define LV 128
 
 #define TWO_PI 6.2831853071795864769252867665590057683943
@@ -67,8 +66,7 @@ void dlarnv(const INT idist, INT* restrict iseed, const INT n,
                 X[iv + i] = 2.0 * U[i] - 1.0;
             }
         } else if (idist == 3) {
-            /* Convert generated numbers to normal (0,1) distribution
-             * using the Box-Muller transform */
+            /* Convert generated numbers to normal (0,1) distribution */
             for (i = 0; i < il; i++) {
                 X[iv + i] = sqrt(-2.0 * log(U[2 * i])) *
                             cos(TWO_PI * U[2 * i + 1]);

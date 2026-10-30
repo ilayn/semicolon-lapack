@@ -46,7 +46,6 @@ f64 zlansy(
     INT i, j;
     f64 absa, scale, sum, value, temp;
 
-    /* Quick return if possible */
     if (n == 0) {
         return 0.0;
     }

@@ -42,7 +42,6 @@ void dlag2s(
     const INT ldsa,
     INT* info)
 {
-    // Maximum single precision value
     const f64 rmax = (f64)FLT_MAX;
 
     *info = 0;

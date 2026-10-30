@@ -52,10 +52,9 @@ f64 dlantr(
 
     INT i, j;
     f64 scale, sum, value, temp;
-    INT udiag;  /* unit diagonal flag */
+    INT udiag;
     INT minmn;
 
-    /* Quick return if possible */
     minmn = (m < n) ? m : n;
     if (minmn == 0) {
         return ZERO;
@@ -111,7 +110,7 @@ f64 dlantr(
             }
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1') {
-        /* Find norm1(A) - maximum column sum */
+        /* Find norm1(A) */
         value = ZERO;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
@@ -150,7 +149,7 @@ f64 dlantr(
             }
         }
     } else if (norm[0] == 'I' || norm[0] == 'i') {
-        /* Find normI(A) - maximum row sum */
+        /* Find normI(A) */
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 for (i = 0; i < m; i++) {
@@ -206,11 +205,11 @@ f64 dlantr(
             }
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' || norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) - Frobenius norm using dlassq */
+        /* Find normF(A) */
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
-                sum = (f64)minmn;  /* count of unit diagonal elements */
+                sum = (f64)minmn;
                 for (j = 1; j < n; j++) {
                     INT col_len = (j < m) ? j : m;
                     if (col_len > 0) {
@@ -228,10 +227,9 @@ f64 dlantr(
                 }
             }
         } else {
-            /* Lower triangular */
             if (udiag) {
                 scale = ONE;
-                sum = (f64)minmn;  /* count of unit diagonal elements */
+                sum = (f64)minmn;
                 for (j = 0; j < minmn; j++) {
                     INT col_len = m - j - 1;
                     if (col_len > 0) {

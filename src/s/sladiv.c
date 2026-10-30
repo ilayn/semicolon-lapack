@@ -48,9 +48,9 @@ void sladiv(const f32 a, const f32 b, const f32 c, const f32 d,
     cd = fabsf(c) > fabsf(d) ? fabsf(c) : fabsf(d);
     s = 1.0f;
 
-    ov = slamch("O");  /* Overflow threshold */
-    un = slamch("S");  /* Safe minimum */
-    eps = slamch("E"); /* Epsilon */
+    ov = slamch("O");
+    un = slamch("S");
+    eps = slamch("E");
     be = BS / (eps * eps);
 
     if (ab >= HALF * ov) {

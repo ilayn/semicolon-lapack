@@ -33,16 +33,12 @@ f64 dlamch(const char* cmach)
 
     f64 eps, sfmin, small, rmach;
 
-    // eps = relative machine precision (assuming rounding)
-    // DBL_EPSILON is the difference between 1 and the smallest f64 > 1
-    // For rounding arithmetic, divide by 2
+    // Assume rounding, not chopping. Always.
     eps = DBL_EPSILON * 0.5;
 
     if (cmach[0] == 'E' || cmach[0] == 'e') {
-        // Epsilon
         rmach = eps;
     } else if (cmach[0] == 'S' || cmach[0] == 's') {
-        // Safe minimum
         sfmin = DBL_MIN;
         small = ONE / DBL_MAX;
         if (small >= sfmin) {
@@ -52,28 +48,20 @@ f64 dlamch(const char* cmach)
         }
         rmach = sfmin;
     } else if (cmach[0] == 'B' || cmach[0] == 'b') {
-        // Base
         rmach = (f64)FLT_RADIX;
     } else if (cmach[0] == 'P' || cmach[0] == 'p') {
-        // Precision = eps * base
         rmach = eps * (f64)FLT_RADIX;
     } else if (cmach[0] == 'N' || cmach[0] == 'n') {
-        // Number of (base) digits in the mantissa
         rmach = (f64)DBL_MANT_DIG;
     } else if (cmach[0] == 'R' || cmach[0] == 'r') {
-        // Rounding mode (1.0 for rounding)
         rmach = ONE;
     } else if (cmach[0] == 'M' || cmach[0] == 'm') {
-        // Minimum exponent before underflow
         rmach = (f64)DBL_MIN_EXP;
     } else if (cmach[0] == 'U' || cmach[0] == 'u') {
-        // Underflow threshold
         rmach = DBL_MIN;
     } else if (cmach[0] == 'L' || cmach[0] == 'l') {
-        // Largest exponent before overflow
         rmach = (f64)DBL_MAX_EXP;
     } else if (cmach[0] == 'O' || cmach[0] == 'o') {
-        // Overflow threshold
         rmach = DBL_MAX;
     } else {
         rmach = ZERO;

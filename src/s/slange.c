@@ -45,7 +45,6 @@ f32 slange(
     INT i, j;
     f32 scale, sum, value, temp;
 
-    /* Quick return if possible */
     INT minmn = (m < n) ? m : n;
     if (minmn == 0) {
         return ZERO;
@@ -63,7 +62,7 @@ f32 slange(
             }
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1') {
-        /* Find norm1(A) - maximum column sum */
+        /* Find norm1(A) */
         value = ZERO;
         for (j = 0; j < n; j++) {
             sum = ZERO;
@@ -75,7 +74,7 @@ f32 slange(
             }
         }
     } else if (norm[0] == 'I' || norm[0] == 'i') {
-        /* Find normI(A) - maximum row sum */
+        /* Find normI(A) */
         for (i = 0; i < m; i++) {
             work[i] = ZERO;
         }
@@ -92,7 +91,7 @@ f32 slange(
             }
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' || norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) - Frobenius norm using slassq */
+        /* Find normF(A) */
         scale = ZERO;
         sum = ONE;
         for (j = 0; j < n; j++) {

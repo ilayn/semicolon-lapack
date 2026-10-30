@@ -53,7 +53,6 @@ f32 clanhs(
         /* Find max(abs(A(i,j))) */
         value = ZERO;
         for (j = 0; j < n; j++) {
-            /* For Hessenberg matrix, only access rows 0 to min(n-1, j+1) */
             jmax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
             for (i = 0; i <= jmax; i++) {
                 temp = cabsf(A[i + j * lda]);
@@ -63,11 +62,10 @@ f32 clanhs(
             }
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1') {
-        /* Find norm1(A) - maximum column sum */
+        /* Find norm1(A) */
         value = ZERO;
         for (j = 0; j < n; j++) {
             sum = ZERO;
-            /* For Hessenberg matrix, only access rows 0 to min(n-1, j+1) */
             jmax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
             for (i = 0; i <= jmax; i++) {
                 sum += cabsf(A[i + j * lda]);
@@ -77,12 +75,11 @@ f32 clanhs(
             }
         }
     } else if (norm[0] == 'I' || norm[0] == 'i') {
-        /* Find normI(A) - maximum row sum */
+        /* Find normI(A) */
         for (i = 0; i < n; i++) {
             work[i] = ZERO;
         }
         for (j = 0; j < n; j++) {
-            /* For Hessenberg matrix, only access rows 0 to min(n-1, j+1) */
             jmax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
             for (i = 0; i <= jmax; i++) {
                 work[i] += cabsf(A[i + j * lda]);
@@ -97,13 +94,11 @@ f32 clanhs(
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' ||
                norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) - Frobenius norm using classq */
+        /* Find normF(A) */
         scale = ZERO;
         sum = ONE;
         for (j = 0; j < n; j++) {
-            /* For Hessenberg matrix, only access rows 0 to min(n-1, j+1) */
             jmax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
-            /* Number of elements in this column: jmax + 1 */
             classq(jmax + 1, &A[j * lda], 1, &scale, &sum);
         }
         value = scale * sqrtf(sum);
