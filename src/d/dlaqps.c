@@ -64,74 +64,73 @@ void dlaqps(const INT m, const INT n, const INT offset, const INT nb,
     f64 akk, temp, temp2, tol3z;
 
     lastrk = m < n + offset ? m : n + offset;
-    lsticc = 0;
+    lsticc = -1;
     k = 0;
     tol3z = sqrt(dlamch("E"));
 
     /*
      * Beginning of while loop.
      */
-    while (k < nb && lsticc == 0) {
-        k++;
+    while (k < nb && lsticc == -1) {
         rk = offset + k;
 
         /*
          * Determine ith pivot column and swap if necessary
          */
-        pvt = (k - 1) + (INT)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
-        if (pvt != k - 1) {
-            cblas_dswap(m, &A[pvt * lda], 1, &A[(k - 1) * lda], 1);
-            cblas_dswap(k - 1, &F[pvt], ldf, &F[k - 1], ldf);
+        pvt = k + (INT)cblas_idamax(n - k, &vn1[k], 1);
+        if (pvt != k) {
+            cblas_dswap(m, &A[pvt * lda], 1, &A[k * lda], 1);
+            cblas_dswap(k, &F[pvt], ldf, &F[k], ldf);
             itemp = jpvt[pvt];
-            jpvt[pvt] = jpvt[k - 1];
-            jpvt[k - 1] = itemp;
-            vn1[pvt] = vn1[k - 1];
-            vn2[pvt] = vn2[k - 1];
+            jpvt[pvt] = jpvt[k];
+            jpvt[k] = itemp;
+            vn1[pvt] = vn1[k];
+            vn2[pvt] = vn2[k];
         }
 
         /*
          * Apply previous Householder reflectors to column K:
          * A(RK:M, K) := A(RK:M, K) - A(RK:M, 1:K-1)*F(K, 1:K-1)**T.
          */
-        if (k > 1) {
+        if (k > 0) {
             cblas_dgemv(CblasColMajor, CblasNoTrans,
-                        m - rk + 1, k - 1, -1.0,
-                        &A[(rk - 1)], lda,
-                        &F[(k - 1)], ldf,
-                        1.0, &A[(rk - 1) + (k - 1) * lda], 1);
+                        m - rk, k, -1.0,
+                        &A[rk], lda,
+                        &F[k], ldf,
+                        1.0, &A[rk + k * lda], 1);
         }
 
         /*
          * Generate elementary reflector H(k).
          */
-        if (rk < m) {
-            dlarfg(m - rk + 1, &A[(rk - 1) + (k - 1) * lda],
-                   &A[rk + (k - 1) * lda], 1, &tau[k - 1]);
+        if (rk < m - 1) {
+            dlarfg(m - rk, &A[rk + k * lda],
+                   &A[rk + 1 + k * lda], 1, &tau[k]);
         } else {
-            dlarfg(1, &A[(rk - 1) + (k - 1) * lda],
-                   &A[(rk - 1) + (k - 1) * lda], 1, &tau[k - 1]);
+            dlarfg(1, &A[rk + k * lda],
+                   &A[rk + k * lda], 1, &tau[k]);
         }
 
-        akk = A[(rk - 1) + (k - 1) * lda];
-        A[(rk - 1) + (k - 1) * lda] = 1.0;
+        akk = A[rk + k * lda];
+        A[rk + k * lda] = 1.0;
 
         /*
          * Compute Kth column of F:
          * F(K+1:N, K) := tau(K)*A(RK:M, K+1:N)**T * A(RK:M, K).
          */
-        if (k < n) {
+        if (k < n - 1) {
             cblas_dgemv(CblasColMajor, CblasTrans,
-                        m - rk + 1, n - k, tau[k - 1],
-                        &A[(rk - 1) + k * lda], lda,
-                        &A[(rk - 1) + (k - 1) * lda], 1,
-                        0.0, &F[k + (k - 1) * ldf], 1);
+                        m - rk, n - k - 1, tau[k],
+                        &A[rk + (k + 1) * lda], lda,
+                        &A[rk + k * lda], 1,
+                        0.0, &F[k + 1 + k * ldf], 1);
         }
 
         /*
          * Padding F(1:K, K) with zeros.
          */
-        for (j = 0; j < k; j++) {
-            F[j + (k - 1) * ldf] = 0.0;
+        for (j = 0; j <= k; j++) {
+            F[j + k * ldf] = 0.0;
         }
 
         /*
@@ -139,57 +138,58 @@ void dlaqps(const INT m, const INT n, const INT offset, const INT nb,
          * F(1:N, K) := F(1:N, K) - tau(K)*F(1:N, 1:K-1)*A(RK:M, 1:K-1)**T
          *              * A(RK:M, K).
          */
-        if (k > 1) {
+        if (k > 0) {
             cblas_dgemv(CblasColMajor, CblasTrans,
-                        m - rk + 1, k - 1, -tau[k - 1],
-                        &A[(rk - 1)], lda,
-                        &A[(rk - 1) + (k - 1) * lda], 1,
+                        m - rk, k, -tau[k],
+                        &A[rk], lda,
+                        &A[rk + k * lda], 1,
                         0.0, auxv, 1);
 
             cblas_dgemv(CblasColMajor, CblasNoTrans,
-                        n, k - 1, 1.0,
+                        n, k, 1.0,
                         F, ldf,
                         auxv, 1,
-                        1.0, &F[(k - 1) * ldf], 1);
+                        1.0, &F[k * ldf], 1);
         }
 
         /*
          * Update the current row of A:
          * A(RK, K+1:N) := A(RK, K+1:N) - A(RK, 1:K)*F(K+1:N, 1:K)**T.
          */
-        if (k < n) {
+        if (k < n - 1) {
             cblas_dgemv(CblasColMajor, CblasNoTrans,
-                        n - k, k, -1.0,
-                        &F[k], ldf,
-                        &A[(rk - 1)], lda,
-                        1.0, &A[(rk - 1) + k * lda], lda);
+                        n - k - 1, k + 1, -1.0,
+                        &F[k + 1], ldf,
+                        &A[rk], lda,
+                        1.0, &A[rk + (k + 1) * lda], lda);
         }
 
         /*
          * Update partial column norms.
          */
-        if (rk < lastrk) {
-            for (j = k + 1; j <= n; j++) {
-                if (vn1[j - 1] != 0.0) {
+        if (rk < lastrk - 1) {
+            for (j = k + 1; j < n; j++) {
+                if (vn1[j] != 0.0) {
                     /*
                      * NOTE: The following 4 lines follow from the analysis in
                      * Lapack Working Note 176.
                      */
-                    temp = fabs(A[(rk - 1) + (j - 1) * lda]) / vn1[j - 1];
+                    temp = fabs(A[rk + j * lda]) / vn1[j];
                     temp = (1.0 + temp) * (1.0 - temp);
                     if (temp < 0.0) temp = 0.0;
-                    temp2 = temp * (vn1[j - 1] / vn2[j - 1]) * (vn1[j - 1] / vn2[j - 1]);
+                    temp2 = temp * (vn1[j] / vn2[j]) * (vn1[j] / vn2[j]);
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = (f64)lsticc;
+                        vn2[j] = (f64)lsticc;
                         lsticc = j;
                     } else {
-                        vn1[j - 1] = vn1[j - 1] * sqrt(temp);
+                        vn1[j] = vn1[j] * sqrt(temp);
                     }
                 }
             }
         }
 
-        A[(rk - 1) + (k - 1) * lda] = akk;
+        A[rk + k * lda] = akk;
+        k++;
     }
     *kb = k;
     rk = offset + *kb;
@@ -210,16 +210,16 @@ void dlaqps(const INT m, const INT n, const INT offset, const INT nb,
     /*
      * Recomputation of difficult columns.
      */
-    while (lsticc > 0) {
-        itemp = (INT)round(vn2[lsticc - 1]);
-        vn1[lsticc - 1] = cblas_dnrm2(m - rk, &A[rk + (lsticc - 1) * lda], 1);
+    while (lsticc >= 0) {
+        itemp = (INT)round(vn2[lsticc]);
+        vn1[lsticc] = cblas_dnrm2(m - rk, &A[rk + lsticc * lda], 1);
 
         /*
          * NOTE: The computation of VN1(LSTICC) relies on the fact that
          * SNRM2 does not fail on vectors with norm below the value of
          * SQRT(DLAMCH("S"))
          */
-        vn2[lsticc - 1] = vn1[lsticc - 1];
+        vn2[lsticc] = vn1[lsticc];
         lsticc = itemp;
     }
 }
