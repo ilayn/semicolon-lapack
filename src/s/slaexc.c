@@ -62,7 +62,7 @@ void slaexc(const INT wantq, const INT n, f32* T, const INT ldt,
     /* Quick return if possible */
     if (n == 0 || n1 == 0 || n2 == 0)
         return;
-    if (j1 + n1 > n)
+    if (j1 + n1 >= n)
         return;
 
     j2 = j1 + 1;

@@ -103,6 +103,7 @@ lapack_tests_d = {
   'ddrges3': ['test_ddrges3.c', 'eigen'],     # Generalized Schur form (DGGES3)
   'dgges3_scaling': ['test_dgges3_scaling.c', 'eigen'],  # DGGES3 QZ regressions (DLAQZ0/DLAQZ4)
   'dlaqz3_window': ['test_dlaqz3_window.c', 'eigen'],
+  'dlaexc_bounds': ['test_dlaexc_bounds.c', 'eigen'],
   'dgesvj_emptsw': ['test_dgesvj_emptsw.c', 'eigen'],
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
