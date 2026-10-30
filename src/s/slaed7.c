@@ -166,10 +166,6 @@ void slaed7(const INT icompq, const INT n, const INT qsiz,
      * first row of Q_2.
      */
 
-    /* PTR = 1 + 2**TLVLS in Fortran (1-based).
-     * In 0-based: ptr = (1 << tlvls). The tree has 2^TLVLS leaf nodes at
-     * level 0. The pointer for level curlvl, problem curpbm is computed
-     * by walking the tree. */
     ptr = 1 << tlvls;
     for (i = 0; i < curlvl - 1; i++) {
         ptr = ptr + (1 << (tlvls - 1 - i));

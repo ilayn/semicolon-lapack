@@ -118,7 +118,6 @@ void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     INT ed, stind, edind, blklastind, colpt, thed;
     INT stepercol, grsiz, thgrsiz, thgrnb, thgrid;
     INT ttype;
-    /* nbtiles, nthreads: set but unused (OpenMP threading placeholders) */
     INT abdpos, abofdpos, dpos, ofdpos, awpos;
     INT inda, indw, apos, sizea, lda, indv, indtau;
     INT sizetau, ldv, lhmin, lwmin;

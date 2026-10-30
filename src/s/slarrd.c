@@ -147,7 +147,8 @@ void slarrd(const char* range, const char* order, const INT n,
     eps = slamch("P");
     uflow = slamch("U");
 
-    /* Special Case when N=1 */
+    /* Special Case when N=1
+     * Treat case of 1x1 matrix for quick return */
     if (n == 1) {
         if ((irange == ALLRNG) ||
             ((irange == VALRNG) && (D[0] > vl) && (D[0] <= vu)) ||
@@ -198,8 +199,6 @@ void slarrd(const char* range, const char* order, const INT n,
          * Gerschgorin bounds GL and GU is refined by SLAEBZ. */
         itmax = (INT)((logf(tnorm + pivmin) - logf(pivmin)) /
                 logf(TWO)) + 2;
-        /* 0-based: work[n+0..n+5], iwork[0..5]
-         * Fortran: WORK(N+1)..WORK(N+6), IWORK(1)..IWORK(6) */
         work[n + 0] = gl;
         work[n + 1] = gl;
         work[n + 2] = gu;
@@ -297,7 +296,11 @@ void slarrd(const char* range, const char* order, const INT n,
                 gu = gu > gers[2 * j + 1] ? gu : gers[2 * j + 1];
             }
             /* [JAN/28/2009]
-             * change SPDIAM by TNORM in lines 2 and 3 thereafter */
+             * change SPDIAM by TNORM in lines 2 and 3 thereafter
+             * line 1: remove computation of SPDIAM (not useful anymore)
+             * SPDIAM = GU - GL
+             * GL = GL - FUDGE*SPDIAM*EPS*IN - FUDGE*PIVMIN
+             * GU = GU + FUDGE*SPDIAM*EPS*IN + FUDGE*PIVMIN */
             gl = gl - FUDGE * tnorm * eps * in - FUDGE * pivmin;
             gu = gu + FUDGE * tnorm * eps * in + FUDGE * pivmin;
 
@@ -427,8 +430,7 @@ void slarrd(const char* range, const char* order, const INT n,
              * Some low eigenvalues to be discarded are not in (WL,WLU],
              * or high eigenvalues to be discarded are not in (WUL,WU]
              * so just kill off the smallest IDISCL/largest IDISCU
-             * eigenvalues, by marking the corresponding IBLOCK with a
-             * deletion sentinel (n is never a valid 0-based block number) */
+             * eigenvalues, by marking the corresponding IBLOCK = n */
             if (idiscl > 0) {
                 wkill = *wu;
                 for (jdisc = 0; jdisc < idiscl; jdisc++) {
@@ -457,7 +459,7 @@ void slarrd(const char* range, const char* order, const INT n,
                     iblock[iw] = n;
                 }
             }
-            /* Now erase all eigenvalues with IBLOCK set to the sentinel */
+            /* Now erase all eigenvalues with IBLOCK set to n */
             im = 0;
             for (je = 0; je < *m; je++) {
                 if (iblock[je] != n) {

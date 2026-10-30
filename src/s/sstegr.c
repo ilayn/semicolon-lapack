@@ -136,11 +136,9 @@ void sstegr(
     const INT liwork,
     INT* info)
 {
-    INT tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
+    INT tryrac = 0;
 
-    // SSTEGR is simply a wrapper around SSTEMR
-    // Note: abstol is unused in sstemr, tryrac is set to false
-    (void)abstol;  // Unused parameter
+    (void)abstol;
 
     *info = 0;
 

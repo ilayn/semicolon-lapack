@@ -54,7 +54,7 @@ void claed0(const INT qsiz, const INT n,
 {
     const f32 TWO = 2.0f;
 
-    /* SMLSIZ from ILAENV(9, ...) */
+    /* SMLSIZ = ILAENV(9, 'CLAED0', ...) = 25 */
     const INT SMLSIZ = LAPACK_SMLSIZ;
 
     INT curlvl, curprb, curr, i, igivcl, igivnm,

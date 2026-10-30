@@ -91,13 +91,13 @@ void slaebz(const INT ijob, const INT nitmax, const INT n,
             INT* restrict iwork,
             INT* info)
 {
-    (void)E;  /* E is in the API for compatibility but E2 is used instead */
+    (void)E;
     const f32 HALF = 0.5f;
 
     INT itmp1, itmp2, j, ji, jit, kf, kfnew, kl, klnew;
     f32 tmp1, tmp2;
 
-    /* Check for errors */
+    /* Check for Errors */
     *info = 0;
     if (ijob < 1 || ijob > 3) {
         *info = -1;
@@ -112,7 +112,6 @@ void slaebz(const INT ijob, const INT nitmax, const INT n,
         *mout = 0;
         for (ji = 0; ji < minp; ji++) {
             for (INT jp = 0; jp < 2; jp++) {
-                /* Sturm sequence: tmp1 = D(1) - AB(ji, jp) */
                 tmp1 = D[0] - AB[ji + jp * mmax];
                 if (fabsf(tmp1) < pivmin)
                     tmp1 = -pivmin;
@@ -121,7 +120,6 @@ void slaebz(const INT ijob, const INT nitmax, const INT n,
                     NAB[ji + jp * mmax] = 1;
 
                 for (j = 1; j < n; j++) {
-                    /* tmp1 = D(j+1) - E2(j) / tmp1 - AB(ji, jp) */
                     tmp1 = D[j] - E2[j - 1] / tmp1 - AB[ji + jp * mmax];
                     if (fabsf(tmp1) < pivmin)
                         tmp1 = -pivmin;
@@ -188,8 +186,7 @@ void slaebz(const INT ijob, const INT nitmax, const INT n,
                 klnew = kl;
                 for (ji = kf; ji <= kl; ji++) {
 
-                    /* Ensure that N(w) is monotone:
-                     * iwork[ji] = min(NAB(ji,2), max(NAB(ji,1), iwork[ji])) */
+                    /* Insure that N(w) is monotone */
                     if (iwork[ji] < NAB[ji + 0 * mmax])
                         iwork[ji] = NAB[ji + 0 * mmax];
                     if (iwork[ji] > NAB[ji + 1 * mmax])
@@ -283,7 +280,7 @@ void slaebz(const INT ijob, const INT nitmax, const INT n,
                     /*
                      * IJOB=2: Choose all intervals containing eigenvalues.
                      *
-                     * Ensure that N(w) is monotone
+                     * Insure that N(w) is monotone
                      */
                     {
                         INT lo = NAB[ji + 0 * mmax] > itmp1 ? NAB[ji + 0 * mmax] : itmp1;

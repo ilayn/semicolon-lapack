@@ -216,16 +216,29 @@ void ssyevr(const char* jobz, const char* range, const char* uplo,
         }
     }
 
-    /* Initialize indices into workspaces */
-    indtau = 0;          /* tau at work[0] */
-    indd = indtau + n;   /* D at work[n] */
-    inde = indd + n;     /* E at work[2*n] */
-    inddd = inde + n;    /* DD at work[3*n] */
-    indee = inddd + n;   /* EE at work[4*n] */
-    indwk = indee + n;   /* remaining work at work[5*n] */
+    /* Initialize indices into workspaces.  Note: The IWORK indices are
+     * used only if SSTERF or SSTEMR fail. */
+    /* WORK(INDTAU:INDTAU+N-1) stores the scalar factors of the
+     * elementary reflectors used in SSYTRD. */
+    indtau = 0;
+    /* WORK(INDD:INDD+N-1) stores the tridiagonal's diagonal entries. */
+    indd = indtau + n;
+    /* WORK(INDE:INDE+N-1) stores the off-diagonal entries of the
+     * tridiagonal matrix from SSYTRD. */
+    inde = indd + n;
+    /* WORK(INDDD:INDDD+N-1) is a copy of the diagonal entries over
+     * -written by SSTEMR (the SSTERF path copies the diagonal to W). */
+    inddd = inde + n;
+    /* WORK(INDEE:INDEE+N-1) is a copy of the off-diagonal entries over
+     * -written while computing the eigenvalues in SSTERF and SSTEMR. */
+    indee = inddd + n;
+    /* INDWK is the starting offset of the left-over workspace, and
+     * LLWORK is the remaining workspace size. */
+    indwk = indee + n;
     llwork = lwork - indwk;
 
-    /* IWORK indices */
+    /* IWORK(INDIBL:INDIBL+M-1) corresponds to IBLOCK in SSTEBZ and
+     * stores the block indices of each of the M<=N eigenvalues. */
     indibl = 0;
     indisp = indibl + n;
     indifl = indisp + n;
@@ -266,7 +279,8 @@ void ssyevr(const char* jobz, const char* range, const char* uplo,
         }
 
         if (*info == 0) {
-            /* Everything worked. Skip SSTEBZ/SSTEIN. */
+            /* Everything worked.  Skip SSTEBZ/SSTEIN.  IWORK(:) are
+             * undefined. */
             *m = n;
             goto L30;
         }

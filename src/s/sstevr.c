@@ -131,23 +131,18 @@ void sstevr(const char* jobz, const char* range, const INT n,
     f32 abstll, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, tnrm, vll, vuu;
 
-    /* Workspace indices for fallback path (SSTEBZ/SSTEIN) */
     INT indibl, indisp, indifl, indiwo;
 
     INT ieee = ieeeck(1, 0.0f, 1.0f);
 
-    /* Decode JOBZ */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 
-    /* Decode RANGE */
     alleig = (range[0] == 'A' || range[0] == 'a');
     valeig = (range[0] == 'V' || range[0] == 'v');
     indeig = (range[0] == 'I' || range[0] == 'i');
 
-    /* Workspace query? */
     lquery = (lwork == -1 || liwork == -1);
 
-    /* Minimum workspace sizes */
     lwmin = 1 > 20 * n ? 1 : 20 * n;
     liwmin = 1 > 10 * n ? 1 : 10 * n;
 
@@ -164,7 +159,6 @@ void sstevr(const char* jobz, const char* range, const INT n,
             if (n > 0 && vu <= vl)
                 *info = -7;
         } else if (indeig) {
-            /* 0-based: 0 <= il <= iu < n */
             if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -8;
             } else if (iu < (n - 1 < il ? n - 1 : il) || iu > n - 1) {

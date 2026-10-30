@@ -136,11 +136,9 @@ void dstegr(
     const INT liwork,
     INT* info)
 {
-    INT tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
+    INT tryrac = 0;
 
-    // DSTEGR is simply a wrapper around DSTEMR
-    // Note: abstol is unused in dstemr, tryrac is set to false
-    (void)abstol;  // Unused parameter
+    (void)abstol;
 
     *info = 0;
 

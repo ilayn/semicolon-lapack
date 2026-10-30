@@ -183,15 +183,9 @@ void dsyev_2stage(const char* jobz, const char* uplo, const INT n,
     if (!wantz) {
         dsterf(n, W, &work[inde], info);
     } else {
-        /* Eigenvector computation not available in 2-stage algorithm;
-           argument checking should prevent reaching here */
+        /* Not available in this release, and argument checking should not
+           let it getting here */
         return;
-        /* TODO: Enable when eigenvector support is added
-        dorgtr(uplo, n, A, lda, &work[indtau],
-               &work[indwrk], llwork, &iinfo);
-        dsteqr(jobz, n, W, &work[inde], A, lda,
-               &work[indtau], info);
-        */
     }
 
     if (iscale == 1) {

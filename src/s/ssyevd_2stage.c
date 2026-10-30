@@ -117,7 +117,6 @@ void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,
     INT lower, lquery, wantz;
     INT iinfo, inde, indtau, indwrk, iscale;
     INT liwmin, llwork, lwmin;
-    /* INT indwk2, llwrk2; - used only in eigenvector path (disabled) */
     INT lhtrd = 0, lwtrd, kd, ib, indhous;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
@@ -207,8 +206,6 @@ void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,
     indhous = indtau + n;
     indwrk = indhous + lhtrd;
     llwork = lwork - indwrk;
-    /* indwk2 = indwrk + n * n; - used only in eigenvector path (disabled) */
-    /* llwrk2 = lwork - indwk2; - used only in eigenvector path (disabled) */
 
     ssytrd_2stage(jobz, uplo, n, A, lda, W, &work[inde],
                   &work[indtau], &work[indhous], lhtrd,
@@ -217,16 +214,9 @@ void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,
     if (!wantz) {
         ssterf(n, W, &work[inde], info);
     } else {
-        /* Eigenvector computation not available in 2-stage algorithm;
-           argument checking should prevent reaching here */
+        /* Not available in this release, and argument checking should not
+           let it getting here */
         return;
-        /* TODO: Enable when eigenvector support is added
-        sstedc("I", n, W, &work[inde], &work[indwrk], n,
-               &work[indwk2], llwrk2, iwork, liwork, info);
-        sormtr("L", uplo, "N", n, n, A, lda, &work[indtau],
-               &work[indwrk], n, &work[indwk2], llwrk2, &iinfo);
-        slacpy("A", n, n, &work[indwrk], n, A, lda);
-        */
     }
 
     if (iscale == 1) {

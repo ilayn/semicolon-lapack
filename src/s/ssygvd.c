@@ -114,14 +114,14 @@ void ssygvd(
     ssygst(itype, uplo, n, A, lda, B, ldb, info);
     ssyevd(jobz, uplo, n, A, lda, W, work, lwork, iwork, liwork, info);
 
-    /* Update optimal workspace sizes */
     lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
 
     if (wantz && *info == 0) {
         /* Backtransform eigenvectors to the original problem */
         if (itype == 1 || itype == 2) {
-            /* x = inv(L)**T*y or inv(U)*y */
+            /* For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+             * backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y */
             if (upper) {
                 cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
                             CblasNonUnit, n, n, ONE, B, ldb, A, lda);
@@ -130,7 +130,8 @@ void ssygvd(
                             CblasNonUnit, n, n, ONE, B, ldb, A, lda);
             }
         } else if (itype == 3) {
-            /* x = L*y or U**T*y */
+            /* For B*A*x=(lambda)*x;
+             * backtransform eigenvectors: x = L*y or U**T*y */
             if (upper) {
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
                             CblasNonUnit, n, n, ONE, B, ldb, A, lda);

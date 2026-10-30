@@ -93,10 +93,6 @@ void dlaed3(const INT k, const INT n, const INT n1, f64* D,
     if (k == 0)
         return;
 
-    /* For each eigenvalue, call DLAED4 to find the root of the secular equation.
-     * dlaed4 takes 0-based index i (0 <= i < k). In Fortran, DLAED4 is called
-     * with 1-based J, and writes into Q(1:K, J). Here we pass 0-based j and
-     * point to Q column j. */
     for (j = 0; j < k; j++) {
         dlaed4(k, j, dlambda, W, &Q[j * ldq], rho, &D[j], info);
 
@@ -121,10 +117,9 @@ void dlaed3(const INT k, const INT n, const INT n1, f64* D,
     }
 
     /* Compute updated W. */
-    /* Save W into S */
     cblas_dcopy(k, W, 1, S, 1);
 
-    /* Initialize W[i] = Q[i + i*ldq] (diagonal of Q) */
+    /* Initialize W(i) = Q(i,i) */
     cblas_dcopy(k, Q, ldq + 1, W, 1);
 
     for (j = 0; j < k; j++) {
@@ -158,12 +153,8 @@ label_110:
     n12 = ctot[0] + ctot[1];
     n23 = ctot[1] + ctot[2];
 
-    /* Copy rows ctot[0] .. ctot[0]+n23-1 of Q (first k columns) into S.
-     * In Fortran: DLACPY('A', N23, K, Q(CTOT(1)+1, 1), LDQ, S, N23)
-     * 0-based: row ctot[0], col 0 */
     dlacpy("A", n23, k, &Q[ctot[0]], ldq, S, n23);
 
-    /* IQ2 = N1*N12 in 0-based (Fortran: N1*N12 + 1, but 0-based offset) */
     iq2 = n1 * n12;
     if (n23 != 0) {
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,

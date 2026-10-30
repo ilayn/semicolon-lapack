@@ -31,16 +31,14 @@
 INT slaneg(const INT n, const f32* D, const f32* lld,
            const f32 sigma, const f32 pivmin, const INT r)
 {
-    (void)pivmin;  /* Not used; requires IEEE-754 propagation */
+    (void)pivmin;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const INT BLKLEN = 128;
 
     INT negcnt = 0;
 
-    /* I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
-     * Fortran loop: DO BJ = 1, R-1 with inner loop J = BJ to MIN(BJ+BLKLEN-1, R-1)
-     * In 0-based C: bj goes from 0 to r-1 (when r>0), using indices 0..r-1. */
+    /* I) upper part: L D L^T - SIGMA I = L+ D+ L+^T */
     f32 t = -sigma;
     for (INT bj = 0; bj < r; bj += BLKLEN) {
         INT neg1 = 0;
@@ -61,7 +59,6 @@ INT slaneg(const INT n, const f32* D, const f32* lld,
         if (sawnan) {
             neg1 = 0;
             t = bsav;
-            /* Recompute jend for the NaN-safe loop */
             jend = bj + BLKLEN - 1;
             if (jend > r - 1) jend = r - 1;
             for (INT j = bj; j <= jend; j++) {
@@ -75,9 +72,7 @@ INT slaneg(const INT n, const f32* D, const f32* lld,
         negcnt += neg1;
     }
 
-    /* II) lower part: L D L^T - SIGMA I = U- D- U-^T
-     * Fortran loop: DO BJ = N-1, R, -BLKLEN with inner loop J = BJ down to MAX(BJ-BLKLEN+1, R)
-     * In 0-based C: bj goes from n-2 down to r (inclusive), using indices r..n-2. */
+    /* II) lower part: L D L^T - SIGMA I = U- D- U-^T */
     f32 p = D[n - 1] - sigma;
     for (INT bj = n - 2; bj >= r; bj -= BLKLEN) {
         INT neg2 = 0;

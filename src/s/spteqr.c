@@ -82,7 +82,6 @@ void spteqr(
     const f32 ONE = 1.0f;
     INT i, icompz, nru;
 
-    // Dummy arrays for sbdsqr (ncvt=0 and ncc=0)
     f32 VT_dummy[1];
     f32 C_dummy[1];
 
@@ -122,7 +121,6 @@ void spteqr(
         return;
     }
 
-    // Initialize Z to the identity matrix if requested
     if (icompz == 2) {
         slaset("F", n, n, ZERO, ONE, Z, ldz);
     }
@@ -132,12 +130,10 @@ void spteqr(
     if (*info != 0)
         return;
 
-    // D[i] = sqrt(D[i])
     for (i = 0; i < n; i++) {
         D[i] = sqrtf(D[i]);
     }
 
-    // E[i] = E[i] * D[i] (form the bidiagonal matrix)
     for (i = 0; i < n - 1; i++) {
         E[i] = E[i] * D[i];
     }
@@ -150,10 +146,9 @@ void spteqr(
         nru = 0;
     }
 
-    // sbdsqr('Lower', n, 0, nru, 0, D, E, VT, 1, Z, ldz, C, 1, work, info)
     sbdsqr("L", n, 0, nru, 0, D, E, VT_dummy, 1, Z, ldz, C_dummy, 1, work, info);
 
-    // Square the singular values to get eigenvalues
+    // Square the singular values.
     if (*info == 0) {
         for (i = 0; i < n; i++) {
             D[i] = D[i] * D[i];

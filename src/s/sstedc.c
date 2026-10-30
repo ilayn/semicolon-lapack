@@ -84,7 +84,7 @@ void sstedc(const char* compz, const INT n,
     INT i, icompz, ii, j, k, lgn, liwmin = 1, lwmin = 1, m, start, finish, storez, strtrw;
     f32 eps, orgnrm, p, tiny;
 
-    /* SMLSIZ from ILAENV(9, 'SSTEDC', ...) - hardcoded per project convention */
+    /* SMLSIZ from ILAENV(9, 'SSTEDC', ...) */
     const INT SMLSIZ = LAPACK_SMLSIZ;
 
     /*
@@ -196,7 +196,7 @@ void sstedc(const char* compz, const INT n,
          * use.
          */
         if (icompz == 1) {
-            storez = n * n;  /* 0-based offset into work */
+            storez = n * n;
         } else {
             storez = 0;
         }
@@ -214,7 +214,7 @@ void sstedc(const char* compz, const INT n,
 
         eps = slamch("Epsilon");
 
-        start = 0;  /* 0-based */
+        start = 0;
 
         /*
          * while ( start < n )
@@ -260,9 +260,9 @@ void sstedc(const char* compz, const INT n,
                         &E[start], m - 1, info);
 
                 if (icompz == 1) {
-                    strtrw = 0;  /* 0-based: row 0 of Z */
+                    strtrw = 0;
                 } else {
-                    strtrw = start;  /* 0-based */
+                    strtrw = start;
                 }
                 slaed0(icompz, n, m, &D[start], &E[start],
                         &Z[strtrw + start * ldz], ldz, &work[0], n,

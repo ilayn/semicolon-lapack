@@ -114,19 +114,9 @@ void dlaed1(const INT n, f64* D, f64* Q, const INT ldq,
      * first row of Q_2.
      */
 
-    /* In Fortran: DCOPY(CUTPNT, Q(CUTPNT, 1), LDQ, WORK(IZ), 1)
-     * Q(CUTPNT, 1) in 1-based Fortran is row CUTPNT, col 1.
-     * In 0-based C: row (cutpnt - 1), col 0 => Q[(cutpnt - 1) + 0 * ldq]
-     * Stride is ldq (stepping across columns in column-major).
-     */
     cblas_dcopy(cutpnt, &Q[(cutpnt - 1)], ldq, &work[iz], 1);
 
-    /* In Fortran: ZPP1 = CUTPNT + 1
-     * DCOPY(N-CUTPNT, Q(ZPP1, ZPP1), LDQ, WORK(IZ+CUTPNT), 1)
-     * Q(ZPP1, ZPP1) in 1-based is row CUTPNT+1, col CUTPNT+1.
-     * In 0-based C: row cutpnt, col cutpnt => Q[cutpnt + cutpnt * ldq]
-     */
-    zpp1 = cutpnt;  /* 0-based row index for what was CUTPNT+1 in Fortran */
+    zpp1 = cutpnt;
     cblas_dcopy(n - cutpnt, &Q[zpp1 + zpp1 * ldq], ldq, &work[iz + cutpnt], 1);
 
     /* Deflate eigenvalues. */

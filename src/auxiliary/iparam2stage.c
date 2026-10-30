@@ -130,7 +130,6 @@ INT iparam2stage(const INT ispec, const char* name, const char* opts,
                 ib = 40;
             }
         } else if (nthreads > 1) {
-            /* LAPACK has identical branches */
             kd = 64;
             ib = 32;
         } else {

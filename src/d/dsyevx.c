@@ -204,10 +204,10 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
     }
 
     /* Call DSYTRD to reduce symmetric matrix to tridiagonal form */
-    indtau = 0;          /* tau at work[0] */
-    inde = indtau + n;   /* E at work[n] */
-    indd = inde + n;     /* D at work[2*n] */
-    indwrk = indd + n;   /* remaining work at work[3*n] */
+    indtau = 0;
+    inde = indtau + n;
+    indd = inde + n;
+    indwrk = indd + n;
     llwork = lwork - indwrk;
 
     dsytrd(uplo, n, A, lda, &work[indd], &work[inde], &work[indtau],

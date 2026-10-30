@@ -99,7 +99,6 @@ void dlarre(const char* range, const INT n, f64* vl, f64* vu,
             INT* iblock, INT* indexw, f64* gers,
             f64* pivmin, f64* work, INT* iwork, INT* info)
 {
-    /* Parameters */
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
@@ -116,7 +115,6 @@ void dlarre(const char* range, const INT n, f64* vl, f64* vu,
     const INT INDRNG = 2;
     const INT VALRNG = 3;
 
-    /* Local scalars */
     INT forceb, norep, usedqd;
     INT cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
@@ -126,7 +124,6 @@ void dlarre(const char* range, const INT n, f64* vl, f64* vu,
            rtol, s1, s2, safmin, sgndef, sigma, spdiam,
            tau, tmp, tmp1;
 
-    /* Local arrays */
     INT iseed[4];
 
     *info = 0;

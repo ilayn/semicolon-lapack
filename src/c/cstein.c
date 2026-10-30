@@ -97,7 +97,7 @@ void cstein(
     f32 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm = 0.0f, ztr;
     INT iseed[4];
 
-    /* Workspace offsets: each segment has n elements */
+    /* Initialize pointers. */
     const INT indrv1 = 0;
     const INT indrv2 = n;
     const INT indrv3 = 2 * n;
@@ -144,7 +144,7 @@ void cstein(
         return;
     }
 
-    /* Get machine constant: eps = eps*base (precision) */
+    /* Get machine constants. */
     eps = slamch("P");
 
     /* Initialize seed for random number generator SLARNV. */
@@ -153,18 +153,11 @@ void cstein(
     iseed[2] = 1;
     iseed[3] = 1;
 
-    /*
-     * Compute eigenvectors of matrix blocks.
-     *
-     * j1 is the 0-based index of the first eigenvalue in the current block.
-     */
+    /* Compute eigenvectors of matrix blocks. */
     j1 = 0;
     for (nblk = 0; nblk <= ((iblock[m - 1] >= 0) ? iblock[m - 1] : -iblock[m - 1] - 2); nblk++) {
 
-        /*
-         * Find starting and ending indices of block nblk (0-based).
-         * isplit stores 0-based endpoint indices.
-         */
+        /* Find starting and ending indices of block nblk. */
         if (nblk == 0) {
             b1 = 0;
         } else {
@@ -226,48 +219,33 @@ void cstein(
             /* Get random starting vector. */
             slarnv(2, iseed, blksiz, &work[indrv1]);
 
-            /*
-             * Copy the matrix T so it won't be destroyed in factorization.
-             * indrv4: diagonal (D[b1..bn])
-             * indrv2: upper subdiagonal (E[b1..bn-1]), stored at offset +1
-             * indrv3: lower subdiagonal (E[b1..bn-1])
-             */
+            /* Copy the matrix T so it won't be destroyed in factorization. */
             cblas_scopy(blksiz, &D[b1], 1, &work[indrv4], 1);
             cblas_scopy(blksiz - 1, &E[b1], 1, &work[indrv2 + 1], 1);
             cblas_scopy(blksiz - 1, &E[b1], 1, &work[indrv3], 1);
 
-            /*
-             * Compute LU factors with partial pivoting (PT = LU).
-             * slagtf factors (T - xj*I).
-             */
+            /* Compute LU factors with partial pivoting  ( PT = LU ) */
             tol = 0.0f;
             slagtf(blksiz, &work[indrv4], xj,
                    &work[indrv2 + 1],
                    &work[indrv3], tol, &work[indrv5], iwork,
                    &iinfo);
 
-            /* Inverse iteration loop. */
+            /* Update iteration count. */
             for (;;) {
                 its++;
                 if (its > MAXITS) {
                     goto convergence_failure;
                 }
 
-                /*
-                 * Normalize and scale the righthand side vector Pb.
-                 * jmax = index of element with largest absolute value.
-                 * cblas_idamax returns 0-based index.
-                 */
+                /* Normalize and scale the righthand side vector Pb. */
                 jmax = (INT)cblas_isamax(blksiz, &work[indrv1], 1);
                 scl = (f32)blksiz * onenrm *
                       ((eps > fabsf(work[indrv4 + blksiz - 1])) ? eps : fabsf(work[indrv4 + blksiz - 1])) /
                       fabsf(work[indrv1 + jmax]);
                 cblas_sscal(blksiz, scl, &work[indrv1], 1);
 
-                /*
-                 * Solve the system LU = Pb.
-                 * slagts with job=-1 solves (T - lambda*I)x = y with perturbation.
-                 */
+                /* Solve the system LU = Pb. */
                 slagts(-1, blksiz, &work[indrv4],
                        &work[indrv2 + 1],
                        &work[indrv3], &work[indrv5], iwork,
@@ -320,13 +298,13 @@ check_norm:
 convergence_failure:
             /*
              * If stopping criterion was not satisfied, update info and
-             * store eigenvector index in array ifail.
+             * store eigenvector number in array ifail.
              */
             (*info)++;
             ifail[(*info) - 1] = j;
 
 accept_eigenvector:
-            /* Accept iterate as j-th eigenvector. Normalize. */
+            /* Accept iterate as jth eigenvector. */
             scl = 1.0f / cblas_snrm2(blksiz, &work[indrv1], 1);
             jmax = (INT)cblas_isamax(blksiz, &work[indrv1], 1);
             if (work[indrv1 + jmax] < 0.0f) {
@@ -335,7 +313,6 @@ accept_eigenvector:
             cblas_sscal(blksiz, scl, &work[indrv1], 1);
 
 store_eigenvector:
-            /* Zero out the full column, then copy block portion. */
             for (i = 0; i < n; i++) {
                 Z[i + j * ldz] = CMPLXF(0.0f, 0.0f);
             }

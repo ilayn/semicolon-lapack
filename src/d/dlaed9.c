@@ -80,7 +80,6 @@ void dlaed9(const INT k, const INT kstart, const INT kstop, const INT n,
     if (k == 0)
         return;
 
-    /* For each eigenvalue in [kstart, kstop), call dlaed4 to find the root. */
     for (j = kstart; j < kstop; j++) {
         dlaed4(k, j, dlambda, W, &Q[j * ldq], rho, &D[j], info);
 
@@ -99,7 +98,6 @@ void dlaed9(const INT k, const INT kstart, const INT kstop, const INT n,
     }
 
     /* Compute updated W. */
-    /* Save W into first column of S */
     cblas_dcopy(k, W, 1, S, 1);
 
     /* Initialize W(i) = Q(i,i) */

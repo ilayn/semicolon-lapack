@@ -71,7 +71,7 @@ void ssptrd(const char* uplo, const INT n, f32* restrict AP,
 
     if (upper) {
         /* Reduce the upper triangle of A.
-           i1 is the index in AP of A(0,i+1) in 0-based indexing. */
+           i1 is the index in AP of A(0,i+1). */
 
         i1 = n * (n - 1) / 2;
         for (i = n - 2; i >= 0; i--) {

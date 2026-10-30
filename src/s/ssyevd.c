@@ -155,11 +155,11 @@ void ssyevd(const char* jobz, const char* uplo, const INT n,
     }
 
     /* Call SSYTRD to reduce symmetric matrix to tridiagonal form */
-    inde = 0;            /* E starts at work[0] */
-    indtau = inde + n;   /* tau starts at work[n] */
-    indwrk = indtau + n; /* temporary work at work[2*n] */
+    inde = 0;
+    indtau = inde + n;
+    indwrk = indtau + n;
     llwork = lwork - indwrk;
-    indwk2 = indwrk + n * n; /* second temporary at work[2*n + n*n] */
+    indwk2 = indwrk + n * n;
     llwrk2 = lwork - indwk2;
 
     ssytrd(uplo, n, A, lda, W, &work[inde], &work[indtau],
