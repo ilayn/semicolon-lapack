@@ -353,15 +353,12 @@ void dlasyf_rk(
 
         /* Update the upper triangle of A11 (= A(1:k,1:k)) as
          *
-         * A11 := A11 - U12*D*U12**T = A11 - U12*W**T
-         *
-         * We use cblas_dgemm since DGEMMTR is not standard CBLAS. */
-
+         * A11 := A11 - U12*D*U12**T = A11 - U12*W**T */
         if (k >= 0) {
-            cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        k + 1, k + 1, n - k - 1, -ONE,
-                        &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
-                        ONE, &A[0], lda);
+            cblas_dgemmtr(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
+                          k + 1, n - k - 1, -ONE,
+                          &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
+                          ONE, &A[0], lda);
         }
 
         *kb = n - k - 1;
@@ -543,15 +540,12 @@ void dlasyf_rk(
 
         /* Update the lower triangle of A22 (= A(k:n,k:n)) as
          *
-         * A22 := A22 - L21*D*L21**T = A22 - L21*W**T
-         *
-         * We use cblas_dgemm since DGEMMTR is not standard CBLAS. */
-
+         * A22 := A22 - L21*D*L21**T = A22 - L21*W**T */
         if (k < n) {
-            cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        n - k, n - k, k, -ONE,
-                        &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
-                        ONE, &A[k + k * lda], lda);
+            cblas_dgemmtr(CblasColMajor, CblasLower, CblasNoTrans, CblasTrans,
+                          n - k, k, -ONE,
+                          &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
+                          ONE, &A[k + k * lda], lda);
         }
 
         *kb = k;

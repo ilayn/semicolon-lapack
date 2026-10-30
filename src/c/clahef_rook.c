@@ -116,7 +116,7 @@ void clahef_rook(
 
         while (1) {
 
-            kw = nb + k - (n - 1);
+            kw = nb + k - n;
 
             if ((k <= n - nb && nb < n) || k < 0) {
                 break;
@@ -228,7 +228,7 @@ void clahef_rook(
 
                 kk = k - kstep + 1;
 
-                kkw = nb + kk - (n - 1);
+                kkw = nb + kk - n;
 
                 if ((kstep == 2) && (p != k)) {
 
@@ -377,7 +377,7 @@ void clahef_rook(
 
         while (1) {
 
-            if ((k >= nb && nb < n) || k > n - 1) {
+            if ((k >= nb - 1 && nb < n) || k > n - 1) {
                 break;
             }
 

@@ -118,7 +118,7 @@ void clasyf_rook(
         k = n - 1;
         while (1) {
 
-            kw = nb + k - (n - 1);
+            kw = nb + k - n;
 
             if ((k <= n - nb && nb < n) || k < 0) {
                 break;
@@ -217,7 +217,7 @@ void clasyf_rook(
 
                 kk = k - kstep + 1;
 
-                kkw = nb + kk - (n - 1);
+                kkw = nb + kk - n;
 
                 if ((kstep == 2) && (p != k)) {
 
@@ -282,12 +282,16 @@ void clasyf_rook(
             k = k - kstep;
         }
 
-        /* Update the upper triangle of A11 using cblas_zgemm (ZGEMMTR replacement) */
+        /* Update the upper triangle of A11 (= A(1:k,1:k)) as
+         *
+         * A11 := A11 - U12*D*U12**T = A11 - U12*W**T
+         *
+         * (note that conjg(W) is actually stored) */
         if (k >= 0 && n > nb) {
-            cblas_cgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        k + 1, k + 1, n - k - 1, &NEG_CONE,
-                        &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
-                        &CONE, &A[0], lda);
+            cblas_cgemmtr(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
+                          k + 1, n - k - 1, &NEG_CONE,
+                          &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
+                          &CONE, &A[0], lda);
         }
 
         j = k + 1;
@@ -479,12 +483,16 @@ void clasyf_rook(
             k = k + kstep;
         }
 
-        /* Update the lower triangle of A22 using cblas_zgemm (ZGEMMTR replacement) */
+        /* Update the lower triangle of A22 (= A(k:n,k:n)) as
+         *
+         * A22 := A22 - L21*D*L21**T = A22 - L21*W**T
+         *
+         * (note that conjg(W) is actually stored) */
         if (k < n && k > 0) {
-            cblas_cgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        n - k, n - k, k, &NEG_CONE,
-                        &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
-                        &CONE, &A[k + k * lda], lda);
+            cblas_cgemmtr(CblasColMajor, CblasLower, CblasNoTrans, CblasTrans,
+                          n - k, k, &NEG_CONE,
+                          &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
+                          &CONE, &A[k + k * lda], lda);
         }
 
         j = k - 1;

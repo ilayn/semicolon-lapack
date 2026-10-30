@@ -108,6 +108,7 @@ lapack_tests_d = {
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
   'dgeqp3_fixed': ['test_dgeqp3_fixed.c', 'qr'],
   'dtgsen_lwork': ['test_dtgsen_lwork.c', 'eigen'],
+  'dsytrf_bounds': ['test_dsytrf_bounds.c', 'symmetric'],
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],
   'dlarf_incv': ['test_dlarf_incv.c', 'qr'],
   'dlarft': ['test_dlarft.c', 'qr'],

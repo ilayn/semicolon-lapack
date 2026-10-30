@@ -339,11 +339,16 @@ void clahef_rk(
             k = k - kstep;
         }
 
+        /* Update the upper triangle of A11 (= A(1:k,1:k)) as
+         *
+         * A11 := A11 - U12*D*U12**H = A11 - U12*W**H
+         *
+         * (note that conjg(W) is actually stored) */
         if (k >= 0) {
-            cblas_cgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        k + 1, k + 1, n - k - 1, &NEG_CONE,
-                        &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
-                        &CONE, &A[0], lda);
+            cblas_cgemmtr(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
+                          k + 1, n - k - 1, &NEG_CONE,
+                          &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
+                          &CONE, &A[0], lda);
         }
 
         *kb = n - k - 1;
@@ -556,11 +561,16 @@ void clahef_rk(
             k = k + kstep;
         }
 
+        /* Update the lower triangle of A22 (= A(k:n,k:n)) as
+         *
+         * A22 := A22 - L21*D*L21**H = A22 - L21*W**H
+         *
+         * (note that conjg(W) is actually stored) */
         if (k < n) {
-            cblas_cgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                        n - k, n - k, k, &NEG_CONE,
-                        &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
-                        &CONE, &A[k + k * lda], lda);
+            cblas_cgemmtr(CblasColMajor, CblasLower, CblasNoTrans, CblasTrans,
+                          n - k, k, &NEG_CONE,
+                          &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
+                          &CONE, &A[k + k * lda], lda);
         }
 
         *kb = k;

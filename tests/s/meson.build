@@ -95,6 +95,7 @@ lapack_tests_s = {
   'sdrges': ['test_sdrges.c', 'eigen'],
   'sdrges3': ['test_sdrges3.c', 'eigen'],
   'sgges3_scaling': ['test_sgges3_scaling.c', 'eigen'],
+  'ssytrf_bounds': ['test_ssytrf_bounds.c', 'symmetric'],
   'sgesvj_emptsw': ['test_sgesvj_emptsw.c', 'eigen'],
   'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
   'sstein_unconverged': ['test_sstein_unconverged.c', 'eigen'],
