@@ -459,7 +459,7 @@ void cgesvj(const char* joba, const char* jobu, const char* jobv,
         skl = ONE / skl;
     }
 
-    emptsw = (n * (n - 1)) / 2;
+    emptsw = (n / 2) * (n - 1 + n % 2);
 
     for (q = 0; q < n; q++) {
         cwork[q] = CONE;

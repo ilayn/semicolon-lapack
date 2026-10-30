@@ -440,7 +440,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
         skl = ONE / skl;
     }
 
-    emptsw = (n * (n - 1)) / 2;
+    emptsw = (n / 2) * (n - 1 + n % 2);
     fastr[0] = ZERO;
 
     for (q = 0; q < n; q++) {

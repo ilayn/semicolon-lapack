@@ -105,7 +105,7 @@ void sgsvj0(const char* jobv, const INT m, const INT n,
     roottol = sqrtf(tol);
 
     /* Row-cyclic Jacobi SVD algorithm with column pivoting */
-    emptsw = (n * (n - 1)) / 2;
+    emptsw = (n / 2) * (n - 1 + n % 2);
     fastr[0] = ZERO;
 
     /* Tuning parameters */
