@@ -87,7 +87,7 @@ void dtrsen(const char* job, const char* compq, const INT* select,
     const f64 ONE = 1.0;
 
     INT wantbh, wants, wantsp, wantq, lquery;
-    INT ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
+    INT ierr, k, kase, kk, ks, lwmin = 0, liwmin = 0, n1, n2, nn;
     INT pair, swap;
     f64 est, rnorm, scale;
     INT isave[3];
@@ -152,10 +152,6 @@ void dtrsen(const char* job, const char* compq, const INT* select,
             liwmin = 1;
         } else if (job[0] == 'E' || job[0] == 'e') {
             lwmin = (1 > nn) ? 1 : nn;
-            liwmin = 1;
-        } else {
-            /* Default case - shouldn't reach here if validation is correct */
-            lwmin = 1;
             liwmin = 1;
         }
 

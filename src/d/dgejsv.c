@@ -522,7 +522,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     aaqq = big;
     for (p = 0; p < n; p++) {
         aapp = (aapp > SVA[p]) ? aapp : SVA[p];
-        if (SVA[p] != ZERO && SVA[p] < aaqq) aaqq = SVA[p];
+        if (SVA[p] != ZERO) aaqq = (aaqq < SVA[p]) ? aaqq : SVA[p];
     }
 
     /* Quick return for zero matrix */

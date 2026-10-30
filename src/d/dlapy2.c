@@ -21,9 +21,8 @@ f64 dlapy2(const f64 x, const f64 y)
 {
     f64 xabs, yabs, w, z;
 
-    /* Handle NaN propagation */
-    if (isnan(x)) return x;
     if (isnan(y)) return y;
+    if (isnan(x)) return x;
 
     xabs = fabs(x);
     yabs = fabs(y);

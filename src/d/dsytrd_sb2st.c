@@ -182,7 +182,6 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     sizea = lda * n;
     inda = 0;
     indw = inda + sizea;
-    (void)1;  /* nthreads = 1; unused OpenMP placeholder */
 
     if (upper) {
         apos = inda + kd;
@@ -236,7 +235,6 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     thgrsiz = n;
     grsiz = 1;
     shift = 3;
-    (void)ceil((f64)n / (f64)kd);  /* nbtiles: unused OpenMP placeholder */
     stepercol = (INT)ceil((f64)shift / (f64)grsiz);
     thgrnb = (INT)ceil((f64)(n - 1) / (f64)thgrsiz);
 

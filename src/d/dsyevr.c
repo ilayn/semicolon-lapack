@@ -77,8 +77,7 @@ void dsyevr(const char* jobz, const char* range, const char* uplo,
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */
-    /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
-    ieeeok = 1;  /* Assume IEEE arithmetic on modern systems */
+    ieeeok = ieeeck(1, 0.0f, 1.0f);
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

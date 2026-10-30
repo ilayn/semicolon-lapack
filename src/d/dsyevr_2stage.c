@@ -251,8 +251,7 @@ void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll, vuu;
 
-    /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
-    ieeeok = 1;
+    ieeeok = ieeeck(1, 0.0f, 1.0f);
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
