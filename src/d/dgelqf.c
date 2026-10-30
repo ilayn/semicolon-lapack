@@ -36,50 +36,45 @@ void dgelqf(const INT m, const INT n,
             f64* restrict work, const INT lwork,
             INT* info)
 {
-    INT k, nb, nbmin, nx, iws, ldwork;
+    INT k, nb, nbmin, nx, iws, ldwork, lwkopt;
     INT i, ib, iinfo;
     INT lquery;
 
     /* Test the input arguments */
-    *info = 0;
     k = m < n ? m : n;
+    *info = 0;
+    nb = lapack_get_nb("GELQF");
     lquery = (lwork == -1);
-
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
         *info = -2;
-    } else if (lda < (m > 1 ? m : 1)) {
+    } else if (lda < (1 > m ? 1 : m)) {
         *info = -4;
-    }
-
-    if (*info == 0) {
-        if (k == 0) {
-            work[0] = 1.0;
-        } else {
-            nb = lapack_get_nb("GELQF");
-            work[0] = (f64)(m * nb);
-        }
-        if (!lquery && lwork < (k > 0 ? (m > 1 ? m : 1) : 1)) {
+    } else if (!lquery) {
+        if (lwork <= 0 || (n > 0 && lwork < (1 > m ? 1 : m))) {
             *info = -7;
         }
     }
-
     if (*info != 0) {
         xerbla("DGELQF", -(*info));
         return;
-    }
-
-    if (lquery) {
+    } else if (lquery) {
+        if (k == 0) {
+            lwkopt = 1;
+        } else {
+            lwkopt = m * nb;
+        }
+        work[0] = (f64)lwkopt;
         return;
     }
 
     /* Quick return if possible */
     if (k == 0) {
+        work[0] = 1.0;
         return;
     }
 
-    nb = lapack_get_nb("GELQF");
     nbmin = 2;
     nx = 0;
     iws = m;
