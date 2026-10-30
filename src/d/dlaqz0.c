@@ -215,7 +215,7 @@ void dlaqz0(
 
     /* Get machine constants */
     safmin = dlamch("S");
-    (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
+    (void)(ONE / safmin);
     ulp = dlamch("P");
     smlnum = safmin * ((f64)n / ulp);
 
@@ -306,7 +306,8 @@ void dlaqz0(
             istopm = istop;
         }
 
-        /* Check infinite eigenvalues */
+        /* Check infinite eigenvalues, this is done without blocking so might
+         * slow down the method when many infinite eigenvalues are present */
         k = istop;
         while (k >= istart2) {
             if (fabs(B[k + k * ldb]) < btol) {
@@ -378,7 +379,9 @@ void dlaqz0(
         nblock = nbr;
 
         if (istop - istart2 + 1 < nmin) {
-            /* Setting nw to the size of the subblock will make AED deflate all the eigenvalues */
+            /* Setting nw to the size of the subblock will make AED deflate
+             * all the eigenvalues. This is slightly more efficient than just
+             * using DHGEQZ because the off diagonal part gets updated via BLAS. */
             if (istop - istart + 1 < nmin) {
                 nw = istop - istart + 1;
                 istart2 = istart;
@@ -412,7 +415,8 @@ void dlaqz0(
         if (ns > n_undeflated) ns = n_undeflated;
         shiftpos = istop - n_undeflated + 1;
 
-        /* Shuffle shifts to put double shifts in front */
+        /* Shuffle shifts to put double shifts in front
+         * This ensures that we don't split up a double shift */
         for (i = shiftpos; i <= shiftpos + n_undeflated - 3; i += 2) {
             if (alphai[i] != -alphai[i + 1]) {
                 swap = alphar[i];
@@ -433,7 +437,7 @@ void dlaqz0(
         }
 
         if ((ld % 6) == 0) {
-            /* Exceptional shift */
+            /* Exceptional shift.  Chosen for no particularly good reason. */
             if (((f64)maxit * safmin) * fabs(A[istop + (istop - 1) * lda]) <
                 fabs(A[(istop - 1) + (istop - 1) * lda])) {
                 eshift = A[istop + (istop - 1) * lda] / B[(istop - 1) + (istop - 1) * ldb];
@@ -459,7 +463,10 @@ void dlaqz0(
     }
 
 label80:
-    /* Call DHGEQZ to normalize the eigenvalue blocks and set the eigenvalues */
+    /* Call DHGEQZ to normalize the eigenvalue blocks and set the eigenvalues
+     * If all the eigenvalues have been found, DHGEQZ will not do any iterations
+     * and only normalize the blocks. In case of a rare convergence failure,
+     * the single shift might perform better. */
     dhgeqz(wants, wantq, wantz, n, ilo, ihi, A, lda, B, ldb,
            alphar, alphai, beta, Q, ldq, Z, ldz, work, lwork, &norm_info);
 

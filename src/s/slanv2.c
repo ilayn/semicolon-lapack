@@ -73,7 +73,6 @@ void slanv2(f32* a, f32* b, f32* c, f32* d,
 
     } else if ((*a - *d) == ZERO &&
                copysignf(ONE, *b) != copysignf(ONE, *c)) {
-        /* SIGN(ONE, B) != SIGN(ONE, C) means B and C have opposite signs */
         *cs = ONE;
         *sn = ZERO;
 
@@ -82,7 +81,6 @@ void slanv2(f32* a, f32* b, f32* c, f32* d,
         p = HALF * temp;
         bcmax = fabsf(*b) > fabsf(*c) ? fabsf(*b) : fabsf(*c);
         bcmis = (fabsf(*b) < fabsf(*c) ? fabsf(*b) : fabsf(*c));
-        /* Apply sign of B and sign of C to bcmis: SIGN(ONE,B)*SIGN(ONE,C) */
         bcmis = copysignf(bcmis, copysignf(ONE, *b) * copysignf(ONE, *c));
         scale = fabsf(p) > bcmax ? fabsf(p) : bcmax;
         z = (p / scale) * p + (bcmax / scale) * bcmis;

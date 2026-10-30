@@ -8,12 +8,11 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
-/* Lookup tables for 2x2 pivoting (file scope for thread safety) */
-static const INT locu12[4] = {2, 3, 0, 1};  /* 0-based: {3,4,1,2} - 1 */
-static const INT locl21[4] = {1, 0, 3, 2};  /* 0-based: {2,1,4,3} - 1 */
-static const INT locu22[4] = {3, 2, 1, 0};  /* 0-based: {4,3,2,1} - 1 */
-static const INT xswpiv[4] = {0, 0, 1, 1};  /* FALSE, FALSE, TRUE, TRUE */
-static const INT bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
+static const INT locu12[4] = {2, 3, 0, 1};
+static const INT locl21[4] = {1, 0, 3, 2};
+static const INT locu22[4] = {3, 2, 1, 0};
+static const INT xswpiv[4] = {0, 0, 1, 1};
+static const INT bswpiv[4] = {0, 1, 0, 1};
 
 /**
  * SLASY2 solves for the N1 by N2 matrix X, 1 <= N1,N2 <= 2, in
@@ -62,7 +61,7 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
     INT i, ip, ipiv, ipsv, j, jp, jpsv, k;
     f32 bet, eps, gam, l21, sgn, smin, smlnum, tau1;
     f32 temp, u11, u12, u22, xmax;
-    f32 btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
+    f32 btmp[4], t16[16], tmp[4], x2[2];
     INT jpiv[4];
 
     *info = 0;
@@ -125,7 +124,6 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         }
         btmp[0] = B[0];
         btmp[1] = B[ldb];
-        /* Fall through to 2x2 solve */
     } else if (k == 3) {
         /* 2 by 1:
            op[TL11 TL12]*[X11] + ISGN*[X11]*TR11 = [B11]
@@ -153,7 +151,6 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         }
         btmp[0] = B[0];
         btmp[1] = B[1];
-        /* Fall through to 2x2 solve */
     }
 
     if (k == 2 || k == 3) {
@@ -204,11 +201,12 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         return;
     }
 
-    /* k == 4: 2 by 2 case
-       op[TL11 TL12]*[X11 X12] + ISGN*[X11 X12]*op[TR11 TR12] = [B11 B12]
+    /* 2 by 2:
+       op[TL11 TL12]*[X11 X12] +ISGN* [X11 X12]*op[TR11 TR12] = [B11 B12]
          [TL21 TL22] [X21 X22]        [X21 X22]   [TR21 TR22]   [B21 B22]
 
-       Solve equivalent 4 by 4 system using complete pivoting. */
+       Solve equivalent 4 by 4 system using complete pivoting.
+       Set pivots less than SMIN to SMIN. */
 
     smin = fabsf(TR[0]);
     temp = fabsf(TR[ldtr]);
@@ -228,11 +226,9 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
     smin = eps * smin;
     smin = (smin > smlnum) ? smin : smlnum;
 
-    /* Initialize T16 to zero */
     for (i = 0; i < 16; i++)
         t16[i] = ZERO;
 
-    /* Fill in T16 (column-major storage) */
     t16[0 + 4*0] = TL[0] + sgn * TR[0];
     t16[1 + 4*1] = TL[1 + ldtl] + sgn * TR[0];
     t16[2 + 4*2] = TL[0] + sgn * TR[1 + ldtr];
@@ -266,7 +262,7 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
     btmp[2] = B[ldb];
     btmp[3] = B[1 + ldb];
 
-    /* Perform elimination with complete pivoting */
+    /* Perform elimination */
     ipsv = 0;
     jpsv = 0;
     for (i = 0; i < 3; i++) {
@@ -281,14 +277,12 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
             }
         }
         if (ipsv != i) {
-            /* Swap rows ipsv and i */
             cblas_sswap(4, &t16[ipsv], 4, &t16[i], 4);
             temp = btmp[i];
             btmp[i] = btmp[ipsv];
             btmp[ipsv] = temp;
         }
         if (jpsv != i) {
-            /* Swap columns jpsv and i */
             cblas_sswap(4, &t16[4*jpsv], 1, &t16[4*i], 1);
         }
         jpiv[i] = jpsv;
@@ -325,7 +319,6 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         btmp[3] = btmp[3] * (*scale);
     }
 
-    /* Back substitution */
     for (i = 0; i < 4; i++) {
         k = 3 - i;
         temp = ONE / t16[k + 4*k];
@@ -335,7 +328,6 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         }
     }
 
-    /* Undo column permutations */
     for (i = 0; i < 3; i++) {
         if (jpiv[2 - i] != 2 - i) {
             temp = tmp[2 - i];

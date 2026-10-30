@@ -139,7 +139,7 @@ void dgehrd(const INT n, const INT ilo, const INT ihi,
         i = ilo;
     } else {
         /* Use blocked code */
-        iwt = n * nb;  /* offset to T matrix in work array */
+        iwt = n * nb;
 
         for (i = ilo; i <= ihi - 1 - nx; i += nb) {
             ib = (nb < ihi - i) ? nb : (ihi - i);

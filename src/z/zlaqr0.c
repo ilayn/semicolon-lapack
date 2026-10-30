@@ -181,7 +181,7 @@ void zlaqr0(const INT wantt, const INT wantz, const INT n,
             kwv = nw + 1;
             nve = (n - nw) - kwv;
 
-            /* Aggressive early deflation - uses ZLAQR3 (not ZLAQR2) */
+            /* Aggressive early deflation */
             zlaqr3(wantt, wantz, n, ktop, kbot, nw, H, ldh, iloz,
                    ihiz, Z, ldz, &ls, &ld, W, &H[kv], ldh,
                    nho, &H[kv + kt * ldh], ldh, nve, &H[kwv], ldh,

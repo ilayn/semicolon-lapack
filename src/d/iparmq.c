@@ -42,7 +42,6 @@ INT iparmq(
     const INT ihi,
     const INT lwork)
 {
-    /* Parameters */
     const INT INMIN = 12;
     const INT INWIN = 13;
     const INT INIBL = 14;
@@ -50,24 +49,22 @@ INT iparmq(
     const INT IACC22 = 16;
     const INT ICOST = 17;
 
-    /* Default values from LAPACK iparmq.f */
-    const INT NMIN = 75;      /* Crossover point for xLAHQR vs xLAQR0 */
-    const INT K22MIN = 14;    /* Min size for 2x2 block structure */
-    const INT KACMIN = 14;    /* Min size for accumulation */
-    const INT NIBBLE = 14;    /* Nibble crossover point */
-    const INT KNWSWP = 500;   /* Deflation window size threshold */
-    const INT RCOST = 10;     /* Relative cost (percentage) */
+    const INT NMIN = 75;
+    const INT K22MIN = 14;
+    const INT KACMIN = 14;
+    const INT NIBBLE = 14;
+    const INT KNWSWP = 500;
+    const INT RCOST = 10;
     const f64 TWO = 2.0;
 
     INT nh = 0, ns = 0;
     INT result;
 
-    /* Unused parameters (matching Fortran interface) */
     (void)opts;
     (void)n;
     (void)lwork;
 
-    /* Compute NH = active matrix size and NS = number of shifts */
+    /* Set the number simultaneous shifts */
     if (ispec == ISHFTS || ispec == INWIN || ispec == IACC22) {
         nh = ihi - ilo + 1;
         ns = 2;
@@ -93,7 +90,6 @@ INT iparmq(
         if (nh >= 6000) {
             ns = 256;
         }
-        /* Make NS even */
         ns = ns - (ns % 2);
         if (ns < 2) {
             ns = 2;
@@ -101,19 +97,23 @@ INT iparmq(
     }
 
     if (ispec == INMIN) {
-        /* Matrices of order smaller than NMIN get sent to xLAHQR */
+        /* Matrices of order smaller than NMIN get sent
+         * to xLAHQR, the classic double shift algorithm.
+         * This must be at least 11. */
         result = NMIN;
 
     } else if (ispec == INIBL) {
-        /* Nibble crossover point */
+        /* INIBL: skip a multi-shift qr iteration and
+         * whenever aggressive early deflation finds
+         * at least (NIBBLE*(window size)/100) deflations. */
         result = NIBBLE;
 
     } else if (ispec == ISHFTS) {
-        /* Number of simultaneous shifts */
+        /* NSHFTS: The number of simultaneous shifts */
         result = ns;
 
     } else if (ispec == INWIN) {
-        /* Deflation window size */
+        /* NW: deflation window size. */
         if (nh <= KNWSWP) {
             result = ns;
         } else {
@@ -121,15 +121,20 @@ INT iparmq(
         }
 
     } else if (ispec == IACC22) {
-        /* Whether to accumulate reflections */
+        /* IACC22: Whether to accumulate reflections
+         * before updating the far-from-diagonal elements
+         * and whether to use 2-by-2 block structure while
+         * doing it.  A small amount of work could be saved
+         * by making this choice dependent also upon the
+         * NH=IHI-ILO+1. */
         result = 0;
 
-        /* Convert first 6 characters of NAME to uppercase for comparison */
+        /* Convert NAME to upper case if the first character is lower case. */
         char subnam[7];
         INT i;
         for (i = 0; i < 6 && name[i] != '\0'; i++) {
             char c = name[i];
-            /* Convert lowercase to uppercase (ASCII) */
+            /* ASCII character set */
             if (c >= 'a' && c <= 'z') {
                 subnam[i] = c - 32;
             } else {
@@ -141,8 +146,6 @@ INT iparmq(
         }
         subnam[6] = '\0';
 
-        /* Check for specific routines */
-        /* GGHRD or GGHD3 */
         if ((subnam[1] == 'G' && subnam[2] == 'G' && subnam[3] == 'H' &&
              subnam[4] == 'R' && subnam[5] == 'D') ||
             (subnam[1] == 'G' && subnam[2] == 'G' && subnam[3] == 'H' &&
@@ -152,7 +155,6 @@ INT iparmq(
                 result = 2;
             }
         }
-        /* xEXC (DTREXC, etc.) - check positions 3-5 */
         else if (subnam[3] == 'E' && subnam[4] == 'X' && subnam[5] == 'C') {
             if (nh >= KACMIN) {
                 result = 1;
@@ -161,7 +163,6 @@ INT iparmq(
                 result = 2;
             }
         }
-        /* HSEQR or xLAQR */
         else if ((subnam[1] == 'H' && subnam[2] == 'S' && subnam[3] == 'E' &&
                   subnam[4] == 'Q' && subnam[5] == 'R') ||
                  (subnam[1] == 'L' && subnam[2] == 'A' && subnam[3] == 'Q' &&
@@ -175,11 +176,12 @@ INT iparmq(
         }
 
     } else if (ispec == ICOST) {
-        /* Relative cost of near-the-diagonal chase vs BLAS updates */
+        /* Relative cost of near-the-diagonal chase vs
+         * BLAS updates */
         result = RCOST;
 
     } else {
-        /* Invalid value of ispec */
+        /* invalid value of ispec */
         result = -1;
     }
 

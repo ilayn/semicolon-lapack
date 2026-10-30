@@ -158,7 +158,6 @@ void ctrsyl3(const char* trana, const char* tranb, const INT isgn,
         }
     }
 
-    /* Use the tail of column 0 in swork as clange workspace */
     INT rows = (nba > nbb) ? nba : nbb;
     f32* wnrm = &swork[rows];
 

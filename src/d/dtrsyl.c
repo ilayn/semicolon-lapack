@@ -70,7 +70,7 @@ void dtrsyl(const char* trana, const char* tranb, const INT isgn,
     INT ierr, j, k, k1, k2, knext, l, l1, l2, lnext;
     f64 a11, bignum, da11, db, eps, scaloc, sgn, smin;
     f64 smlnum, suml, sumr, xnorm;
-    f64 dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
+    f64 dum[1], vec[4], x[4];
     INT minval;
 
     /* Decode and test input parameters */

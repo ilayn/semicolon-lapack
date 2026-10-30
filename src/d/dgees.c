@@ -116,7 +116,6 @@ void dgees(const char* jobvs, const char* sort, dselect2_t select,
             maxwrk = 2 * n + n * nb_gehrd;
             minwrk = 3 * n;
 
-            /* Query DHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             dhseqr("S", jobvs, n, 0, n - 1, A, lda, wr, wi, VS, ldvs,
                    work, -1, &ieval);
             hswork = (INT)work[0];
@@ -169,7 +168,7 @@ void dgees(const char* jobvs, const char* sort, dselect2_t select,
         dlascl("G", 0, 0, anrm, cscale, n, n, A, lda, &ierr);
 
     /* Permute the matrix to make it more nearly triangular (Workspace: need N) */
-    ibal = 0;  /* 0-based */
+    ibal = 0;
     dgebal("P", n, A, lda, &ilo, &ihi, &work[ibal], &ierr);
 
     /* Reduce to upper Hessenberg form (Workspace: need 3*N, prefer 2*N+N*NB) */

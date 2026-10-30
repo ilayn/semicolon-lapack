@@ -73,7 +73,7 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
     INT hswork, i, ibal, ierr, ihi, ilo, itau, iwrk, k;
     INT lwork_trevc, maxwrk, minwrk, nout;
     f64 anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
-    INT select[1];  /* Dummy select array for dtrevc3 */
+    INT select[1];
     f64 dum[1];
     INT nb_gehrd, nb_orghr;
 
@@ -111,13 +111,11 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
                 minwrk = 4 * n;
                 maxwrk = maxwrk > (2 * n + (n - 1) * nb_orghr) ?
                          maxwrk : (2 * n + (n - 1) * nb_orghr);
-                /* Query DHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 dhseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VL, ldvl,
                        work, -1, &ierr);
                 hswork = (INT)work[0];
                 maxwrk = maxwrk > (n + 1) ? maxwrk : (n + 1);
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
-                /* Query DTREVC3 for workspace */
                 dtrevc3("L", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
                 lwork_trevc = (INT)work[0];
@@ -127,13 +125,11 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
                 minwrk = 4 * n;
                 maxwrk = maxwrk > (2 * n + (n - 1) * nb_orghr) ?
                          maxwrk : (2 * n + (n - 1) * nb_orghr);
-                /* Query DHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 dhseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, &ierr);
                 hswork = (INT)work[0];
                 maxwrk = maxwrk > (n + 1) ? maxwrk : (n + 1);
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
-                /* Query DTREVC3 for workspace */
                 dtrevc3("R", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
                 lwork_trevc = (INT)work[0];
@@ -141,7 +137,6 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
                 maxwrk = maxwrk > (4 * n) ? maxwrk : (4 * n);
             } else {
                 minwrk = 3 * n;
-                /* Query DHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 dhseqr("E", "N", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, &ierr);
                 hswork = (INT)work[0];
@@ -192,7 +187,7 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
         dlascl("G", 0, 0, anrm, cscale, n, n, A, lda, &ierr);
 
     /* Balance the matrix (Workspace: need N) */
-    ibal = 0;  /* 0-based index into work */
+    ibal = 0;
     dgebal("B", n, A, lda, &ilo, &ihi, &work[ibal], &ierr);
 
     /* Reduce to upper Hessenberg form (Workspace: need 3*N, prefer 2*N+N*NB) */

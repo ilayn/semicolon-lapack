@@ -148,7 +148,14 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                     H[(k + 2) + j * ldh] = H[(k + 2) + j * ldh] - refsum * t2;
                 }
 
-                /* Convergence test */
+                /* The following convergence test requires that
+                 * the tradition small-compared-to-nearby-diagonals
+                 * criterion and the Ahues & Tisseur (LAWN 122, 1997)
+                 * criteria both be satisfied.  The latter improves
+                 * accuracy in some examples. Falling back on an
+                 * alternate convergence criterion when TST1 or TST2
+                 * is zero (as done here) is traditional but probably
+                 * unnecessary. */
                 if (k >= ktop) {
                     if (H[(k + 1) + k * ldh] != czero) {
                         tst1 = cabs1f(H[k + k * ldh]) + cabs1f(H[(k + 1) + (k + 1) * ldh]);
@@ -190,7 +197,7 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                     }
                 }
 
-                /* Accumulate unitary transformations */
+                /* Accumulate orthogonal transformations. */
                 if (accum) {
                     kms = k - incol;
                     for (j = (1 > ktop - incol ? 1 : ktop - incol) - 1; j < kdu; j++) {
@@ -222,8 +229,9 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                     clarfg(3, &alpha, &V[1 + (m - 1) * ldv], 1,
                            &V[(m - 1) * ldv]);
                 } else {
-                    /* Perform delayed transformation of row below Mth bulge.
-                     * Exploit fact that first two elements of row are zero. */
+                    /* Perform delayed transformation of row below
+                     * Mth bulge. Exploit fact that first two elements
+                     * of row are actually zero. */
                     t1 = V[(m - 1) * ldv];
                     t2 = t1 * conjf(V[1 + (m - 1) * ldv]);
                     t3 = t1 * conjf(V[2 + (m - 1) * ldv]);
@@ -273,8 +281,11 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                     }
                 }
 
-                /* Apply reflection from the right and first column of
-                 * update from the left */
+                /* Apply reflection from the right and
+                 * the first column of update from the left.
+                 * These updates are required for the vigilant
+                 * deflation check. We still delay most of the
+                 * updates from the left for efficiency. */
                 t1 = V[(m - 1) * ldv];
                 t2 = t1 * conjf(V[1 + (m - 1) * ldv]);
                 t3 = t1 * conjf(V[2 + (m - 1) * ldv]);
@@ -298,7 +309,14 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                 H[(k + 2) + (k + 1) * ldh] = H[(k + 2) + (k + 1) * ldh] - refsum * t2;
                 H[(k + 3) + (k + 1) * ldh] = H[(k + 3) + (k + 1) * ldh] - refsum * t3;
 
-                /* Convergence test */
+                /* The following convergence test requires that
+                 * the tradition small-compared-to-nearby-diagonals
+                 * criterion and the Ahues & Tisseur (LAWN 122, 1997)
+                 * criteria both be satisfied.  The latter improves
+                 * accuracy in some examples. Falling back on an
+                 * alternate convergence criterion when TST1 or TST2
+                 * is zero (as done here) is traditional but probably
+                 * unnecessary. */
                 if (k < ktop)
                     continue;
 
@@ -366,7 +384,7 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
                 }
             }
 
-            /* Accumulate unitary transformations */
+            /* Accumulate orthogonal transformations. */
             if (accum) {
                 for (m = mbot; m >= mtop; m--) {
                     k = krcol + 2 * (m - 1);
@@ -405,7 +423,9 @@ void claqr5(const INT wantt, const INT wantz, const INT kacc22,
             }
         }
 
-        /* Use U (if accumulated) to update far-from-diagonal entries in H */
+        /* Use U (if accumulated) to update far-from-diagonal
+         * entries in H.  If required, use U to update Z as
+         * well. */
         if (accum) {
             if (wantt) {
                 jtop = 0;

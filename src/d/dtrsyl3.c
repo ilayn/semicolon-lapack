@@ -173,7 +173,6 @@ void dtrsyl3(const char* trana, const char* tranb, const INT isgn,
         }
     }
 
-    /* Use the tail of column 0 in swork as dlange workspace */
     INT rows = (nba > nbb) ? nba : nbb;
     f64* wnrm = &swork[rows];
 

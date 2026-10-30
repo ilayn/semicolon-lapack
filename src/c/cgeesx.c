@@ -142,7 +142,6 @@ void cgeesx(const char* jobvs, const char* sort, cselect1_t select,
             maxwrk = n + n * nb_gehrd;
             minwrk = 2 * n;
 
-            /* Query CHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             chseqr("S", jobvs, n, 0, n - 1, A, lda, W, VS, ldvs,
                    work, -1, &ieval);
             hswork = (INT)crealf(work[0]);

@@ -57,7 +57,6 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
                           f64* Z, const INT ldz,
                           INT* info)
 {
-    /* Parameters */
     const f64 zero = 0.0;
     const f64 one = 1.0;
     const f64 two = 2.0;
@@ -65,13 +64,11 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
     const f64 dat2 = -0.4375;
     const INT kexsh = 10;
 
-    /* Local scalars */
     f64 aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
     f64 rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
     f64 smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
     INT i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
 
-    /* Local array */
     f64 v[3];
 
     *info = 0;
@@ -86,7 +83,7 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
         return;
     }
 
-    /* Clear out the trash below the subdiagonal */
+    /* clear out the trash */
     for (j = ilo; j <= ihi - 3; j++) {
         H[(j + 2) + j * ldh] = zero;
         H[(j + 3) + j * ldh] = zero;
@@ -105,7 +102,7 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
     /* I1 and I2 are the indices of the first row and last column of H
      * to which transformations must be applied. If eigenvalues only are
      * being computed, I1 and I2 are set inside the main loop. */
-    i1 = 0;  /* Initialize to avoid warning */
+    i1 = 0;
     i2 = 0;
     if (wantt) {
         i1 = 0;
@@ -121,14 +118,16 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
     /* The main loop begins here. I is the loop index and decreases from
      * ihi to ilo in steps of 1 or 2. Each iteration of the loop works
      * with the active submatrix in rows and columns l to i.
-     * Eigenvalues i+1 to ihi have already converged. */
+     * Eigenvalues i+1 to ihi have already converged. Either l = ilo or
+     * H(l, l-1) is negligible so that the matrix splits. */
     i = ihi;
 
     while (i >= ilo) {
         l = ilo;
 
         /* Perform QR iterations on rows and columns ilo to i until a
-         * submatrix of order 1 or 2 splits off at the bottom */
+         * submatrix of order 1 or 2 splits off at the bottom because a
+         * subdiagonal element has become negligible. */
         for (its = 0; its <= itmax; its++) {
 
             /* Look for a single small subdiagonal element */
@@ -142,8 +141,10 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
                     if (k + 1 <= ihi)
                         tst = tst + fabs(H[(k + 1) + k * ldh]);
                 }
-                /* Conservative small subdiagonal deflation criterion
-                 * (Ahues & Tisseur, LAWN 122, 1997) */
+                /* The following is a conservative small subdiagonal
+                 * deflation criterion due to Ahues & Tisseur (LAWN 122,
+                 * 1997). It has better mathematical foundation and
+                 * improves accuracy in some cases. */
                 if (fabs(H[k + (k - 1) * ldh]) <= ulp * tst) {
                     ab = fabs(H[k + (k - 1) * ldh]) > fabs(H[(k - 1) + k * ldh]) ?
                          fabs(H[k + (k - 1) * ldh]) : fabs(H[(k - 1) + k * ldh]);
@@ -195,7 +196,7 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
                 h21 = s;
                 h22 = h11;
             } else {
-                /* Prepare to use Francis' f64 shift
+                /* Prepare to use Francis' double shift
                  * (i.e. 2nd degree generalized Rayleigh quotient) */
                 h11 = H[(i - 1) + (i - 1) * ldh];
                 h21 = H[i + (i - 1) * ldh];
@@ -241,9 +242,10 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
 
             /* Look for two consecutive small subdiagonal elements */
             for (m = i - 2; m >= l; m--) {
-                /* Determine the effect of starting the f64-shift QR
+                /* Determine the effect of starting the double-shift QR
                  * iteration at row m, and see if this would make H(m, m-1)
-                 * negligible. */
+                 * negligible.  (The following uses scaling to avoid
+                 * overflows and most underflows.) */
                 h21s = H[(m + 1) + m * ldh];
                 s = fabs(H[m + m * ldh] - rt2r) + fabs(rt2i) + fabs(h21s);
                 h21s = H[(m + 1) + m * ldh] / s;
@@ -358,7 +360,7 @@ SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
         }
 
         /* Failure to converge in remaining number of iterations */
-        *info = i + 1;  /* Return 1-based index for compatibility */
+        *info = i + 1;
         return;
 
     converged:

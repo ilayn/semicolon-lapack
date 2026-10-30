@@ -65,7 +65,7 @@ void cgehd2(const INT n, const INT ilo, const INT ihi,
 
     for (i = ilo; i <= ihi - 1; i++) {
         /* Compute elementary reflector H(i) to annihilate A(i+2:ihi,i) */
-        INT len = ihi - i;  /* length of reflector vector */
+        INT len = ihi - i;
         INT start = (i + 2 < n) ? (i + 2) : (n - 1);
 
         clarfg(len, &A[(i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);

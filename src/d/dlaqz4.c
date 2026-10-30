@@ -161,8 +161,6 @@ void dlaqz4(
 
         /* Chase the shift down */
         for (j = 0; j <= ns - 3 - i; j++) {
-            /* Fortran: DO J = 1, NS-1-I with 1-based I where I_f = i_c + 1 */
-            /* Loop count: NS-1-(i+1) = ns-2-i, so j goes 0 to ns-3-i */
             dlaqz2(1, 1, j, 0, ns - 1, ihi - ilo,
                    &A[ilo + ilo * lda], lda, &B[ilo + ilo * ldb], ldb,
                    ns + 1, 0, QC, ldqc, ns, 0, ZC, ldzc);
@@ -289,14 +287,6 @@ void dlaqz4(
     for (i = 0; i <= ns - 1; i += 2) {
         /* Chase the shift down to the bottom right corner */
         for (ishift = ihi - i - 2; ishift <= ihi - 2; ishift++) {
-            /* Fortran: DO ISHIFT = IHI-I-1, IHI-2 (1-based IHI, I goes 1,3,5,...)
-               C: ihi is 0-based, i goes 0,2,4,...
-               Fortran ISHIFT range: IHI-I-1 to IHI-2
-               With Fortran IHI = C ihi + 1 and Fortran I = C i + 1:
-               Fortran ISHIFT = (ihi+1)-(i+1)-1 to (ihi+1)-2 = ihi-i-1 to ihi-1
-               But ISHIFT is the k parameter to dlaqz2, which should be 0-based.
-               Fortran ISHIFT is 1-based position, C needs 0-based.
-               So C ishift should go from ihi-i-2 to ihi-2. */
             dlaqz2(1, 1, ishift, istartb, istopb, ihi,
                    A, lda, B, ldb, ns, ihi - ns + 1, QC, ldqc,
                    ns + 1, ihi - ns, ZC, ldzc);

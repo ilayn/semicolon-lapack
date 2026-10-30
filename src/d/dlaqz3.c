@@ -120,7 +120,7 @@ void dlaqz3(
 
     /* Get machine constants */
     safmin = dlamch("S");
-    (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
+    (void)(ONE / safmin);
     ulp = dlamch("P");
     smlnum = safmin * ((f64)n / ulp);
 
@@ -258,7 +258,6 @@ void dlaqz3(
 
     if (kwtop != ilo && s != ZERO) {
         /* Reflect spike back, this will create optimally packed bulges */
-        /* A(KWTOP:KWBOT, KWTOP-1) = A(KWTOP, KWTOP-1) * QC(1, 1:JW-ND) */
         {
             f64 a_val = A[kwtop + (kwtop - 1) * lda];
             for (INT i = kwtop; i <= kwbot; i++) {
@@ -284,7 +283,7 @@ void dlaqz3(
         k = kwbot - 1;
         while (k >= kwtop) {
             if ((k >= kwtop + 1) && A[(k + 1) + (k - 1) * lda] != ZERO) {
-                /* Move f64 pole block down and remove it */
+                /* Move double pole block down and remove it */
                 for (k2 = k - 1; k2 <= kwbot - 2; k2++) {
                     dlaqz2(1, 1, k2, kwtop, kwtop + jw - 1, kwbot,
                            A, lda, B, ldb, jw, kwtop, QC, ldqc, jw, kwtop, ZC, ldzc);

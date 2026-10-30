@@ -183,7 +183,7 @@ void ctrevc3(const char* side, const char* howmny, INT* select,
         /* ============================================================
          * Compute right eigenvectors.
          *
-         * IV is index of column in current block (1-based).
+         * IV is index of column in current block.
          * Non-blocked version always uses IV=NB=1;
          * blocked     version starts with IV=NB, goes down to 1.
          * (Note the "0-th" column is used to store the original diagonal.) */
@@ -289,7 +289,7 @@ R80:        ;
         /* ============================================================
          * Compute left eigenvectors.
          *
-         * IV is index of column in current block (1-based).
+         * IV is index of column in current block.
          * Non-blocked version always uses IV=1;
          * blocked     version starts with IV=1, goes up to NB.
          * (Note the "0-th" column is used to store the original diagonal.) */

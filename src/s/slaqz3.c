@@ -120,7 +120,7 @@ void slaqz3(
 
     /* Get machine constants */
     safmin = slamch("S");
-    (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
+    (void)(ONE / safmin);
     ulp = slamch("P");
     smlnum = safmin * ((f32)n / ulp);
 
@@ -258,7 +258,6 @@ void slaqz3(
 
     if (kwtop != ilo && s != ZERO) {
         /* Reflect spike back, this will create optimally packed bulges */
-        /* A(KWTOP:KWBOT, KWTOP-1) = A(KWTOP, KWTOP-1) * QC(1, 1:JW-ND) */
         {
             f32 a_val = A[kwtop + (kwtop - 1) * lda];
             for (INT i = kwtop; i <= kwbot; i++) {

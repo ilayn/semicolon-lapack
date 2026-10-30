@@ -132,7 +132,6 @@ void slaein(
                 B[n - 1 + (n - 1) * ldb] = eps3;
             }
 
-            /* Solve using SLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
                 v0norm = cblas_sasum(n, vr, 1);
@@ -195,7 +194,6 @@ void slaein(
                 B[0] = eps3;
             }
 
-            /* Solve using SLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
                 v0norm = cblas_sasum(n, vr, 1);
