@@ -54,7 +54,7 @@ void slacn2(
             X[i] = ONE / (f32)n;
         }
         *kase = 1;
-        isave[0] = 1;  // JUMP = 1
+        isave[0] = 1;
         return;
     }
 
@@ -84,19 +84,19 @@ L20:
         } else {
             X[i] = -ONE;
         }
-        isgn[i] = (INT)(X[i] + 0.5f);  // NINT equivalent
+        isgn[i] = (INT)(X[i] + 0.5f);
         if (X[i] < 0) isgn[i] = (INT)(X[i] - 0.5f);
     }
     *kase = 2;
-    isave[0] = 2;  // JUMP = 2
+    isave[0] = 2;
     return;
 
 L40:
     // ENTRY (isave[0] = 2)
     // FIRST ITERATION. X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 
-    isave[1] = cblas_isamax(n, X, 1);  // J (0-based)
-    isave[2] = 2;  // ITER = 2
+    isave[1] = cblas_isamax(n, X, 1);
+    isave[2] = 2;
 
     // MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
 
@@ -106,7 +106,7 @@ L50:
     }
     X[isave[1]] = ONE;
     *kase = 1;
-    isave[0] = 3;  // JUMP = 3
+    isave[0] = 3;
     return;
 
 L70:
@@ -148,7 +148,7 @@ L90:
         if (X[i] < 0) isgn[i] = (INT)(X[i] - 0.5f);
     }
     *kase = 2;
-    isave[0] = 4;  // JUMP = 4
+    isave[0] = 4;
     return;
 
 L110:
@@ -156,9 +156,9 @@ L110:
     // X HAS BEEN OVERWRITTEN BY TRANSPOSE(A)*X.
 
     jlast = isave[1];
-    isave[1] = cblas_isamax(n, X, 1);  // J (0-based)
+    isave[1] = cblas_isamax(n, X, 1);
     if ((X[jlast] != fabsf(X[isave[1]])) && (isave[2] < ITMAX)) {
-        isave[2] = isave[2] + 1;  // ITER++
+        isave[2] = isave[2] + 1;
         goto L50;
     }
 
@@ -171,7 +171,7 @@ L120:
         altsgn = -altsgn;
     }
     *kase = 1;
-    isave[0] = 5;  // JUMP = 5
+    isave[0] = 5;
     return;
 
 L140:

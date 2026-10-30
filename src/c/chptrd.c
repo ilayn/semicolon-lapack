@@ -102,7 +102,7 @@ void chptrd(const char* uplo, const INT n, c64* AP,
     if (upper) {
 
         /* Reduce the upper triangle of A. */
-        /* i1 is the 0-based index in AP of A(0, i+1). */
+        /* i1 is the index in AP of A(0, i+1). */
 
         i1 = n * (n - 1) / 2;
         AP[i1 + n - 1] = CMPLXF(crealf(AP[i1 + n - 1]), 0.0f);
@@ -149,7 +149,7 @@ void chptrd(const char* uplo, const INT n, c64* AP,
         d[0] = crealf(AP[0]);
     } else {
 
-        /* Reduce the lower triangle of A. ii is the 0-based index in AP of */
+        /* Reduce the lower triangle of A. ii is the index in AP of */
         /* A(i,i) and i1i1 is the index of A(i+1,i+1). */
 
         ii = 0;

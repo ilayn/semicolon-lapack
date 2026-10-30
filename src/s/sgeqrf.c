@@ -43,7 +43,7 @@ void sgeqrf(const INT m, const INT n,
     INT i, ib, iinfo;
     INT lquery;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     k = m < n ? m : n;
     lquery = (lwork == -1);
@@ -89,14 +89,15 @@ void sgeqrf(const INT m, const INT n,
     ldwork = n;
 
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("GEQRF");
         if (nx < 0) nx = 0;
         if (nx < k) {
             /* Determine if workspace is large enough for blocked code */
             iws = n * nb;
             if (lwork < iws) {
-                /* Not enough workspace: reduce nb */
+                /* Not enough workspace to use optimal NB:  reduce NB and
+                 * determine the minimum value of NB. */
                 nb = lwork / n;
                 nbmin = lapack_get_nbmin("GEQRF");
                 if (nbmin < 2) nbmin = 2;
@@ -105,11 +106,12 @@ void sgeqrf(const INT m, const INT n,
     }
 
     if (nb >= nbmin && nb < k && nx < k) {
-        /* Use blocked code */
+        /* Use blocked code initially */
         for (i = 0; i < k - nx; i += nb) {
             ib = (k - i) < nb ? (k - i) : nb;
 
-            /* Factor block A(i:m-1, i:i+ib-1) */
+            /* Compute the QR factorization of the current block
+             * A(i:m-1, i:i+ib-1) */
             sgeqr2(m - i, ib, &A[i + i * lda], lda, &tau[i], work, &iinfo);
 
             if (i + ib < n) {
@@ -118,7 +120,7 @@ void sgeqrf(const INT m, const INT n,
                 slarft("F", "C", m - i, ib,
                        &A[i + i * lda], lda, &tau[i], work, ldwork);
 
-                /* Apply H^T to A(i:m-1, i+ib:n-1) from the left */
+                /* Apply H**T to A(i:m-1, i+ib:n-1) from the left */
                 slarfb("L", "T", "F", "C",
                        m - i, n - i - ib, ib,
                        &A[i + i * lda], lda,
@@ -131,7 +133,7 @@ void sgeqrf(const INT m, const INT n,
         i = 0;
     }
 
-    /* Use unblocked code for the remaining columns */
+    /* Use unblocked code to factor the last or only block. */
     if (i < k) {
         sgeqr2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }

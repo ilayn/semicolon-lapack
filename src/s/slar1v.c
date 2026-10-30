@@ -75,25 +75,19 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
             INT* restrict isuppz, f32* nrminv, f32* resid,
             f32* rqcorr, f32* restrict work)
 {
-    /* Local variables */
     INT i, r1, r2, neg1, neg2;
     INT sawnan1, sawnan2;
     f32 dplus, dminus, s, tmp, eps;
 
-    /* Workspace segment offsets (0-based):
-     *   work[indlpl .. indlpl+n-2]: L+ values
-     *   work[indumn .. indumn+n-2]: U- values
-     *   work[inds   .. inds+n-1]:   S  values (stationary transform)
-     *   work[indp   .. indp+n-1]:   P  values (progressive transform) */
+    /* Storage for LPLUS */
     const INT indlpl = 0;
+    /* Storage for UMINUS */
     const INT indumn = n;
     const INT inds   = 2 * n;
     const INT indp   = 3 * n;
 
     eps = slamch("Precision");
 
-    /* Determine the range [r1, r2] for the twist index search.
-     * r < 0 means "search for best twist index". */
     if (*r < 0) {
         r1 = b1;
         r2 = bn;
@@ -102,7 +96,6 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
         r2 = *r;
     }
 
-    /* Initialize the S segment at position b1 */
     if (b1 == 0) {
         work[inds + b1] = 0.0f;
     } else {
@@ -116,7 +109,6 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     neg1 = 0;
     s = work[inds + b1] - lambda;
 
-    /* Forward loop from b1 to r1-1 */
     for (i = b1; i < r1; i++) {
         dplus = D[i] + s;
         work[indlpl + i] = LD[i] / dplus;
@@ -129,7 +121,6 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     sawnan1 = sisnan(s);
 
     if (!sawnan1) {
-        /* Forward loop from r1 to r2-1 */
         for (i = r1; i < r2; i++) {
             dplus = D[i] + s;
             work[indlpl + i] = LD[i] / dplus;
@@ -140,7 +131,7 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     }
 
     if (sawnan1) {
-        /* Slower NaN-safe version of the stationary transform */
+        /* Runs a slower version of the above loop if a NaN is detected */
         neg1 = 0;
         s = work[inds + b1] - lambda;
 
@@ -181,7 +172,6 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     neg2 = 0;
     work[indp + bn] = D[bn] - lambda;
 
-    /* Backward loop from bn-1 down to r1 */
     for (i = bn - 1; i >= r1; i--) {
         dminus = LLD[i] + work[indp + i + 1];
         tmp = D[i] / dminus;
@@ -195,7 +185,7 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     sawnan2 = sisnan(tmp);
 
     if (sawnan2) {
-        /* Slower NaN-safe version of the progressive transform */
+        /* Runs a slower version of the above loop if a NaN is detected */
         neg2 = 0;
         work[indp + bn] = D[bn] - lambda;
 
@@ -268,7 +258,7 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
             *ztz = *ztz + Z[i] * Z[i];
         }
     } else {
-        /* Slower NaN-safe upward loop */
+        /* Run slower loop if NaN occurred. */
         for (i = *r - 1; i >= b1; i--) {
             if (Z[i + 1] == 0.0f) {
                 Z[i] = -(LD[i + 1] / LD[i]) * Z[i + 2];
@@ -285,7 +275,7 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
     }
 
     /*
-     * Compute the FP vector downwards from r
+     * Compute the FP vector downwards from r in blocks of size BLKSIZ
      */
     if (!sawnan1 && !sawnan2) {
         for (i = *r; i < bn; i++) {
@@ -298,7 +288,7 @@ void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
             *ztz = *ztz + Z[i + 1] * Z[i + 1];
         }
     } else {
-        /* Slower NaN-safe downward loop */
+        /* Run slower loop if NaN occurred. */
         for (i = *r; i < bn; i++) {
             if (Z[i] == 0.0f) {
                 Z[i + 1] = -(LD[i - 1] / LD[i]) * Z[i - 1];

@@ -29,7 +29,6 @@
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
-/* LV = max number of uniform random values generated per slaruv call */
 #define LV 128
 
 #define TWO_PI 6.2831853071795864769252867665590057683943f
@@ -67,8 +66,7 @@ void slarnv(const INT idist, INT* restrict iseed, const INT n,
                 X[iv + i] = 2.0f * U[i] - 1.0f;
             }
         } else if (idist == 3) {
-            /* Convert generated numbers to normal (0,1) distribution
-             * using the Box-Muller transform */
+            /* Convert generated numbers to normal (0,1) distribution */
             for (i = 0; i < il; i++) {
                 X[iv + i] = sqrtf(-2.0f * logf(U[2 * i])) *
                             cosf(TWO_PI * U[2 * i + 1]);

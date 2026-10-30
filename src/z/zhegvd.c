@@ -129,7 +129,6 @@ void zhegvd(
     zheevd(jobz, uplo, n, A, lda, W, work, lwork, rwork, lrwork,
            iwork, liwork, info);
 
-    /* Update optimal workspace sizes */
     lopt = (lopt > (INT)creal(work[0])) ? lopt : (INT)creal(work[0]);
     lropt = (lropt > (INT)rwork[0]) ? lropt : (INT)rwork[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
@@ -137,7 +136,8 @@ void zhegvd(
     if (wantz && *info == 0) {
         /* Backtransform eigenvectors to the original problem */
         if (itype == 1 || itype == 2) {
-            /* x = inv(L)**H*y or inv(U)*y */
+            /* For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+               backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y */
             if (upper) {
                 trans = 'N';
             } else {
@@ -149,7 +149,8 @@ void zhegvd(
                         trans == 'N' ? CblasNoTrans : CblasConjTrans,
                         CblasNonUnit, n, n, &CONE, B, ldb, A, lda);
         } else if (itype == 3) {
-            /* x = L*y or U**H*y */
+            /* For B*A*x=(lambda)*x;
+               backtransform eigenvectors: x = L*y or U**H *y */
             if (upper) {
                 trans = 'C';
             } else {

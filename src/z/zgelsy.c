@@ -78,7 +78,6 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
             f64* restrict rwork,
             INT* info)
 {
-    /* Constants from Fortran source: IMAX=1, IMIN=2 */
     const INT IMAX = 1;
     const INT IMIN = 2;
     const c128 CZERO = CMPLX(0.0, 0.0);
@@ -92,10 +91,9 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
     f64 smax, smaxpr, smin, sminpr;
     c128 c1, c2, s1, s2;
 
-    /* Initialization */
     mn = m < n ? m : n;
-    ismin = mn;       /* 0-based offset: Fortran ISMIN = MN+1 */
-    ismax = 2 * mn;   /* 0-based offset: Fortran ISMAX = 2*MN+1 */
+    ismin = mn;
+    ismax = 2 * mn;
 
     /* Test the input arguments */
     *info = 0;
@@ -188,14 +186,13 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
     }
 
     /* Compute QR factorization with column pivoting of A:
-     *   A * P = Q * R
-     * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
+     *   A * P = Q * R */
     zgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, rwork, &iinfo);
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = CONE;
     work[ismax] = CONE;
-    smax = cabs(A[0]);  /* |A(0,0)| = |R(1,1)| */
+    smax = cabs(A[0]);
     smin = smax;
 
     if (cabs(A[0]) == 0.0) {
@@ -208,9 +205,8 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
         *rank = 1;
     }
 
-    /* Rank determination loop (Fortran GO TO 10 pattern -> while loop) */
     while (*rank < mn) {
-        INT i = *rank;  /* 0-based column index: Fortran I = RANK+1 */
+        INT i = *rank;
         zlaic1(IMIN, *rank, &work[ismin], smin,
                &A[0 + i * lda], A[i + i * lda],
                &sminpr, &s1, &c1);
@@ -233,7 +229,7 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
         (*rank)++;
     }
 
-    /* workspace: 3*MN.
+    /* complex workspace: 3*MN.
      *
      * Logically partition R = [ R11 R12 ]
      *                          [  0  R22 ]
@@ -241,14 +237,11 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
      *
      * [R11,R12] = [ T11, 0 ] * Y */
     if (*rank < n) {
-        /* RZ factorization of [R11 R12]:
-         * tau stored in work[mn..2*mn-1], sub-workspace in work[2*mn..] */
         ztzrzf(*rank, n, A, lda, &work[mn], &work[2 * mn],
                lwork - 2 * mn, &iinfo);
     }
 
-    /* B(0:m-1, 0:nrhs-1) := Q**H * B(0:m-1, 0:nrhs-1)
-     * sub-workspace in work[2*mn..] */
+    /* B(0:m-1, 0:nrhs-1) := Q**H * B(0:m-1, 0:nrhs-1) */
     zunmqr("L", "C", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
 
@@ -256,22 +249,19 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
     cblas_ztrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
                 CblasNonUnit, *rank, nrhs, &CONE, A, lda, B, ldb);
 
-    /* B(rank:n-1, 0:nrhs-1) = 0 */
     for (INT j = 0; j < nrhs; j++) {
         for (INT i = *rank; i < n; i++) {
             B[i + j * ldb] = CZERO;
         }
     }
 
-    /* B(0:n-1, 0:nrhs-1) := Z**H * B(0:n-1, 0:nrhs-1)
-     * sub-workspace in work[2*mn..] */
+    /* B(0:n-1, 0:nrhs-1) := Y**H * B(0:n-1, 0:nrhs-1) */
     if (*rank < n) {
         zunmrz("L", "C", n, nrhs, *rank, n - *rank, A, lda,
                &work[mn], B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
     }
 
-    /* B(0:n-1, 0:nrhs-1) := P * B(0:n-1, 0:nrhs-1)
-     * Apply column permutation: result[jpvt[i]] = B[i] */
+    /* B(0:n-1, 0:nrhs-1) := P * B(0:n-1, 0:nrhs-1) */
     for (INT j = 0; j < nrhs; j++) {
         for (INT i = 0; i < n; i++) {
             work[jpvt[i]] = B[i + j * ldb];

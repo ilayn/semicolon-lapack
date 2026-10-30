@@ -37,51 +37,48 @@ void zlaqsp(
     const f64 amax,
     char* equed)
 {
-    // zlaqsp.f lines 143-144: Parameters
     const f64 ONE = 1.0;
-    const f64 THRESH = 0.1;  // zlaqsp.f line 144: THRESH = 0.1D+0
+    const f64 THRESH = 0.1;
 
-    // zlaqsp.f lines 147-148: Local Scalars
     INT i, j, jc;
     f64 cj, large, small;
 
-    // zlaqsp.f lines 159-162: Quick return if possible
+    // Quick return if possible
     if (n <= 0) {
         *equed = 'N';
         return;
     }
 
-    // zlaqsp.f lines 166-167: Initialize LARGE and SMALL
-    small = dlamch("S") / dlamch("P");  // Safe minimum / Precision
+    // Initialize LARGE and SMALL
+    small = dlamch("S") / dlamch("P");
     large = ONE / small;
 
-    // zlaqsp.f lines 169-204: Check if equilibration is needed
     if (scond >= THRESH && amax >= small && amax <= large) {
-        // zlaqsp.f lines 173: No equilibration
+        // No equilibration
         *equed = 'N';
     } else {
-        // zlaqsp.f lines 176-202: Replace A by diag(S) * A * diag(S)
+        // Replace A by diag(S) * A * diag(S)
         if (uplo[0] == 'U' || uplo[0] == 'u') {
-            // zlaqsp.f lines 182-189: Upper triangle of A is stored
-            jc = 0;  // zlaqsp.f line 182: JC = 1 (0-based: jc = 0)
-            for (j = 0; j < n; j++) {  // zlaqsp.f line 183: DO 20 J = 1, N
-                cj = S[j];  // zlaqsp.f line 184
-                for (i = 0; i <= j; i++) {  // zlaqsp.f line 185: DO 10 I = 1, J
-                    AP[jc + i] = cj * S[i] * AP[jc + i];  // zlaqsp.f line 186
+            // Upper triangle of A is stored
+            jc = 0;
+            for (j = 0; j < n; j++) {
+                cj = S[j];
+                for (i = 0; i <= j; i++) {
+                    AP[jc + i] = cj * S[i] * AP[jc + i];
                 }
-                jc = jc + (j + 1);  // zlaqsp.f line 188: JC = JC + J
+                jc = jc + (j + 1);
             }
         } else {
-            // zlaqsp.f lines 194-201: Lower triangle of A is stored
-            jc = 0;  // zlaqsp.f line 194: JC = 1 (0-based: jc = 0)
-            for (j = 0; j < n; j++) {  // zlaqsp.f line 195: DO 40 J = 1, N
-                cj = S[j];  // zlaqsp.f line 196
-                for (i = j; i < n; i++) {  // zlaqsp.f line 197: DO 30 I = J, N
-                    AP[jc + i - j] = cj * S[i] * AP[jc + i - j];  // zlaqsp.f line 198
+            // Lower triangle of A is stored
+            jc = 0;
+            for (j = 0; j < n; j++) {
+                cj = S[j];
+                for (i = j; i < n; i++) {
+                    AP[jc + i - j] = cj * S[i] * AP[jc + i - j];
                 }
-                jc = jc + (n - j);  // zlaqsp.f line 200: JC = JC + N - J + 1
+                jc = jc + (n - j);
             }
         }
-        *equed = 'Y';  // zlaqsp.f line 203
+        *equed = 'Y';
     }
 }

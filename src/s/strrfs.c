@@ -106,7 +106,6 @@ void strrfs(
     f32 safe1 = nz * safmin;
     f32 safe2 = safe1 / eps;
 
-    /* Set up CBLAS enums */
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE cblas_trans = notran ? CblasNoTrans : CblasTrans;
     CBLAS_TRANSPOSE cblas_transt = notran ? CblasTrans : CblasNoTrans;
@@ -118,14 +117,6 @@ void strrfs(
         /*
          * Compute residual R = B - op(A) * X,
          * where op(A) = A or A**T, depending on TRANS.
-         *
-         * Copy X(:,j) into work[n..2n-1], then compute
-         * work[n..2n-1] = op(A) * X(:,j) via dtrmv,
-         * then work[n..2n-1] = work[n..2n-1] - B(:,j)
-         * so work[n..2n-1] = op(A)*X - B = -(B - op(A)*X) = -R
-         * Actually the Fortran does: work(n+1) = X, dtrmv, daxpy(-1, B, work(n+1))
-         * so work(n+1:2n) = op(A)*X - B
-         * The sign does not matter for the absolute value usage below.
          */
         cblas_scopy(n, &X[j * ldx], 1, &work[n], 1);
         cblas_strmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
@@ -133,21 +124,22 @@ void strrfs(
         cblas_saxpy(n, -ONE, &B[j * ldb], 1, &work[n], 1);
 
         /*
-         * Compute componentwise relative backward error from formula:
+         * Compute componentwise relative backward error from formula
          *
-         * max(i) ( |R(i)| / ( |op(A)|*|X| + |B| )(i) )
+         * max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
          *
-         * where |Z| is the componentwise absolute value of the matrix
-         * or vector Z.
+         * where abs(Z) is the componentwise absolute value of the matrix
+         * or vector Z.  If the i-th component of the denominator is less
+         * than SAFE2, then SAFE1 is added to the i-th components of the
+         * numerator and denominator before dividing.
          */
 
-        /* Initialize work[0..n-1] = |B(:,j)| */
         for (INT i = 0; i < n; i++) {
             work[i] = fabsf(B[i + j * ldb]);
         }
 
         if (notran) {
-            /* Compute |A|*|X| + |B| */
+            /* Compute abs(A)*abs(X) + abs(B). */
             if (upper) {
                 if (nounit) {
                     for (INT k = 0; k < n; k++) {
@@ -184,7 +176,7 @@ void strrfs(
                 }
             }
         } else {
-            /* Compute |A**T|*|X| + |B| */
+            /* Compute abs(A**T)*abs(X) + abs(B). */
             if (upper) {
                 if (nounit) {
                     for (INT k = 0; k < n; k++) {
@@ -224,7 +216,6 @@ void strrfs(
             }
         }
 
-        /* Compute BERR(j) */
         f32 s = ZERO;
         for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {
@@ -238,25 +229,27 @@ void strrfs(
         berr[j] = s;
 
         /*
-         * Bound error from formula:
+         * Bound error from formula
          *
-         * norm(X - XTRUE) / norm(X) <= FERR =
-         * norm( |inv(op(A))| * ( |R| + NZ*EPS*( |op(A)|*|X|+|B| ))) / norm(X)
+         * norm(X - XTRUE) / norm(X) .le. FERR =
+         * norm( abs(inv(op(A)))*
+         *    ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
          *
          * where
          *   norm(Z) is the magnitude of the largest component of Z
          *   inv(op(A)) is the inverse of op(A)
-         *   |Z| is the componentwise absolute value of the matrix or vector Z
+         *   abs(Z) is the componentwise absolute value of the matrix or
+         *      vector Z
          *   NZ is the maximum number of nonzeros in any row of A, plus 1
          *   EPS is machine epsilon
          *
-         * The i-th component of |R|+NZ*EPS*(|op(A)|*|X|+|B|)
+         * The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
          * is incremented by SAFE1 if the i-th component of
-         * |op(A)|*|X| + |B| is less than SAFE2.
+         * abs(op(A))*abs(X) + abs(B) is less than SAFE2.
          *
          * Use SLACN2 to estimate the infinity-norm of the matrix
-         *   inv(op(A)) * diag(W),
-         * where W = |R| + NZ*EPS*( |op(A)|*|X|+|B| )
+         *    inv(op(A)) * diag(W),
+         * where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
          */
         for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {

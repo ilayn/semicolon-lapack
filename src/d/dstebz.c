@@ -60,7 +60,6 @@ void dstebz(const char* range, const char* order, const INT n,
             INT* restrict iwork,
             INT* info)
 {
-    /* Internal parameters from the Fortran source */
     const f64 FUDGE = 2.1;
     const f64 RELFAC = 2.0;
 
@@ -126,7 +125,7 @@ void dstebz(const char* range, const char* order, const INT n,
     if (n == 0)
         return;
 
-    /* Simplification: if RANGE='I' and IL=1 and IU=N, treat as RANGE='A' */
+    /* Simplifications: */
     if (irange == 3 && il == 0 && iu == n - 1)
         irange = 1;
 
@@ -143,7 +142,7 @@ void dstebz(const char* range, const char* order, const INT n,
     /* Special case when N=1 */
     if (n == 1) {
         *nsplit = 1;
-        isplit[0] = 0;  /* 0-based: last index of only block is 0 */
+        isplit[0] = 0;
         if (irange == 2 && (vl >= D[0] || vu < D[0])) {
             *m = 0;
         } else {
@@ -156,7 +155,7 @@ void dstebz(const char* range, const char* order, const INT n,
 
     /* Compute Splitting Points */
     *nsplit = 1;
-    work[n - 1] = 0.0;  /* Fortran: WORK(N) = ZERO */
+    work[n - 1] = 0.0;
     pivmin = 1.0;
 
     for (j = 1; j < n; j++) {
@@ -170,7 +169,7 @@ void dstebz(const char* range, const char* order, const INT n,
          * e(j)**2 does. */
         tmp2 = (fabs(D[j]) * ulp) * (fabs(D[j - 1]) * ulp);
         if (tmp1 < tmp2 || tmp1 == 0.0) {
-            isplit[*nsplit - 1] = j - 1;  /* 0-based: end of current block */
+            isplit[*nsplit - 1] = j - 1;
             *nsplit = *nsplit + 1;
             work[j - 1] = 0.0;
         } else {
@@ -178,7 +177,7 @@ void dstebz(const char* range, const char* order, const INT n,
             pivmin = (pivmin > tmp1) ? pivmin : tmp1;
         }
     }
-    isplit[*nsplit - 1] = n - 1;  /* 0-based: last block ends at n-1 */
+    isplit[*nsplit - 1] = n - 1;
     pivmin = pivmin * safemn;
 
     /* Compute Interval and ATOLI */
@@ -195,8 +194,6 @@ void dstebz(const char* range, const char* order, const INT n,
         tmp1 = 0.0;
 
         for (j = 0; j < n - 1; j++) {
-            /* Fortran: DO J=1,N-1 with TMP2 = SQRT(WORK(J))
-             * work[j] = E[j]^2 (stored above for j=0..n-2) */
             tmp2 = sqrt(work[j]);
             gu = (gu > D[j] + tmp1 + tmp2) ? gu : D[j] + tmp1 + tmp2;
             gl = (gl < D[j] - tmp1 - tmp2) ? gl : D[j] - tmp1 - tmp2;
@@ -218,43 +215,13 @@ void dstebz(const char* range, const char* order, const INT n,
             atoli = abstol;
         }
 
-        /*
-         * Set up the initial intervals for DLAEBZ IJOB=3 call.
-         * AB is stored at work[n..] with mmax=2 (column-major, 2 rows).
-         * In Fortran: WORK(N+1..N+6) maps to C work[n..n+5].
-         * AB layout (mmax=2, column-major):
-         *   AB[0 + 0*2] = work[n+0], AB[1 + 0*2] = work[n+1]  (column 0: lower bounds)
-         *   AB[0 + 1*2] = work[n+2], AB[1 + 1*2] = work[n+3]  (column 1: upper bounds)
-         * C is stored at work[n+4..n+5]:
-         *   C[0] = work[n+4], C[1] = work[n+5]
-         *
-         * Fortran sets:
-         *   WORK(N+1) = GL  -> AB[0,0]
-         *   WORK(N+2) = GL  -> AB[1,0]
-         *   WORK(N+3) = GU  -> AB[0,1]
-         *   WORK(N+4) = GU  -> AB[1,1]
-         *   WORK(N+5) = GL  -> C[0]
-         *   WORK(N+6) = GU  -> C[1]
-         */
-        work[n + 0] = gl;  /* AB[0 + 0*2] */
-        work[n + 1] = gl;  /* AB[1 + 0*2] */
-        work[n + 2] = gu;  /* AB[0 + 1*2] */
-        work[n + 3] = gu;  /* AB[1 + 1*2] */
-        work[n + 4] = gl;  /* C[0] */
-        work[n + 5] = gu;  /* C[1] */
+        work[n + 0] = gl;
+        work[n + 1] = gl;
+        work[n + 2] = gu;
+        work[n + 3] = gu;
+        work[n + 4] = gl;
+        work[n + 5] = gu;
 
-        /*
-         * NAB is stored in iwork[0..3] with mmax=2 (column-major, 2 rows).
-         * NVAL is stored in iwork[4..5].
-         *
-         * Fortran sets:
-         *   IWORK(1) = -1   -> NAB[0 + 0*2] = iwork[0]
-         *   IWORK(2) = -1   -> NAB[1 + 0*2] = iwork[1]
-         *   IWORK(3) = N+1  -> NAB[0 + 1*2] = iwork[2]
-         *   IWORK(4) = N+1  -> NAB[1 + 1*2] = iwork[3]
-         *   IWORK(5) = IL-1 -> NVAL[0] = iwork[4]
-         *   IWORK(6) = IU   -> NVAL[1] = iwork[5]
-         */
         iwork[0] = -1;
         iwork[1] = -1;
         iwork[2] = n + 1;
@@ -262,64 +229,25 @@ void dstebz(const char* range, const char* order, const INT n,
         iwork[4] = il;
         iwork[5] = iu + 1;
 
-        /*
-         * DLAEBZ(3, ITMAX, N, 2, 2, NB, ATOLI, RTOLI, PIVMIN,
-         *         D, E, WORK, IWORK(5), WORK(N+1), WORK(N+5),
-         *         IOUT, IWORK, W, IBLOCK, IINFO)
-         *
-         * In our C interface:
-         *   ijob=3, nitmax=itmax, n=n, mmax=2, minp=2, nbmin=nb
-         *   D=D, E=E, E2=work (the E^2 values stored in work[0..n-2])
-         *   nval=&iwork[4], AB=&work[n], C=&work[n+4]
-         *   mout=&iout, NAB=iwork, work=W, iwork=iblock
-         *   info=&iinfo
-         */
         dlaebz(3, itmax, n, 2, 2, nb, atoli, rtoli, pivmin,
                D, E, work,
                &iwork[4], &work[n], &work[n + 4],
                &iout, iwork, W, iblock, &iinfo);
 
-        /*
-         * Extract WL, WLU, NWL, WU, WUL, NWU.
-         * Fortran checks IWORK(6)==IU; we check iwork[5]==iu.
-         *
-         * AB layout after dlaebz (mmax=2, column-major):
-         *   AB[0+0*2] = work[n+0]  (row 0, col 0 = lower bound of interval 0)
-         *   AB[1+0*2] = work[n+1]  (row 1, col 0 = lower bound of interval 1)
-         *   AB[0+1*2] = work[n+2]  (row 0, col 1 = upper bound of interval 0)
-         *   AB[1+1*2] = work[n+3]  (row 1, col 1 = upper bound of interval 1)
-         *
-         * NAB layout (mmax=2, column-major):
-         *   NAB[0+0*2] = iwork[0]  (row 0, col 0)
-         *   NAB[1+0*2] = iwork[1]  (row 1, col 0)
-         *   NAB[0+1*2] = iwork[2]  (row 0, col 1)
-         *   NAB[1+1*2] = iwork[3]  (row 1, col 1)
-         *
-         * Fortran WORK(N+1) = AB(1,1) = work[n+0]
-         * Fortran WORK(N+2) = AB(2,1) = work[n+1]
-         * Fortran WORK(N+3) = AB(1,2) = work[n+2]
-         * Fortran WORK(N+4) = AB(2,2) = work[n+3]
-         *
-         * Fortran IWORK(1) = NAB(1,1) = iwork[0]
-         * Fortran IWORK(2) = NAB(2,1) = iwork[1]
-         * Fortran IWORK(3) = NAB(1,2) = iwork[2]
-         * Fortran IWORK(4) = NAB(2,2) = iwork[3]
-         */
         if (iwork[5] == iu + 1) {
-            /* Fortran: IWORK(6).EQ.IU */
-            wl  = work[n + 0];  /* WORK(N+1) = AB(1,1) */
-            wlu = work[n + 2];  /* WORK(N+3) = AB(1,2) */
-            nwl = iwork[0];     /* IWORK(1) = NAB(1,1) */
-            wu  = work[n + 3];  /* WORK(N+4) = AB(2,2) */
-            wul = work[n + 1];  /* WORK(N+2) = AB(2,1) */
-            nwu = iwork[3];     /* IWORK(4) = NAB(2,2) */
+            wl  = work[n + 0];
+            wlu = work[n + 2];
+            nwl = iwork[0];
+            wu  = work[n + 3];
+            wul = work[n + 1];
+            nwu = iwork[3];
         } else {
-            wl  = work[n + 1];  /* WORK(N+2) = AB(2,1) */
-            wlu = work[n + 3];  /* WORK(N+4) = AB(2,2) */
-            nwl = iwork[1];     /* IWORK(2) = NAB(2,1) */
-            wu  = work[n + 2];  /* WORK(N+3) = AB(1,2) */
-            wul = work[n + 0];  /* WORK(N+1) = AB(1,1) */
-            nwu = iwork[2];     /* IWORK(3) = NAB(1,2) */
+            wl  = work[n + 1];
+            wlu = work[n + 3];
+            nwl = iwork[1];
+            wu  = work[n + 2];
+            wul = work[n + 0];
+            nwu = iwork[2];
         }
 
         if (nwl < 0 || nwl >= n || nwu < 1 || nwu > n) {
@@ -329,10 +257,6 @@ void dstebz(const char* range, const char* order, const INT n,
     } else {
         /*
          * RANGE='A' or 'V' -- Set ATOLI
-         *
-         * Compute 1-norm of the tridiagonal matrix.
-         * Fortran: TNORM = MAX(|D(1)|+|E(1)|, |D(N)|+|E(N-1)|)
-         * In 0-based: D[0]+|E[0]|, |D[n-1]|+|E[n-2]|
          */
         tnorm = fabs(D[0]) + fabs(E[0]);
         {
@@ -341,8 +265,6 @@ void dstebz(const char* range, const char* order, const INT n,
         }
 
         for (j = 1; j < n - 1; j++) {
-            /* Fortran: DO J=2,N-1; TNORM = MAX(TNORM, |D(J)|+|E(J-1)|+|E(J)|)
-             * 0-based: j=1..n-2; |D[j]| + |E[j-1]| + |E[j]| */
             tmp1 = fabs(D[j]) + fabs(E[j - 1]) + fabs(E[j]);
             tnorm = (tnorm > tmp1) ? tnorm : tmp1;
         }
@@ -372,14 +294,13 @@ void dstebz(const char* range, const char* order, const INT n,
     nwu = 0;
 
     for (jb = 0; jb < *nsplit; jb++) {
-        ibegin = iend + 1;          /* 0-based start of block */
-        iend = isplit[jb];           /* 0-based last index of block */
-        in = iend - ibegin + 1;     /* block size */
+        ibegin = iend + 1;
+        iend = isplit[jb];
+        in = iend - ibegin + 1;
 
         if (in == 1) {
             /*
              * Special Case -- IN=1
-             * D[ibegin] is the single diagonal element of this block.
              */
             if (irange == 1 || wl >= D[ibegin] - pivmin)
                 nwl = nwl + 1;
@@ -402,8 +323,6 @@ void dstebz(const char* range, const char* order, const INT n,
             tmp1 = 0.0;
 
             for (j = ibegin; j < iend; j++) {
-                /* Fortran: DO J=IBEGIN,IEND-1; TMP2 = ABS(E(J))
-                 * In 0-based: E[j] is the off-diagonal between D[j] and D[j+1] */
                 tmp2 = fabs(E[j]);
                 gu = (gu > D[j] + tmp1 + tmp2) ? gu : D[j] + tmp1 + tmp2;
                 gl = (gl < D[j] - tmp1 - tmp2) ? gl : D[j] - tmp1 - tmp2;
@@ -429,39 +348,20 @@ void dstebz(const char* range, const char* order, const INT n,
                 if (gu <= wl) {
                     nwl = nwl + in;
                     nwu = nwu + in;
-                    continue;  /* GO TO 70 */
+                    continue;
                 }
                 gl = (gl > wl) ? gl : wl;
                 gu = (gu < wu) ? gu : wu;
                 if (gl >= gu)
-                    continue;  /* GO TO 70 */
+                    continue;
             }
 
             /*
-             * Set Up Initial Interval for DLAEBZ IJOB=1 call.
-             *
-             * AB is stored at work[n..] with mmax=in (column-major, in rows).
-             * AB[0 + 0*in] = work[n + 0] = GL
-             * AB[0 + 1*in] = work[n + in] = GU
-             *
-             * Fortran: WORK(N+1) = GL, WORK(N+IN+1) = GU
+             * Set Up Initial Interval
              */
             work[n] = gl;
             work[n + in] = gu;
 
-            /*
-             * DLAEBZ(1, 0, IN, IN, 1, NB, ATOLI, RTOLI, PIVMIN,
-             *         D(IBEGIN), E(IBEGIN), WORK(IBEGIN),
-             *         IDUMMA, WORK(N+1), WORK(N+2*IN+1),
-             *         IM, IWORK, W(M+1), IBLOCK(M+1), IINFO)
-             *
-             * In our C interface:
-             *   ijob=1, nitmax=0, n=in, mmax=in, minp=1, nbmin=nb
-             *   D=&D[ibegin], E=&E[ibegin], E2=&work[ibegin]
-             *   nval=idumma, AB=&work[n], C=&work[n+2*in]
-             *   mout=&im, NAB=iwork, work=&W[m_val], iwork=&iblock[m_val]
-             *   info=&iinfo
-             */
             dlaebz(1, 0, in, in, 1, nb, atoli, rtoli, pivmin,
                    &D[ibegin], &E[ibegin], &work[ibegin],
                    idumma, &work[n], &work[n + 2 * in],
@@ -472,55 +372,18 @@ void dstebz(const char* range, const char* order, const INT n,
             iwoff = m_val - iwork[0];
 
             /*
-             * Compute Eigenvalues via DLAEBZ IJOB=2 call.
-             *
-             * ITMAX = INT((LOG(GU-GL+PIVMIN)-LOG(PIVMIN))/LOG(2)) + 2
+             * Compute Eigenvalues
              */
             itmax = (INT)((log(gu - gl + pivmin) - log(pivmin)) / log(2.0)) + 2;
 
-            /*
-             * DLAEBZ(2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI, PIVMIN,
-             *         D(IBEGIN), E(IBEGIN), WORK(IBEGIN),
-             *         IDUMMA, WORK(N+1), WORK(N+2*IN+1),
-             *         IOUT, IWORK, W(M+1), IBLOCK(M+1), IINFO)
-             */
             dlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin,
                    &D[ibegin], &E[ibegin], &work[ibegin],
                    idumma, &work[n], &work[n + 2 * in],
                    &iout, iwork, &W[m_val], &iblock[m_val], &iinfo);
 
             /*
-             * Copy Eigenvalues Into W and IBLOCK.
+             * Copy Eigenvalues Into W and IBLOCK
              * Use -(jb+2) for block number for unconverged eigenvalues.
-             *
-             * Fortran loop: DO J=1,IOUT
-             *   TMP1 = HALF*(WORK(J+N) + WORK(J+IN+N))
-             *   ...
-             *   DO JE = IWORK(J)+1+IWOFF, IWORK(J+IN)+IWOFF
-             *
-             * In 0-based:
-             *   work[n + j] = AB[j + 0*in] (lower bound for interval j, 0-based)
-             *   work[n + in + j] = AB[j + 1*in] (upper bound for interval j)
-             *   iwork[j] = NAB[j + 0*in] (count at lower bound)
-             *   iwork[in + j] = NAB[j + 1*in] (count at upper bound)
-             *
-             * Fortran: WORK(J+N) is AB(J,1) in 1-based. In 0-based: work[n + (j-1)]
-             *          for J=1..IOUT => work[n+0..n+iout-1]
-             * But dlaebz uses 0-based internally: AB[j + 0*mmax] = work[n + j]
-             * and AB[j + 1*mmax] = work[n + in + j], for j=0..iout-1.
-             *
-             * Fortran: IWORK(J) is NAB(J,1) in 1-based = iwork[j-1] in 0-based.
-             *          IWORK(J+IN) is NAB(J,2) = iwork[j-1+in] in 0-based.
-             *
-             * Actually, our dlaebz uses 0-based indexing throughout, so:
-             *   AB[j + 0*in] = work[n + j]     for j=0..iout-1
-             *   AB[j + 1*in] = work[n + in + j] for j=0..iout-1
-             *   NAB[j + 0*in] = iwork[j]       for j=0..iout-1
-             *   NAB[j + 1*in] = iwork[in + j]  for j=0..iout-1
-             *
-             * The Fortran loop "DO J=1,IOUT" with WORK(J+N) means:
-             *   J=1: WORK(1+N) = work[n+0] in 0-based (since Fortran arrays 1-based)
-             *   => j_c = 0..iout-1 in C
              */
             for (j = 0; j < iout; j++) {
                 tmp1 = 0.5 * (work[n + j] + work[n + in + j]);
@@ -533,46 +396,6 @@ void dstebz(const char* range, const char* order, const INT n,
                     ib = jb;
                 }
 
-                /*
-                 * Fortran: DO JE = IWORK(J)+1+IWOFF, IWORK(J+IN)+IWOFF
-                 * In 0-based: iwork[j] = NAB(j,1), iwork[in+j] = NAB(j,2)
-                 *
-                 * Fortran IWORK(J) is 1-based subscript into IWORK, so
-                 * IWORK(J) with J=1..IOUT maps to iwork[0..iout-1] in C.
-                 *
-                 * The loop bounds in Fortran:
-                 *   start: IWORK(J) + 1 + IWOFF
-                 *   end:   IWORK(J+IN) + IWOFF
-                 * These are 1-based W/IBLOCK indices.
-                 *
-                 * In 0-based C:
-                 *   start: iwork[j] + iwoff      (already 0-based count + 0-based offset)
-                 *   end:   iwork[in + j] - 1 + iwoff
-                 *
-                 * Actually, NAB values are eigenvalue counts (0-based: 0..n).
-                 * IWOFF = m_val - iwork[0] (matching Fortran: IWOFF = M - IWORK(1))
-                 *
-                 * Fortran JE loop: JE = IWORK(J)+1+IWOFF to IWORK(J+IN)+IWOFF
-                 * These are 1-based indices into W and IBLOCK.
-                 * In 0-based: JE = IWORK(J)+IWOFF to IWORK(J+IN)+IWOFF-1
-                 *
-                 * Wait - let's be more careful. In Fortran:
-                 *   start: IWORK(J) + 1 + IWOFF  (1-based index)
-                 *   end:   IWORK(J+IN) + IWOFF   (1-based index)
-                 * Convert to 0-based: subtract 1 from each:
-                 *   start: IWORK(J) + IWOFF       (0-based)
-                 *   end:   IWORK(J+IN) + IWOFF - 1 (0-based)
-                 *
-                 * But IWORK here is 1-based subscript: IWORK(J) = our iwork[j-1].
-                 * For J=1..IOUT: iwork[0..iout-1] and iwork[in..in+iout-1].
-                 * Since our j goes 0..iout-1: iwork[j] and iwork[in+j].
-                 *
-                 * IWOFF = m_val - iwork[0] corresponds to Fortran IWOFF = M - IWORK(1).
-                 *
-                 * So 0-based loop:
-                 *   for (je = iwork[j] + iwoff; je <= iwork[in+j] + iwoff - 1; je++)
-                 *   = for (je = iwork[j] + iwoff; je < iwork[in+j] + iwoff; je++)
-                 */
                 for (je = iwork[j] + iwoff; je < iwork[in + j] + iwoff; je++) {
                     W[je] = tmp1;
                     iblock[je] = ib;
@@ -613,7 +436,11 @@ void dstebz(const char* range, const char* order, const INT n,
              * Some low eigenvalues to be discarded are not in (WL,WLU],
              * or high eigenvalues to be discarded are not in (WUL,WU]
              * so just kill off the smallest IDISCL/largest IDISCU
-             * eigenvalues.
+             * eigenvalues, by simply finding the smallest/largest
+             * eigenvalue(s).
+             *
+             * (If N(w) is monotone non-decreasing, this should never
+             * happen.)
              */
             if (idiscl > 0) {
                 wkill = wu;

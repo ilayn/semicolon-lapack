@@ -70,10 +70,7 @@ void zpttrs(
     if (n == 0 || nrhs == 0)
         return;
 
-    /*
-     * ILAENV(1, 'ZPTTRS', ...) returns NB=1 (no special case in ilaenv.f).
-     * Therefore, we call zptts2 directly without blocking.
-     */
+    /* ILAENV(1, 'ZPTTRS', ...) = 1: ilaenv.f has no PTTRS entry. */
     INT iuplo = upper ? 1 : 0;
     zptts2(iuplo, n, nrhs, D, E, B, ldb);
 }

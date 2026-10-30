@@ -68,11 +68,9 @@ void dsterf(const INT n, f64* restrict D,
      * for each block, according to whether top or bottom diagonal
      * element is smaller. */
 
-    /* Fortran: L1=1..N (1-based). C: l1=0..n-1 (0-based). */
     INT l1 = 0;
 
     while (l1 < n) {
-        /* Look for a small subdiagonal element: E(m) negligible. */
         if (l1 > 0)
             E[l1 - 1] = ZERO;
 
@@ -84,11 +82,8 @@ void dsterf(const INT n, f64* restrict D,
             }
         }
         if (m == n - 1 && (fabs(E[m - 1]) > (sqrt(fabs(D[m - 1])) * sqrt(fabs(D[m]))) * eps)) {
-            /* No split found - block extends to end */
             m = n - 1;
-            /* Check the last element again; for loop ended without break */
         }
-        /* After this: the block is D[l..m], subdiagonals E[l..m-1]. */
 
         INT l = l1;
         INT lsv = l;
@@ -117,7 +112,6 @@ void dsterf(const INT n, f64* restrict D,
             dlascl("G", 0, 0, anorm, ssfmin, subsize - 1, 1, &E[l], n, &linfo);
         }
 
-        /* Square the subdiagonal elements */
         for (INT i = l; i < lend; i++) {
             E[i] = E[i] * E[i];
         }
@@ -139,7 +133,6 @@ void dsterf(const INT n, f64* restrict D,
                             break;
                     }
                     if (mm == lend) {
-                        /* No small element found */
                     }
                 } else {
                     mm = lend;
@@ -209,7 +202,6 @@ void dsterf(const INT n, f64* restrict D,
 
                 E[l] = s * p;
                 D[l] = sigma + gamma;
-                /* Continue QL iteration */
             }
         } else {
             /* QR Iteration */
@@ -222,7 +214,6 @@ void dsterf(const INT n, f64* restrict D,
                             break;
                     }
                     if (mm == lend) {
-                        /* No small element found */
                     }
                 } else {
                     mm = lend;
@@ -292,7 +283,6 @@ void dsterf(const INT n, f64* restrict D,
 
                 E[l - 1] = s * p;
                 D[l] = sigma + gamma;
-                /* Continue QR iteration */
             }
         }
 

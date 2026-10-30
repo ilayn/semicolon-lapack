@@ -111,19 +111,16 @@ void spotrf2(
             // Compute the Cholesky factorization A = U**T * U
 
             // Update and scale A12
-            // Fortran: DTRSM('L', 'U', 'T', 'N', N1, N2, ONE, A(1,1), LDA, A(1,N1+1), LDA)
             cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
                         CblasNonUnit, n1, n2, ONE,
                         A, lda, &A[n1 * lda], lda);
 
-            // Update A22
-            // Fortran: DSYRK(UPLO, 'T', N2, N1, -ONE, A(1,N1+1), LDA, ONE, A(N1+1,N1+1), LDA)
+            // Update and factor A22
             cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                         n2, n1, NEG_ONE,
                         &A[n1 * lda], lda,
                         ONE, &A[n1 + n1 * lda], lda);
 
-            // Factor A22
             spotrf2(uplo, n2, &A[n1 + n1 * lda], lda, &iinfo);
             if (iinfo != 0) {
                 *info = iinfo + n1;
@@ -133,19 +130,16 @@ void spotrf2(
             // Compute the Cholesky factorization A = L * L**T
 
             // Update and scale A21
-            // Fortran: DTRSM('R', 'L', 'T', 'N', N2, N1, ONE, A(1,1), LDA, A(N1+1,1), LDA)
             cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans,
                         CblasNonUnit, n2, n1, ONE,
                         A, lda, &A[n1], lda);
 
-            // Update A22
-            // Fortran: DSYRK(UPLO, 'N', N2, N1, -ONE, A(N1+1,1), LDA, ONE, A(N1+1,N1+1), LDA)
+            // Update and factor A22
             cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                         n2, n1, NEG_ONE,
                         &A[n1], lda,
                         ONE, &A[n1 + n1 * lda], lda);
 
-            // Factor A22
             spotrf2(uplo, n2, &A[n1 + n1 * lda], lda, &iinfo);
             if (iinfo != 0) {
                 *info = iinfo + n1;

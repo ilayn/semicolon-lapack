@@ -49,18 +49,15 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                           const INT nv, f64* WV, const INT ldwv,
                           const INT nh, f64* WH, const INT ldwh)
 {
-    /* Parameters */
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    /* Local scalars */
     f64 alpha, beta, h11, h12, h21, h22, refsum;
     f64 safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
     INT i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
     INT k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
     INT accum, bmp22;
 
-    /* Local array */
     f64 vt[3];
 
     /* If there are no shifts, then there is nothing to do */
@@ -88,8 +85,10 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
         }
     }
 
-    /* NSHFTS is supposed to be even, but if it is odd, then simply
-     * reduce it by one */
+    /* NSHFTS is supposed to be even, but if it is odd,
+     * then simply reduce it by one.  The shuffle above
+     * ensures that the dropped shift is real and that
+     * the remaining shifts are paired. */
     ns = nshfts - (nshfts % 2);
 
     /* Machine constants for deflation */
@@ -126,11 +125,26 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
         if (accum)
             dlaset("ALL", kdu, kdu, zero, one, U, ldu);
 
-        /* Near-the-diagonal bulge chase */
+        /* Near-the-diagonal bulge chase.  The following loop
+         * performs the near-the-diagonal part of a small bulge
+         * multi-shift QR sweep.  Each 4*NBMPS column diagonal
+         * chunk extends from column INCOL to column NDCOL
+         * (including both column INCOL and column NDCOL). The
+         * following loop chases a 2*NBMPS+1 column long chain of
+         * NBMPS bulges 2*NBMPS columns to the right.  (INCOL
+         * may be less than KTOP and and NDCOL may be greater than
+         * KBOT indicating phantom columns from which to chase
+         * bulges before they are actually introduced or to which
+         * to chase bulges beyond column KBOT.) */
         for (krcol = incol; krcol <= (incol + 2 * nbmps - 1 < kbot - 2 ?
                                       incol + 2 * nbmps - 1 : kbot - 2); krcol++) {
 
-            /* Bulges number MTOP to MBOT are active f64 implicit shift bulges */
+            /* Bulges number MTOP to MBOT are active double implicit
+             * shift bulges.  There may or may not also be small
+             * 2-by-2 bulge, if there is room.  The inactive bulges
+             * (if any) must wait until the active bulges have moved
+             * down the diagonal to make room.  The phantom matrix
+             * paradigm described above helps keep track. */
             mtop = 1 > (ktop - krcol) / 2 + 1 ? 1 : (ktop - krcol) / 2 + 1;
             mbot = nbmps < (kbot - krcol - 1) / 2 ? nbmps : (kbot - krcol - 1) / 2;
             m22 = mbot + 1;
@@ -183,7 +197,14 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                     H[(k + 2) + j * ldh] = H[(k + 2) + j * ldh] - refsum * t2;
                 }
 
-                /* Convergence test */
+                /* The following convergence test requires that
+                 * the tradition small-compared-to-nearby-diagonals
+                 * criterion and the Ahues & Tisseur (LAWN 122, 1997)
+                 * criteria both be satisfied.  The latter improves
+                 * accuracy in some examples. Falling back on an
+                 * alternate convergence criterion when TST1 or TST2
+                 * is zero (as done here) is traditional but probably
+                 * unnecessary. */
                 if (k >= ktop) {
                     if (H[(k + 1) + k * ldh] != zero) {
                         tst1 = fabs(H[k + k * ldh]) + fabs(H[(k + 1) + (k + 1) * ldh]);
@@ -260,8 +281,9 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                     dlarfg(3, &alpha, &V[1 + (m - 1) * ldv], 1,
                            &V[(m - 1) * ldv]);
                 } else {
-                    /* Perform delayed transformation of row below Mth bulge.
-                     * Exploit fact that first two elements of row are zero. */
+                    /* Perform delayed transformation of row below
+                     * Mth bulge. Exploit fact that first two elements
+                     * of row are actually zero. */
                     t1 = V[(m - 1) * ldv];
                     t2 = t1 * V[1 + (m - 1) * ldv];
                     t3 = t1 * V[2 + (m - 1) * ldv];
@@ -277,8 +299,10 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                     dlarfg(3, &beta, &V[1 + (m - 1) * ldv], 1,
                            &V[(m - 1) * ldv]);
 
-                    /* A Bulge may collapse because of vigilant deflation or
-                     * destructive underflow */
+                    /* A Bulge may collapse because of vigilant
+                     * deflation or destructive underflow.  In the
+                     * underflow case, try the two-small-subdiagonals
+                     * trick to try to reinflate the bulge. */
                     if (H[(k + 3) + k * ldh] != zero ||
                         H[(k + 3) + (k + 1) * ldh] != zero ||
                         H[(k + 3) + (k + 2) * ldh] == zero) {
@@ -287,8 +311,11 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                         H[(k + 2) + k * ldh] = zero;
                         H[(k + 3) + k * ldh] = zero;
                     } else {
-                        /* Atypical case: collapsed. Attempt to reintroduce
-                         * ignoring H(k+1,k) and H(k+2,k) */
+                        /* Atypical case: collapsed.  Attempt to
+                         * reintroduce ignoring H(k+1,k) and H(k+2,k).
+                         * If the fill resulting from the new
+                         * reflector is too large, then abandon it.
+                         * Otherwise, use the new one. */
                         dlaqr1(3, &H[(k + 1) + (k + 1) * ldh], ldh,
                                sr[2 * m - 2], si[2 * m - 2],
                                sr[2 * m - 1], si[2 * m - 1], vt);
@@ -303,13 +330,17 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                             fabs(refsum * t3) > ulp * (fabs(H[k + k * ldh]) +
                             fabs(H[(k + 1) + (k + 1) * ldh]) +
                             fabs(H[(k + 2) + (k + 2) * ldh]))) {
-                            /* Starting a new bulge here would create
-                             * non-negligible fill */
+                            /* Starting a new bulge here would
+                             * create non-negligible fill.  Use
+                             * the old one with trepidation. */
                             H[(k + 1) + k * ldh] = beta;
                             H[(k + 2) + k * ldh] = zero;
                             H[(k + 3) + k * ldh] = zero;
                         } else {
-                            /* Replace the old reflector with the new one */
+                            /* Starting a new bulge here would
+                             * create only negligible fill.
+                             * Replace the old reflector with
+                             * the new one. */
                             H[(k + 1) + k * ldh] = H[(k + 1) + k * ldh] - refsum * t1;
                             H[(k + 2) + k * ldh] = zero;
                             H[(k + 3) + k * ldh] = zero;
@@ -320,8 +351,11 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                     }
                 }
 
-                /* Apply reflection from the right and first column of
-                 * update from the left */
+                /* Apply reflection from the right and
+                 * the first column of update from the left.
+                 * These updates are required for the vigilant
+                 * deflation check. We still delay most of the
+                 * updates from the left for efficiency. */
                 t1 = V[(m - 1) * ldv];
                 t2 = t1 * V[1 + (m - 1) * ldv];
                 t3 = t1 * V[2 + (m - 1) * ldv];
@@ -342,7 +376,14 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                 H[(k + 2) + (k + 1) * ldh] = H[(k + 2) + (k + 1) * ldh] - refsum * t2;
                 H[(k + 3) + (k + 1) * ldh] = H[(k + 3) + (k + 1) * ldh] - refsum * t3;
 
-                /* Convergence test */
+                /* The following convergence test requires that
+                 * the tradition small-compared-to-nearby-diagonals
+                 * criterion and the Ahues & Tisseur (LAWN 122, 1997)
+                 * criteria both be satisfied.  The latter improves
+                 * accuracy in some examples. Falling back on an
+                 * alternate convergence criterion when TST1 or TST2
+                 * is zero (as done here) is traditional but probably
+                 * unnecessary. */
                 if (k < ktop)
                     continue;
 
@@ -412,7 +453,9 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
 
             /* Accumulate orthogonal transformations */
             if (accum) {
-                /* Accumulate U */
+                /* Accumulate U. (If needed, update Z later
+                 * with an efficient matrix-matrix
+                 * multiply.) */
                 for (m = mbot; m >= mtop; m--) {
                     k = krcol + 2 * (m - 1);
                     kms = k - incol;
@@ -433,7 +476,9 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                     }
                 }
             } else if (wantz) {
-                /* Update Z now by multiplying by reflections from the right */
+                /* U is not accumulated, so update Z
+                 * now by multiplying by reflections
+                 * from the right. */
                 for (m = mbot; m >= mtop; m--) {
                     k = krcol + 2 * (m - 1);
                     t1 = V[(m - 1) * ldv];
@@ -451,7 +496,9 @@ SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
             }
         }
 
-        /* Use U (if accumulated) to update far-from-diagonal entries in H */
+        /* Use U (if accumulated) to update far-from-diagonal
+         * entries in H.  If required, use U to update Z as
+         * well. */
         if (accum) {
             if (wantt) {
                 jtop = 0;

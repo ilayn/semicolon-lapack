@@ -73,7 +73,6 @@ void dlanv2(f64* a, f64* b, f64* c, f64* d,
 
     } else if ((*a - *d) == ZERO &&
                copysign(ONE, *b) != copysign(ONE, *c)) {
-        /* SIGN(ONE, B) != SIGN(ONE, C) means B and C have opposite signs */
         *cs = ONE;
         *sn = ZERO;
 
@@ -82,7 +81,6 @@ void dlanv2(f64* a, f64* b, f64* c, f64* d,
         p = HALF * temp;
         bcmax = fabs(*b) > fabs(*c) ? fabs(*b) : fabs(*c);
         bcmis = (fabs(*b) < fabs(*c) ? fabs(*b) : fabs(*c));
-        /* Apply sign of B and sign of C to bcmis: SIGN(ONE,B)*SIGN(ONE,C) */
         bcmis = copysign(bcmis, copysign(ONE, *b) * copysign(ONE, *c));
         scale = fabs(p) > bcmax ? fabs(p) : bcmax;
         z = (p / scale) * p + (bcmax / scale) * bcmis;

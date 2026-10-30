@@ -86,7 +86,7 @@ void dppsv(
     const INT ldb,
     INT* info)
 {
-    // dppsv.f lines 172-186: Test the input parameters
+    // Test the input parameters
     *info = 0;
     if (!((uplo[0] == 'U' || uplo[0] == 'u') ||
           (uplo[0] == 'L' || uplo[0] == 'l'))) {
@@ -103,10 +103,10 @@ void dppsv(
         return;
     }
 
-    // dppsv.f lines 190-197: Compute the Cholesky factorization A = U**T*U or A = L*L**T
+    // Compute the Cholesky factorization A = U**T*U or A = L*L**T
     dpptrf(uplo, n, AP, info);
     if (*info == 0) {
-        // dppsv.f line 195: Solve the system A*X = B, overwriting B with X
+        // Solve the system A*X = B, overwriting B with X
         dpptrs(uplo, n, nrhs, AP, B, ldb, info);
     }
 }

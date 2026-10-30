@@ -105,7 +105,6 @@ void ctrrfs(
     f32 safe1 = nz * safmin;
     f32 safe2 = safe1 / eps;
 
-    /* Set up CBLAS enums */
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE cblas_trans;
     if (trans[0] == 'N' || trans[0] == 'n') {

@@ -91,12 +91,15 @@ void zsytri(
     if (upper) {
         /* Compute inv(A) from the factorization A = U*D*U**T.
          *
-         * K increases from 0 to n-1 in steps of 1 or 2. */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = 0;
         while (k < n) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = ONE / A[k + k * lda];
 
                 /* Compute column k of the inverse. */
@@ -110,7 +113,9 @@ void zsytri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block. */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 c128 t = A[k + (k + 1) * lda];
                 c128 ak = A[k + k * lda] / t;
                 c128 akp1 = A[(k + 1) + (k + 1) * lda] / t;
@@ -141,7 +146,8 @@ void zsytri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp. */
+            /* Interchange rows and columns k and kp in the leading
+             * submatrix A(0:k+1,0:k+1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -159,12 +165,10 @@ void zsytri(
                                 &A[kp + (kp + 1) * lda], lda);
                 }
 
-                /* Swap diagonal elements */
                 c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k+1) with A(kp, k+1) */
                 if (kstep == 2) {
                     temp = A[k + (k + 1) * lda];
                     A[k + (k + 1) * lda] = A[kp + (k + 1) * lda];
@@ -178,12 +182,15 @@ void zsytri(
     } else {
         /* Compute inv(A) from the factorization A = L*D*L**T.
          *
-         * K decreases from n-1 to 0 in steps of 1 or 2. */
+         * K is the main loop index, decreasing from n-1 to 0 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = n - 1;
         while (k >= 0) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = ONE / A[k + k * lda];
 
                 /* Compute column k of the inverse. */
@@ -198,7 +205,9 @@ void zsytri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block. */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 c128 t = A[k + (k - 1) * lda];
                 c128 ak = A[(k - 1) + (k - 1) * lda] / t;
                 c128 akp1 = A[k + k * lda] / t;
@@ -231,7 +240,8 @@ void zsytri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp. */
+            /* Interchange rows and columns k and kp in the trailing
+             * submatrix A(k-1:n-1,k-1:n-1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -250,12 +260,10 @@ void zsytri(
                                 &A[kp + (k + 1) * lda], lda);
                 }
 
-                /* Swap diagonal elements */
                 c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k-1) with A(kp, k-1) */
                 if (kstep == 2) {
                     temp = A[k + (k - 1) * lda];
                     A[k + (k - 1) * lda] = A[kp + (k - 1) * lda];

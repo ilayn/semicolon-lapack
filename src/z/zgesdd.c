@@ -76,8 +76,8 @@ void zgesdd(const char* jobz, const INT m, const INT n,
     INT lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
     INT lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
     f64 anrm, bignum, eps, smlnum;
-    f64 dum[1];   /* For zlange work */
-    c128 wkopt[1]; /* For workspace query results */
+    f64 dum[1];
+    c128 wkopt[1];
 
     *info = 0;
     minmn = (m < n) ? m : n;

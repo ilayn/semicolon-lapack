@@ -173,7 +173,6 @@ void strsyl3(const char* trana, const char* tranb, const INT isgn,
         }
     }
 
-    /* Use the tail of column 0 in swork as slange workspace */
     INT rows = (nba > nbb) ? nba : nbb;
     f32* wnrm = &swork[rows];
 

@@ -84,7 +84,7 @@ void zlarfg(const INT n, c128* alpha, c128* x,
                     break;
                 }
             }
-            knt++;  /* Convert from 0-based loop count to iteration count */
+            knt++;
 
             /* New BETA is at most 1, at least SAFMIN */
 

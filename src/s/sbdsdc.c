@@ -13,8 +13,7 @@ static const f32 ZERO = 0.0f;
 static const f32 ONE = 1.0f;
 static const f32 TWO = 2.0f;
 
-/* SMLSIZ: maximum size of subproblems at bottom of DC tree.
- * From ilaenv.f ISPEC=9, the default is 25. */
+/* SMLSIZ = 25 from ilaenv.f ISPEC=9. */
 static const INT SMLSIZ = LAPACK_SMLSIZ;
 
 /**
@@ -124,8 +123,8 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
 
     /* If matrix lower bidiagonal, rotate to be upper bidiagonal
      * by applying Givens rotations on the left */
-    wstart = 0;   /* 0-based index into work */
-    qstart = 2;   /* qstart-1 = offset in Q array for starting matrices (0-based: 2) */
+    wstart = 0;
+    qstart = 2;
 
     if (icompq == 1) {
         cblas_scopy(n, D, 1, Q, 1);
@@ -135,7 +134,7 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
     if (iuplo == 2) {
         qstart = 4;
         if (icompq == 2) {
-            wstart = 2 * n - 2;  /* 0-based */
+            wstart = 2 * n - 2;
         }
         for (i = 0; i < n - 1; i++) {
             slartg(D[i], E[i], &cs, &sn, &r);
@@ -170,12 +169,8 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
             slasdq("U", 0, n, n, n, 0, D, E, VT, ldvt, U, ldu, NULL, 1,
                    &work[wstart], info);
         } else if (icompq == 1) {
-            iu = 0;           /* 0-based */
+            iu = 0;
             ivt = iu + n;
-            /* Q(IU + (QSTART-1)*N) -> Q[iu + (qstart-1)*n] but Fortran is 1-based
-             * In Fortran: Q(IU + (QSTART-1)*N) with IU=1, QSTART=3 -> Q(1 + 2*N)
-             * In C (0-based): iu=0, qstart=2, so Q[0 + 2*n] = Q[2*n]
-             */
             slaset("A", n, n, ZERO, ONE, &Q[iu + qstart * n], n);
             slaset("A", n, n, ZERO, ONE, &Q[ivt + qstart * n], n);
             slasdq("U", 0, n, n, n, 0, D, E,
@@ -206,7 +201,6 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
     smlszp = SMLSIZ + 1;
 
     if (icompq == 1) {
-        /* Workspace indices for compact form storage (0-based into Q) */
         iu = 0;
         ivt = iu + SMLSIZ;
         difl = ivt + smlszp;
@@ -217,7 +211,6 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
         poles = is + 1;
         givnum = poles + 2 * mlvl;
 
-        /* Integer workspace indices (0-based into IQ) */
         k = 0;
         givptr = 1;
         perm = 2;
@@ -230,7 +223,7 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
         }
     }
 
-    start = 0;  /* 0-based */
+    start = 0;
     sqre = 0;
 
     for (i = 0; i < nm1; i++) {
@@ -251,7 +244,6 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
                     U[(n - 1) + (n - 1) * ldu] = copysignf(ONE, D[n - 1]);
                     VT[(n - 1) + (n - 1) * ldvt] = ONE;
                 } else if (icompq == 1) {
-                    /* Q(N + (QSTART-1)*N) in Fortran -> Q[(n-1) + qstart*n] in C */
                     Q[(n - 1) + qstart * n] = copysignf(ONE, D[n - 1]);
                     Q[(n - 1) + (SMLSIZ + qstart) * n] = ONE;
                 }
@@ -264,7 +256,6 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
                        &VT[start + start * ldvt], ldvt,
                        SMLSIZ, IWORK, &work[wstart], info);
             } else {
-                /* Call slasda for compact form. */
                 slasda(icompq, SMLSIZ, nsize, sqre, &D[start], &E[start],
                        &Q[start + (iu + qstart) * n], n,
                        &Q[start + (ivt + qstart) * n],
@@ -317,7 +308,7 @@ L40:
         }
     }
 
-    /* If ICOMPQ = 1, use IQ(N-1) as the indicator for UPLO */
+    /* If ICOMPQ = 1, use IQ(n-1,0) as the indicator for UPLO */
     if (icompq == 1) {
         if (iuplo == 1) {
             IQ[n - 1] = 1;

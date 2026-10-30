@@ -44,7 +44,7 @@ void sorg2r(const INT m, const INT n, const INT k,
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -74,7 +74,7 @@ void sorg2r(const INT m, const INT n, const INT k,
     }
 
     for (i = k - 1; i >= 0; i--) {
-        /* Apply H(i) to A(i:m-1, i+1:n-1) from the left */
+        /* Apply H(i) to A(i:m-1, i:n-1) from the left */
         if (i < n - 1) {
             slarf1f("L", m - i, n - i - 1, &A[i + i * lda], 1, tau[i],
                     &A[i + (i + 1) * lda], lda, work);

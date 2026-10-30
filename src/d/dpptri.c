@@ -38,10 +38,9 @@ void dpptri(
     f64* restrict AP,
     INT* info)
 {
-    // dpptri.f lines 108-109: Parameters
     const f64 ONE = 1.0;
 
-    // dpptri.f lines 128-138: Test the input parameters
+    // Test the input parameters
     *info = 0;
     INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -54,48 +53,40 @@ void dpptri(
         return;
     }
 
-    // dpptri.f lines 142-143: Quick return if possible
+    // Quick return if possible
     if (n == 0) {
         return;
     }
 
-    // dpptri.f lines 147-149: Invert the triangular Cholesky factor U or L
+    // Invert the triangular Cholesky factor U or L
     dtptri(uplo, "N", n, AP, info);
     if (*info > 0) {
         return;
     }
 
     if (upper) {
-        // dpptri.f lines 151-163: Compute the product inv(U) * inv(U)**T
-        INT jj = -1;  // dpptri.f line 155: JJ = 0 (0-based: -1 so first jj+j gives proper position)
-        for (INT j = 0; j < n; j++) {  // dpptri.f line 156: DO 10 J = 1, N
-            INT jc = jj + 1;  // dpptri.f line 157: JC = JJ + 1
-            jj = jj + (j + 1);  // dpptri.f line 158: JJ = JJ + J
-            // dpptri.f lines 159-160: IF( J.GT.1 ) CALL DSPR( 'Upper', J-1, ONE, AP( JC ), 1, AP )
+        // Compute the product inv(U) * inv(U)**T
+        INT jj = -1;
+        for (INT j = 0; j < n; j++) {
+            INT jc = jj + 1;
+            jj = jj + (j + 1);
             if (j > 0) {
                 cblas_dspr(CblasColMajor, CblasUpper, j, ONE, &AP[jc], 1, AP);
             }
-            // dpptri.f lines 161-162
             f64 ajj = AP[jj];
             cblas_dscal(j + 1, ajj, &AP[jc], 1);
         }
     } else {
-        // dpptri.f lines 165-178: Compute the product inv(L)**T * inv(L)
-        INT jj = 0;  // dpptri.f line 169: JJ = 1 (0-based: 0)
-        for (INT j = 0; j < n; j++) {  // dpptri.f line 170: DO 20 J = 1, N
-            // dpptri.f line 171: JJN = JJ + N - J + 1
-            // In 1-based with J=1..N: JJN = JJ + N - J + 1
-            // In 0-based with j=0..n-1: jjn = jj + n - j
+        // Compute the product inv(L)**T * inv(L)
+        INT jj = 0;
+        for (INT j = 0; j < n; j++) {
             INT jjn = jj + n - j;
-            // dpptri.f line 172: AP( JJ ) = DDOT( N-J+1, AP( JJ ), 1, AP( JJ ), 1 )
-            // In 0-based: length is n - j
             AP[jj] = cblas_ddot(n - j, &AP[jj], 1, &AP[jj], 1);
-            // dpptri.f lines 173-175
             if (j < n - 1) {
                 cblas_dtpmv(CblasColMajor, CblasLower, CblasTrans, CblasNonUnit,
                             n - j - 1, &AP[jjn], &AP[jj + 1], 1);
             }
-            jj = jjn;  // dpptri.f line 176: JJ = JJN
+            jj = jjn;
         }
     }
 }

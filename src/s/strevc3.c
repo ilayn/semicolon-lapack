@@ -12,7 +12,6 @@
 #include <float.h>
 #include "semicolon_cblas.h"
 
-/* Internal constants */
 #define NBMIN 8
 #define NBMAX 128
 
@@ -57,7 +56,6 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    /* Local variables */
     INT bothv, rightv, leftv;
     INT allv, over, somev;
     INT lquery;
@@ -66,11 +64,11 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
     INT iv, nb, maxwrk;
     f32 beta, bignum, emax, rec, remax, scale;
     f32 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
-    f32 x[4];  /* 2x2 matrix, column-major */
+    f32 x[4];
     INT iscomplex[NBMAX];
     INT pair;
 
-    /* Decode and test input parameters */
+    /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
     rightv = (side[0] == 'R' || side[0] == 'r') || bothv;
     leftv = (side[0] == 'L' || side[0] == 'l') || bothv;
@@ -102,7 +100,9 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
     } else if (lwork < (3 * n > 1 ? 3 * n : 1) && !lquery) {
         *info = -14;
     } else {
-        /* Set m to the number of columns required */
+        /* Set M to the number of columns required to store the selected
+         * eigenvectors, standardize the array SELECT if necessary, and
+         * test MM. */
         if (somev) {
             *m = 0;
             pair = 0;
@@ -149,7 +149,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
         return;
 
     /* Use blocked version of back-transformation if sufficient workspace.
-     * Zero out the workspace to avoid potential NaN propagation. */
+     * Zero-out the workspace to avoid potential NaN propagation. */
     if (over && lwork >= n + 2 * n * NBMIN) {
         nb = (lwork - n) / (2 * n);
         if (nb > NBMAX) nb = NBMAX;
@@ -160,7 +160,6 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
 
     /* Set the constants to control overflow */
     unfl = slamch("S");
-    /* ovfl = one / unfl; -- not used in this routine */
     ulp = slamch("P");
     smlnum = unfl * ((f32)n / ulp);
     bignum = (one - ulp) / smlnum;
@@ -190,12 +189,12 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
         }
 
         ip = 0;
-        is = *m - 1;  /* 0-based index */
+        is = *m - 1;
 
         for (ki = n - 1; ki >= 0; ki--) {
             if (ip == -1) {
-                /* Previous iteration (ki+1) was second of conjugate pair,
-                 * so this ki is first of conjugate pair; skip to next iteration */
+                /* previous iteration (ki+1) was second of conjugate pair,
+                 * so this ki is first of conjugate pair; skip to end of loop */
                 ip = 1;
                 continue;
             } else if (ki == 0) {
@@ -286,7 +285,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                                one, one, &work[(j - 1) + iv * n], n, wr, zero,
                                x, 2, &scale, &xnorm, &ierr);
 
-                        /* Scale X(0,0) and X(1,0) to avoid overflow */
+                        /* Scale X(0,0) and X(1,0) to avoid overflow when
+                         * updating the right-hand side. */
                         if (xnorm > one) {
                             beta = work[j - 1] > work[j] ? work[j - 1] : work[j];
                             if (beta > bignum / xnorm) {
@@ -390,11 +390,12 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                                one, one, &work[j + (iv - 1) * n], n, wr, wi,
                                x, 2, &scale, &xnorm, &ierr);
 
-                        /* Scale X(0,0) and X(0,1) to avoid overflow */
+                        /* Scale X(0,0) and X(0,1) to avoid overflow when
+                         * updating the right-hand side. */
                         if (xnorm > one) {
                             if (work[j] > bignum / xnorm) {
                                 x[0] = x[0] / xnorm;
-                                x[2] = x[2] / xnorm;  /* X(0,1) in column-major */
+                                x[2] = x[2] / xnorm;
                                 scale = scale / xnorm;
                             }
                         }
@@ -417,7 +418,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                                one, one, &work[(j - 1) + (iv - 1) * n], n, wr, wi,
                                x, 2, &scale, &xnorm, &ierr);
 
-                        /* Scale X to avoid overflow */
+                        /* Scale X to avoid overflow when updating
+                         * the right-hand side. */
                         if (xnorm > one) {
                             beta = work[j - 1] > work[j] ? work[j - 1] : work[j];
                             if (beta > bignum / xnorm) {
@@ -527,7 +529,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                                 zero, &work[(nb + iv) * n], n);
 
                     /* Normalize vectors */
-                    remax = one;  /* Initialize for compiler; reused for complex pairs */
+                    remax = one;
                     for (k = iv; k <= nb; k++) {
                         if (iscomplex[k - 1] == 0) {
                             /* Real eigenvector */
@@ -577,8 +579,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
 
         for (ki = 0; ki < n; ki++) {
             if (ip == 1) {
-                /* Previous iteration (ki-1) was first of conjugate pair,
-                 * so this ki is second of conjugate pair; skip to next iteration */
+                /* previous iteration (ki-1) was first of conjugate pair,
+                 * so this ki is second of conjugate pair; skip to end of loop */
                 ip = -1;
                 continue;
             } else if (ki == n - 1) {
@@ -640,7 +642,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     if (j1 == j2) {
                         /* 1-by-1 diagonal block */
 
-                        /* Scale if necessary to avoid overflow */
+                        /* Scale if necessary to avoid overflow when forming
+                         * the right-hand side. */
                         if (work[j] > vcrit) {
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
@@ -668,7 +671,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     } else {
                         /* 2-by-2 diagonal block */
 
-                        /* Scale if necessary to avoid overflow */
+                        /* Scale if necessary to avoid overflow when forming
+                         * the right-hand side. */
                         beta = work[j] > work[j + 1] ? work[j] : work[j + 1];
                         if (beta > vcrit) {
                             rec = one / vmax;
@@ -788,7 +792,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     if (j1 == j2) {
                         /* 1-by-1 diagonal block */
 
-                        /* Scale if necessary to avoid overflow */
+                        /* Scale if necessary to avoid overflow when
+                         * forming the right-hand side elements. */
                         if (work[j] > vcrit) {
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
@@ -824,7 +829,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     } else {
                         /* 2-by-2 diagonal block */
 
-                        /* Scale if necessary to avoid overflow */
+                        /* Scale if necessary to avoid overflow when forming
+                         * the right-hand side elements. */
                         beta = work[j] > work[j + 1] ? work[j] : work[j + 1];
                         if (beta > vcrit) {
                             rec = one / vmax;
@@ -952,7 +958,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                                 zero, &work[(nb + 1) * n], n);
 
                     /* Normalize vectors */
-                    remax = one;  /* Initialize for compiler; overwritten before use */
+                    remax = one;
                     for (k = 1; k <= iv; k++) {
                         if (iscomplex[k - 1] == 0) {
                             /* Real eigenvector */

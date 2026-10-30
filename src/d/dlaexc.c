@@ -54,8 +54,8 @@ void dlaexc(const INT wantq, const INT n, f64* T, const INT ldt,
     f64 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
     f64 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
     f64 wr1, wr2, xnorm;
-    f64 D[16];  /* 4x4 stored column-major */
-    f64 U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
+    f64 D[16];
+    f64 U[3], U1[3], U2[3], X[4];
 
     *info = 0;
 

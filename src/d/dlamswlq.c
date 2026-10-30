@@ -65,7 +65,6 @@ void dlamswlq(const char* side, const char* trans,
     INT left, right, tran, notran, lquery;
     INT i, ii, kk, ctr, lw, minmnk, lwmin;
 
-    /* Decode arguments */
     lquery = (lwork == -1);
     notran = (trans[0] == 'N' || trans[0] == 'n');
     tran   = (trans[0] == 'T' || trans[0] == 't');
@@ -86,7 +85,7 @@ void dlamswlq(const char* side, const char* trans,
         lwmin = lw > 1 ? lw : 1;
     }
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (!left && !right) {
         *info = -1;
@@ -131,8 +130,6 @@ void dlamswlq(const char* side, const char* trans,
     }
 
     if (left && tran) {
-        /* Case: Q^T * C -- backward loop from last block to first */
-
         kk = (m - k) % (nb - k);
         ctr = (m - k) / (nb - k);
         if (kk > 0) {
@@ -159,8 +156,6 @@ void dlamswlq(const char* side, const char* trans,
                 &C[0 + 0 * ldc], ldc, work, info);
 
     } else if (left && notran) {
-        /* Case: Q * C -- forward loop from first block to last */
-
         kk = (m - k) % (nb - k);
         ii = m - kk;
         ctr = 1;
@@ -186,8 +181,6 @@ void dlamswlq(const char* side, const char* trans,
         }
 
     } else if (right && notran) {
-        /* Case: C * Q -- backward loop from last block to first */
-
         kk = (n - k) % (nb - k);
         ctr = (n - k) / (nb - k);
         if (kk > 0) {
@@ -214,8 +207,6 @@ void dlamswlq(const char* side, const char* trans,
                 &C[0 + 0 * ldc], ldc, work, info);
 
     } else if (right && tran) {
-        /* Case: C * Q^T -- forward loop from first block to last */
-
         kk = (n - k) % (nb - k);
         ctr = 1;
         ii = n - kk;

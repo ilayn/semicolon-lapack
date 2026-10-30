@@ -92,7 +92,6 @@ void dgbtrs(
         return;
     }
 
-    /* kd is the row index of the diagonal in band storage (0-based) */
     kd = ku + kl;
     lnoti = (kl > 0);
 
@@ -113,8 +112,6 @@ void dgbtrs(
                 if (l != j) {
                     cblas_dswap(nrhs, &B[l], ldb, &B[j], ldb);
                 }
-                /* B[j+1:j+lm, :] -= AB[kd+1:kd+lm, j] * B[j, :]
-                 * This is a rank-1 update: outer product of column vector and row */
                 cblas_dger(CblasColMajor, lm, nrhs, NEG_ONE,
                            &AB[kd + 1 + j * ldab], 1,
                            &B[j], ldb,
@@ -122,8 +119,7 @@ void dgbtrs(
             }
         }
 
-        /* Solve U*X = B, overwriting B with X.
-         * Process each right-hand side column */
+        /* Solve U*X = B, overwriting B with X. */
         for (i = 0; i < nrhs; i++) {
             cblas_dtbsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit,
                         n, kl + ku, AB, ldab, &B[i * ldb], 1);
@@ -131,8 +127,7 @@ void dgbtrs(
     } else {
         /* Solve A**T * X = B.
          *
-         * Solve U**T * X = B, overwriting B with X.
-         * Process each right-hand side column */
+         * Solve U**T * X = B, overwriting B with X. */
         for (i = 0; i < nrhs; i++) {
             cblas_dtbsv(CblasColMajor, CblasUpper, CblasTrans, CblasNonUnit,
                         n, kl + ku, AB, ldab, &B[i * ldb], 1);
@@ -142,8 +137,6 @@ void dgbtrs(
         if (lnoti) {
             for (j = n - 2; j >= 0; j--) {
                 lm = (kl < n - 1 - j) ? kl : n - 1 - j;
-                /* B[j, :] -= AB[kd+1:kd+lm, j]^T * B[j+1:j+lm, :]
-                 * This is a GEMV: row update from multiplying column by submatrix */
                 cblas_dgemv(CblasColMajor, CblasTrans, lm, nrhs, NEG_ONE,
                             &B[j + 1], ldb,
                             &AB[kd + 1 + j * ldab], 1,

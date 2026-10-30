@@ -83,7 +83,6 @@ void zpteqr(
     const c128 CONE = CMPLX(1.0, 0.0);
     INT i, icompz, nru;
 
-    // Dummy arrays for zbdsqr (ncvt=0 and ncc=0)
     c128 VT_dummy[1];
     c128 C_dummy[1];
 
@@ -123,7 +122,6 @@ void zpteqr(
         return;
     }
 
-    // Initialize Z to the identity matrix if requested
     if (icompz == 2) {
         zlaset("F", n, n, CZERO, CONE, Z, ldz);
     }
@@ -133,12 +131,10 @@ void zpteqr(
     if (*info != 0)
         return;
 
-    // D[i] = sqrt(D[i])
     for (i = 0; i < n; i++) {
         D[i] = sqrt(D[i]);
     }
 
-    // E[i] = E[i] * D[i] (form the bidiagonal matrix)
     for (i = 0; i < n - 1; i++) {
         E[i] = E[i] * D[i];
     }
@@ -153,7 +149,7 @@ void zpteqr(
 
     zbdsqr("L", n, 0, nru, 0, D, E, VT_dummy, 1, Z, ldz, C_dummy, 1, work, info);
 
-    // Square the singular values to get eigenvalues
+    // Square the singular values.
     if (*info == 0) {
         for (i = 0; i < n; i++) {
             D[i] = D[i] * D[i];

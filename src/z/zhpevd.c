@@ -194,8 +194,7 @@ void zhpevd(
     zhptrd(uplo, n, AP, W, &rwork[inde], &work[indtau], &iinfo);
 
     /* For eigenvalues only, call DSTERF.  For eigenvectors, first call
-       ZSTEDC to generate the eigenvectors from the tridiagonal form,
-       then call ZUPMTR to multiply by the Householder transformations. */
+       ZUPGTR to generate the orthogonal matrix, then call ZSTEDC. */
 
     if (!wantz) {
         dsterf(n, W, &rwork[inde], info);

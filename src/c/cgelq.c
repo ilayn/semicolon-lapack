@@ -120,7 +120,7 @@ void cgelq(const INT m, const INT n,
         lwreq = mb * m > 1 ? mb * m : 1;
     }
 
-    /* Parameter validation */
+    /* Test the input arguments */
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {

@@ -72,7 +72,7 @@ void zgeqp3(const INT m, const INT n,
     INT lquery;
     INT iinfo;
 
-    /* Parameter validation */
+    /* Test input arguments */
     *info = 0;
     lquery = (lwork == -1);
 
@@ -113,8 +113,6 @@ void zgeqp3(const INT m, const INT n,
 
     /*
      * Move initial columns up front.
-     * In 0-based indexing: nfxd counts how many fixed columns we have.
-     * Fixed columns (jpvt[j] != 0) are swapped to positions 0..nfxd-1.
      */
     nfxd = 0;
     for (j = 0; j < n; j++) {
@@ -122,13 +120,13 @@ void zgeqp3(const INT m, const INT n,
             if (j != nfxd) {
                 cblas_zswap(m, &A[j * lda], 1, &A[nfxd * lda], 1);
                 jpvt[j] = jpvt[nfxd];
-                jpvt[nfxd] = j;  /* 0-based original column index */
+                jpvt[nfxd] = j;
             } else {
-                jpvt[j] = j;  /* 0-based original column index */
+                jpvt[j] = j;
             }
             nfxd++;
         } else {
-            jpvt[j] = j;  /* 0-based original column index */
+            jpvt[j] = j;
         }
     }
 
@@ -147,12 +145,10 @@ void zgeqp3(const INT m, const INT n,
     if (nfxd > 0) {
         na = m < nfxd ? m : nfxd;
 
-        /* QR factorization of the fixed columns */
         zgeqrf(m, na, A, lda, tau, work, lwork, &iinfo);
         iws = iws > (INT)creal(work[0]) ? iws : (INT)creal(work[0]);
 
         if (na < n) {
-            /* Apply Q^H to remaining columns: A(:, na:n-1) */
             zunmqr("L", "C", m, n - na, na, A, lda, tau,
                    &A[na * lda], lda, work, lwork, &iinfo);
         }
@@ -200,17 +196,8 @@ void zgeqp3(const INT m, const INT n,
         }
 
         /*
-         * Initialize partial column norms. The first N elements of rwork
+         * Initialize partial column norms. The first N elements of work
          * store the exact column norms.
-         *
-         * Workspace layout (0-based):
-         *   rwork[0..n-1]    = vn1 (partial column norms)
-         *   rwork[n..2n-1]   = vn2 (exact column norms)
-         *   work[0..]        = used by zlaqps (auxv + F matrix)
-         *
-         * In the Fortran source, vn1 and vn2 are indexed from NFXD+1..N
-         * (1-based). Here we use 0-based: rwork[nfxd..n-1] = vn1 for free
-         * columns, rwork[n+nfxd..2n-1] = vn2 for free columns.
          */
         for (j = nfxd; j < n; j++) {
             rwork[j] = cblas_dznrm2(sm, &A[nfxd + j * lda], 1);
@@ -221,13 +208,10 @@ void zgeqp3(const INT m, const INT n,
 
             /*
              * Use blocked code initially.
-             *
-             * j is 0-based column index into the full matrix.
-             * The Fortran GOTO 30 loop becomes a while loop.
              */
             j = nfxd;
 
-            /* topbmn = minmn - nx (0-based: last column for blocked code) */
+            /* Compute factorization: while loop. */
             topbmn = minmn - nx;
 
             while (j < topbmn) {
@@ -235,22 +219,6 @@ void zgeqp3(const INT m, const INT n,
 
                 /*
                  * Factorize JB columns among columns j:n-1.
-                 *
-                 * zlaqps arguments (translated from Fortran 1-based):
-                 *   M      = m
-                 *   N      = n - j       (number of remaining columns)
-                 *   OFFSET = j           (rows already factorized)
-                 *   NB     = jb          (block size to try)
-                 *   KB     = fjb         (actual columns factorized, output)
-                 *   A      = &A[j*lda]   (start at column j)
-                 *   LDA    = lda
-                 *   JPVT   = &jpvt[j]
-                 *   TAU    = &tau[j]
-                 *   VN1    = &rwork[j]
-                 *   VN2    = &rwork[n+j]
-                 *   AUXV   = &work[0]
-                 *   F      = &work[jb]
-                 *   LDF    = n - j
                  */
                 zlaqps(m, n - j, j, jb, &fjb,
                        &A[j * lda], lda,
@@ -267,18 +235,6 @@ void zgeqp3(const INT m, const INT n,
 
         /*
          * Use unblocked code to factor the last or only block.
-         *
-         * zlaqp2 arguments (translated from Fortran 1-based):
-         *   M      = m
-         *   N      = n - j       (remaining columns)
-         *   OFFSET = j           (rows already factorized)
-         *   A      = &A[j*lda]  (start at column j)
-         *   LDA    = lda
-         *   JPVT   = &jpvt[j]
-         *   TAU    = &tau[j]
-         *   VN1    = &rwork[j]
-         *   VN2    = &rwork[n+j]
-         *   WORK   = &work[0]
          */
         if (j < minmn) {
             zlaqp2(m, n - j, j,

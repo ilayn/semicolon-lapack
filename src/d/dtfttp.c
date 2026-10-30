@@ -70,12 +70,11 @@ void dtfttp(
     }
 
     if (n == 1) {
-        /* LAPACK has identical branches */
         AP[0] = ARF[0];
         return;
     }
 
-    (void)(n * (n + 1) / 2);  /* nt computed in Fortran but unused */
+    (void)(n * (n + 1) / 2);
 
     if (lower) {
         n2 = n / 2;

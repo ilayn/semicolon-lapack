@@ -89,7 +89,6 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
             c64* Z, const INT ldz, INT* isuppz,
             f32* work, INT* iwork, INT* info)
 {
-    /* Parameters */
     const INT MAXITR = 10;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const f32 ZERO = 0.0f;
@@ -99,7 +98,6 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
     const f32 FOUR = 4.0f;
     const f32 HALF = 0.5f;
 
-    /* Local Scalars */
     INT eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
     INT done, i, ibegin, idone, iend, ii, iindc1,
         iindc2, iindr, iindwk, iinfo, im, in, indeig,
@@ -116,11 +114,10 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
            rgap, right, rqcorr, rqtol, savgap, sgndef,
            sigma, spdiam, ssigma, tau, tmp, tol, ztz;
 
-    /* Effective rtol values (may be overridden for partial eigenvector computation) */
     f32 eff_rtol1 = rtol1;
     f32 eff_rtol2 = rtol2;
 
-    (void)vu; /* Currently unused */
+    (void)vu;
 
     *info = 0;
 
@@ -142,7 +139,7 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
     /* IWORK(IINDR..IINDR+N-1) hold the twist indices R for the
      * factorization used to compute the FP vector */
     iindr = 0;
-    /* IWORK(IINDC1..IINDC1+N-1) are used to store the clusters of the current
+    /* IWORK(IINDC1..IINDC2+N-1) are used to store the clusters of the current
      * layer and the one above. */
     iindc1 = n;
     iindc2 = 2 * n;
@@ -177,7 +174,6 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
     tryrqc = 1;
 
     if ((dol == 0) && (dou == m - 1)) {
-        /* All eigenpairs computed */
     } else {
         /* Only selected eigenpairs are computed. Since the other evalues
          * are not refined by RQ iteration, bisection has to compute to full
@@ -228,10 +224,6 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
         }
         spdiam = gu - gl;
 
-        /* OLDIEN is the offset to convert local (within-block) 0-based indices
-         * to global 0-based indices. In Fortran (1-based), this is IBEGIN-1.
-         * In 0-based C, this is simply IBEGIN since local index 0 maps to
-         * global index IBEGIN. */
         oldien = ibegin;
         /* Calculate the size of the current block */
         in = iend - ibegin + 1;
@@ -356,7 +348,9 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
                      * within the current block */
                     p = indexw[wbegin + oldfst];
                     q = indexw[wbegin + oldlst];
-                    /* Offset for the arrays WORK, WGAP and WERR */
+                    /* Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
+                     * through the Q-OFFSET elements of these arrays are to be used.
+                     *  OFFSET = P-OLDFST */
                     offset = indexw[wbegin];
                     /* perform limited bisection (if necessary) to get approximate
                      * eigenvalues to the precision needed. */
@@ -803,11 +797,11 @@ label_125:
 next_child:
                     /* Proceed to any remaining child nodes */
                     newfst = j + 1;
-                } /* end for j = oldfst..oldlst */
-            } /* end for i = 0..oldncl-1 */
+                }
+            }
             ndepth = ndepth + 1;
-        } /* end while (idone < im) */
+        }
         ibegin = iend + 1;
         wbegin = wend + 1;
-    } /* end for jblk */
+    }
 }

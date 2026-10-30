@@ -59,18 +59,15 @@ f32 clangt(
             }
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1') {
-        /* Find norm1(A) - maximum column sum */
+        /* Find norm1(A) */
         if (n == 1) {
             anorm = cabsf(D[0]);
         } else {
-            /* First column: D[0] + DL[0] */
             anorm = cabsf(D[0]) + cabsf(DL[0]);
-            /* Last column: DU[n-2] + D[n-1] */
             temp = cabsf(D[n - 1]) + cabsf(DU[n - 2]);
             if (anorm < temp || isnan(temp)) {
                 anorm = temp;
             }
-            /* Middle columns: DU[i-1] + D[i] + DL[i] */
             for (i = 1; i < n - 1; i++) {
                 temp = cabsf(D[i]) + cabsf(DL[i]) + cabsf(DU[i - 1]);
                 if (anorm < temp || isnan(temp)) {
@@ -79,18 +76,15 @@ f32 clangt(
             }
         }
     } else if (norm[0] == 'I' || norm[0] == 'i') {
-        /* Find normI(A) - maximum row sum */
+        /* Find normI(A) */
         if (n == 1) {
             anorm = cabsf(D[0]);
         } else {
-            /* First row: D[0] + DU[0] */
             anorm = cabsf(D[0]) + cabsf(DU[0]);
-            /* Last row: DL[n-2] + D[n-1] */
             temp = cabsf(D[n - 1]) + cabsf(DL[n - 2]);
             if (anorm < temp || isnan(temp)) {
                 anorm = temp;
             }
-            /* Middle rows: DL[i-1] + D[i] + DU[i] */
             for (i = 1; i < n - 1; i++) {
                 temp = cabsf(D[i]) + cabsf(DU[i]) + cabsf(DL[i - 1]);
                 if (anorm < temp || isnan(temp)) {
@@ -99,7 +93,7 @@ f32 clangt(
             }
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' || norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) - Frobenius norm */
+        /* Find normF(A) */
         scale = ZERO;
         sum = ONE;
         classq(n, D, 1, &scale, &sum);
@@ -109,7 +103,6 @@ f32 clangt(
         }
         anorm = scale * sqrtf(sum);
     } else {
-        /* Default to zero for unrecognized norm */
         anorm = ZERO;
     }
 

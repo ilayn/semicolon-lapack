@@ -51,7 +51,7 @@ void dorglq(const INT m, const INT n, const INT k,
     INT lquery;
     const f64 ZERO = 0.0;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     nb = lapack_get_nb("ORGLQ");
     lwkopt = (m > 1 ? m : 1) * nb;
@@ -86,7 +86,7 @@ void dorglq(const INT m, const INT n, const INT k,
     nx = 0;
     iws = m;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("ORGLQ");
         if (nx < 0) nx = 0;
         if (nx < k) {
@@ -135,7 +135,7 @@ void dorglq(const INT m, const INT n, const INT k,
                        &A[i + i * lda], lda,
                        &tau[i], work, ldwork);
 
-                /* Apply H^T to A(i+ib:m-1, i:n-1) from the right */
+                /* Apply H**T to A(i+ib:m-1, i:n-1) from the right */
                 dlarfb("R", "T", "F", "R",
                        m - i - ib, n - i, ib,
                        &A[i + i * lda], lda,
@@ -144,7 +144,7 @@ void dorglq(const INT m, const INT n, const INT k,
                        &work[ib], ldwork);
             }
 
-            /* Apply H^T to columns i:n-1 of current block */
+            /* Apply H**T to columns i:n-1 of current block */
             dorgl2(ib, n - i, ib, &A[i + i * lda], lda,
                    &tau[i], work, &iinfo);
 

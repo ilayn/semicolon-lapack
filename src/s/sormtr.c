@@ -135,18 +135,12 @@ void sormtr(const char* side, const char* uplo, const char* trans,
     }
 
     if (upper) {
-        /* Q was determined by a call to SSYTRD with UPLO = 'U'
-         *
-         * Apply Q or Q^T to C(0:m-2, 0:n-1) or C(0:m-1, 0:n-2)
-         * using the reflectors stored in A(0:nq-2, 1:nq-1) */
+        /* Q was determined by a call to SSYTRD with UPLO = 'U' */
         sormql(side, trans, mi, ni, nq - 1,
                &A[0 + 1 * lda], lda, tau,
                C, ldc, work, lwork, &iinfo);
     } else {
-        /* Q was determined by a call to SSYTRD with UPLO = 'L'
-         *
-         * Apply Q or Q^T to C(1:m-1, 0:n-1) or C(0:m-1, 1:n-1)
-         * using the reflectors stored in A(1:nq-1, 0:nq-2) */
+        /* Q was determined by a call to SSYTRD with UPLO = 'L' */
         if (left) {
             i1 = 1;
             i2 = 0;

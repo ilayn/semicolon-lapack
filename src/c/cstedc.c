@@ -86,7 +86,7 @@ void cstedc(const char* compz, const INT n,
     INT liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
     f32 eps, orgnrm, p, tiny;
 
-    /* SMLSIZ from ILAENV(9, 'CSTEDC', ...) - hardcoded per project convention */
+    /* SMLSIZ from ILAENV(9, 'CSTEDC', ...) */
     const INT SMLSIZ = LAPACK_SMLSIZ;
 
     /*
@@ -226,7 +226,7 @@ void cstedc(const char* compz, const INT n,
 
         eps = slamch("Epsilon");
 
-        start = 0;  /* 0-based */
+        start = 0;
 
         /*
          * while ( start < n )

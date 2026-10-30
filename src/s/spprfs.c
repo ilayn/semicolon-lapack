@@ -60,21 +60,19 @@ void spprfs(
     INT* restrict iwork,
     INT* info)
 {
-    // spprfs.f lines 189-198: Parameters
-    const INT ITMAX = 5;  // spprfs.f line 190
-    const f32 ZERO = 0.0f;  // spprfs.f line 192
-    const f32 ONE = 1.0f;  // spprfs.f line 194
-    const f32 TWO = 2.0f;  // spprfs.f line 196
-    const f32 THREE = 3.0f;  // spprfs.f line 198
+    const INT ITMAX = 5;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
 
-    // spprfs.f lines 201-206: Local Scalars and Arrays
     INT upper;
     INT count, i, ik, j, k, kase, kk, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
     INT isave[3];
     INT locinfo;
 
-    // spprfs.f lines 224-240: Test the input parameters
+    // Test the input parameters
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -93,143 +91,160 @@ void spprfs(
         return;
     }
 
-    // spprfs.f lines 244-250: Quick return if possible
+    // Quick return if possible
     if (n == 0 || nrhs == 0) {
-        for (j = 0; j < nrhs; j++) {  // spprfs.f line 245: DO 10 J = 1, NRHS
-            ferr[j] = ZERO;  // spprfs.f line 246
-            berr[j] = ZERO;  // spprfs.f line 247
+        for (j = 0; j < nrhs; j++) {
+            ferr[j] = ZERO;
+            berr[j] = ZERO;
         }
         return;
     }
 
-    // spprfs.f lines 254-258: NZ = maximum number of nonzero elements in each row of A, plus 1
+    // NZ = maximum number of nonzero elements in each row of A, plus 1
     nz = n + 1;
-    eps = slamch("E");  // Epsilon
-    safmin = slamch("S");  // Safe minimum
-    safe1 = nz * safmin;  // spprfs.f line 257
-    safe2 = safe1 / eps;  // spprfs.f line 258
+    eps = slamch("E");
+    safmin = slamch("S");
+    safe1 = nz * safmin;
+    safe2 = safe1 / eps;
 
-    // spprfs.f lines 262-415: Do for each right hand side
-    for (j = 0; j < nrhs; j++) {  // spprfs.f line 262: DO 140 J = 1, NRHS
-
-        // spprfs.f lines 264-265
+    // Do for each right hand side
+    for (j = 0; j < nrhs; j++) {
         count = 1;
         lstres = THREE;
 
-        // spprfs.f line 266: label 20 - Loop until stopping criterion is satisfied
+        // Loop until stopping criterion is satisfied.
         while (1) {
-            // spprfs.f lines 272-275: Compute residual R = B - A * X
-            // CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
+            // Compute residual R = B - A * X
             cblas_scopy(n, &B[j * ldb], 1, &work[n], 1);
-            // CALL DSPMV( UPLO, N, -ONE, AP, X( 1, J ), 1, ONE, WORK( N+1 ), 1 )
             cblas_sspmv(CblasColMajor, upper ? CblasUpper : CblasLower,
                         n, -ONE, AP, &X[j * ldx], 1, ONE, &work[n], 1);
 
-            // spprfs.f lines 286-288: Compute componentwise relative backward error
-            for (i = 0; i < n; i++) {  // spprfs.f line 286: DO 30 I = 1, N
-                work[i] = fabsf(B[i + j * ldb]);  // spprfs.f line 287
+            // Compute componentwise relative backward error from formula
+            //
+            // max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+            //
+            // where abs(Z) is the componentwise absolute value of the matrix
+            // or vector Z.  If the i-th component of the denominator is less
+            // than SAFE2, then SAFE1 is added to the i-th components of the
+            // numerator and denominator before dividing.
+            for (i = 0; i < n; i++) {
+                work[i] = fabsf(B[i + j * ldb]);
             }
 
-            // spprfs.f lines 292-320: Compute abs(A)*abs(X) + abs(B)
-            kk = 0;  // spprfs.f line 292: KK = 1 (0-based: kk = 0)
+            // Compute abs(A)*abs(X) + abs(B)
+            kk = 0;
             if (upper) {
-                // spprfs.f lines 294-305
-                for (k = 0; k < n; k++) {  // spprfs.f line 294: DO 50 K = 1, N
-                    s = ZERO;  // spprfs.f line 295
-                    xk = fabsf(X[k + j * ldx]);  // spprfs.f line 296
-                    ik = kk;  // spprfs.f line 297
-                    for (i = 0; i < k; i++) {  // spprfs.f line 298: DO 40 I = 1, K - 1
-                        work[i] = work[i] + fabsf(AP[ik]) * xk;  // spprfs.f line 299
-                        s = s + fabsf(AP[ik]) * fabsf(X[i + j * ldx]);  // spprfs.f line 300
-                        ik = ik + 1;  // spprfs.f line 301
+                for (k = 0; k < n; k++) {
+                    s = ZERO;
+                    xk = fabsf(X[k + j * ldx]);
+                    ik = kk;
+                    for (i = 0; i < k; i++) {
+                        work[i] = work[i] + fabsf(AP[ik]) * xk;
+                        s = s + fabsf(AP[ik]) * fabsf(X[i + j * ldx]);
+                        ik = ik + 1;
                     }
-                    // spprfs.f line 303: WORK( K ) = WORK( K ) + ABS( AP( KK+K-1 ) )*XK + S
-                    // In 0-based: kk + k is the diagonal element position
                     work[k] = work[k] + fabsf(AP[kk + k]) * xk + s;
-                    kk = kk + (k + 1);  // spprfs.f line 304: KK = KK + K
+                    kk = kk + (k + 1);
                 }
             } else {
-                // spprfs.f lines 307-319
-                for (k = 0; k < n; k++) {  // spprfs.f line 307: DO 70 K = 1, N
-                    s = ZERO;  // spprfs.f line 308
-                    xk = fabsf(X[k + j * ldx]);  // spprfs.f line 309
-                    work[k] = work[k] + fabsf(AP[kk]) * xk;  // spprfs.f line 310
-                    ik = kk + 1;  // spprfs.f line 311
-                    for (i = k + 1; i < n; i++) {  // spprfs.f line 312: DO 60 I = K + 1, N
-                        work[i] = work[i] + fabsf(AP[ik]) * xk;  // spprfs.f line 313
-                        s = s + fabsf(AP[ik]) * fabsf(X[i + j * ldx]);  // spprfs.f line 314
-                        ik = ik + 1;  // spprfs.f line 315
+                for (k = 0; k < n; k++) {
+                    s = ZERO;
+                    xk = fabsf(X[k + j * ldx]);
+                    work[k] = work[k] + fabsf(AP[kk]) * xk;
+                    ik = kk + 1;
+                    for (i = k + 1; i < n; i++) {
+                        work[i] = work[i] + fabsf(AP[ik]) * xk;
+                        s = s + fabsf(AP[ik]) * fabsf(X[i + j * ldx]);
+                        ik = ik + 1;
                     }
-                    work[k] = work[k] + s;  // spprfs.f line 317
-                    kk = kk + (n - k);  // spprfs.f line 318: KK = KK + ( N-K+1 )
+                    work[k] = work[k] + s;
+                    kk = kk + (n - k);
                 }
             }
 
-            // spprfs.f lines 321-330
-            s = ZERO;  // spprfs.f line 321
-            for (i = 0; i < n; i++) {  // spprfs.f line 322: DO 80 I = 1, N
-                if (work[i] > safe2) {  // spprfs.f line 323
-                    s = (s > fabsf(work[n + i]) / work[i]) ? s : fabsf(work[n + i]) / work[i];  // spprfs.f line 324
+            s = ZERO;
+            for (i = 0; i < n; i++) {
+                if (work[i] > safe2) {
+                    s = (s > fabsf(work[n + i]) / work[i]) ? s : fabsf(work[n + i]) / work[i];
                 } else {
                     s = (s > (fabsf(work[n + i]) + safe1) / (work[i] + safe1)) ?
-                        s : (fabsf(work[n + i]) + safe1) / (work[i] + safe1);  // spprfs.f lines 326-327
+                        s : (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
                 }
             }
-            berr[j] = s;  // spprfs.f line 330
+            berr[j] = s;
 
-            // spprfs.f lines 338-348: Test stopping criterion
+            // Test stopping criterion. Continue iterating if
+            //    1) The residual BERR(J) is larger than machine epsilon, and
+            //    2) BERR(J) decreased by at least a factor of 2 during the
+            //       last iteration, and
+            //    3) At most ITMAX iterations tried.
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
-                // spprfs.f lines 343-344: Update solution and try again
+                // Update solution and try again
                 spptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
                 cblas_saxpy(n, ONE, &work[n], 1, &X[j * ldx], 1);
-                lstres = berr[j];  // spprfs.f line 345
-                count = count + 1;  // spprfs.f line 346
-                // GO TO 20 (continue while loop)
+                lstres = berr[j];
+                count = count + 1;
             } else {
-                break;  // Exit while loop
+                break;
             }
         }
 
-        // spprfs.f lines 372-378: Bound error from formula
-        for (i = 0; i < n; i++) {  // spprfs.f line 372: DO 90 I = 1, N
-            if (work[i] > safe2) {  // spprfs.f line 373
-                work[i] = fabsf(work[n + i]) + nz * eps * work[i];  // spprfs.f line 374
+        // Bound error from formula
+        //
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(A))*
+        //    ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+        //
+        // where
+        //   norm(Z) is the magnitude of the largest component of Z
+        //   inv(A) is the inverse of A
+        //   abs(Z) is the componentwise absolute value of the matrix or
+        //      vector Z
+        //   NZ is the maximum number of nonzeros in any row of A, plus 1
+        //   EPS is machine epsilon
+        //
+        // The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(A)*abs(X) + abs(B) is less than SAFE2.
+        for (i = 0; i < n; i++) {
+            if (work[i] > safe2) {
+                work[i] = fabsf(work[n + i]) + nz * eps * work[i];
             } else {
-                work[i] = fabsf(work[n + i]) + nz * eps * work[i] + safe1;  // spprfs.f line 376
+                work[i] = fabsf(work[n + i]) + nz * eps * work[i] + safe1;
             }
         }
 
-        // spprfs.f lines 380-404: Use SLACN2 to estimate the infinity-norm
-        kase = 0;  // spprfs.f line 380
-        while (1) {  // spprfs.f line 381: label 100
-            // spprfs.f lines 382-384
+        // Use SLACN2 to estimate the infinity-norm of the matrix
+        //    inv(A) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+        kase = 0;
+        while (1) {
             slacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
             if (kase == 0) {
                 break;
             }
             if (kase == 1) {
-                // spprfs.f lines 390-393: Multiply by diag(W)*inv(A**T)
+                // Multiply by diag(W)*inv(A**T)
                 spptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
-                for (i = 0; i < n; i++) {  // spprfs.f line 391: DO 110 I = 1, N
-                    work[n + i] = work[i] * work[n + i];  // spprfs.f line 392
+                for (i = 0; i < n; i++) {
+                    work[n + i] = work[i] * work[n + i];
                 }
             } else if (kase == 2) {
-                // spprfs.f lines 398-401: Multiply by inv(A)*diag(W)
-                for (i = 0; i < n; i++) {  // spprfs.f line 398: DO 120 I = 1, N
-                    work[n + i] = work[i] * work[n + i];  // spprfs.f line 399
+                // Multiply by inv(A)*diag(W)
+                for (i = 0; i < n; i++) {
+                    work[n + i] = work[i] * work[n + i];
                 }
                 spptrs(uplo, n, 1, AFP, &work[n], n, &locinfo);
             }
-            // GO TO 100 (continue while loop)
         }
 
-        // spprfs.f lines 408-413: Normalize error
-        lstres = ZERO;  // spprfs.f line 408
-        for (i = 0; i < n; i++) {  // spprfs.f line 409: DO 130 I = 1, N
-            lstres = (lstres > fabsf(X[i + j * ldx])) ? lstres : fabsf(X[i + j * ldx]);  // spprfs.f line 410
+        // Normalize error
+        lstres = ZERO;
+        for (i = 0; i < n; i++) {
+            lstres = (lstres > fabsf(X[i + j * ldx])) ? lstres : fabsf(X[i + j * ldx]);
         }
-        if (lstres != ZERO) {  // spprfs.f line 412
-            ferr[j] = ferr[j] / lstres;  // spprfs.f line 413
+        if (lstres != ZERO) {
+            ferr[j] = ferr[j] / lstres;
         }
     }
 }

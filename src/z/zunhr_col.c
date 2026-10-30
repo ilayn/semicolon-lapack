@@ -121,30 +121,33 @@ void zunhr_col(const INT m, const INT n, const INT nb,
      */
     nplusone = n + 1;
 
-    /* Fortran: DO JB = 1, N, NB  =>  C: jb from 0, step nb */
     for (jb = 0; jb < n; jb += nb) {
 
         /* (2-0) Determine the column block size jnb. */
         jnb = (nplusone - (jb + 1)) < nb ? (nplusone - (jb + 1)) : nb;
-        /* nplusone - (jb+1) = n - jb, same as Fortran NPLUSONE-JB */
 
         /*
          * (2-1) Copy the upper-triangular part of the current jnb-by-jnb
-         * diagonal block U(jb) stored in A(jb:jb+jnb-1, jb:jb+jnb-1)
-         * into the upper-triangular part of the current jnb-by-jnb block
-         * T(0:jnb-1, jb:jb+jnb-1) column-by-column.
+         * diagonal block U(jb) (of the N-by-N matrix U) stored
+         * in A(jb:jb+jnb-1, jb:jb+jnb-1) into the upper-triangular part
+         * of the current jnb-by-jnb block T(0:jnb-1, jb:jb+jnb-1)
+         * column-by-column, total jnb*(jnb+1)/2 elements.
          */
-        /* Fortran: JBTEMP1 = JB - 1 (1-based) => in 0-based the count
-         * for column j (0-based) is: j - jb + 1 elements */
         for (j = jb; j < jb + jnb; j++) {
             cblas_zcopy(j - jb + 1, &A[jb + j * lda], 1, &T[0 + j * ldt], 1);
         }
 
         /*
          * (2-2) Perform on the upper-triangular part of the current
-         * jnb-by-jnb diagonal block U(jb) stored in T(0:jnb-1, jb:jb+jnb-1):
-         * (-1)*U(jb)*S(jb). Changing the sign of each j-th column
-         * according to the sign of D(j).
+         * jnb-by-jnb diagonal block U(jb) (of the N-by-N matrix U) stored
+         * in T(0:jnb-1, jb:jb+jnb-1) the following operation in place:
+         * (-1)*U(jb)*S(jb), i.e the result will be stored in the upper-
+         * triangular part of T(0:jnb-1, jb:jb+jnb-1). This multiplication
+         * of the jnb-by-jnb diagonal block U(jb) by the jnb-by-jnb
+         * diagonal block S(jb) of the N-by-N sign matrix S from the
+         * right means changing the sign of each j-th column of the block
+         * U(jb) according to the sign of the diagonal element of the block
+         * S(jb), i.e. S(j,j) that is stored in the array element D(j).
          */
         for (j = jb; j < jb + jnb; j++) {
             if (D[j] == CONE) {
@@ -156,35 +159,40 @@ void zunhr_col(const INT m, const INT n, const INT nb,
          * (2-3) Perform the triangular solve for the current block
          * matrix X(jb):
          *
-         *     X(jb) * (A(jb)^H) = B(jb), where:
+         *        X(jb) * (A(jb)**T) = B(jb), where:
          *
-         *     A(jb)^H  is a jnb-by-jnb unit upper-triangular
-         *              coefficient block, and A(jb)=V1(jb), which
-         *              is a jnb-by-jnb unit lower-triangular block
-         *              stored in A(jb:jb+jnb-1, jb:jb+jnb-1).
+         *        A(jb)**T  is a jnb-by-jnb unit upper-triangular
+         *                  coefficient block, and A(jb)=V1(jb), which
+         *                  is a jnb-by-jnb unit lower-triangular block
+         *                  stored in A(jb:jb+jnb-1, jb:jb+jnb-1).
+         *                  The N-by-N matrix V1 is the upper part
+         *                  of the M-by-N lower-trapezoidal matrix V
+         *                  stored in A(0:m-1, 0:n-1);
          *
-         *     B(jb)    is a jnb-by-jnb upper-triangular right-hand
-         *              side block, B(jb) = (-1)*U(jb)*S(jb), stored
-         *              in T(0:jnb-1, jb:jb+jnb-1).
+         *        B(jb)     is a jnb-by-jnb  upper-triangular right-hand
+         *                  side block, B(jb) = (-1)*U(jb)*S(jb), and
+         *                  B(jb) is stored in T(0:jnb-1, jb:jb+jnb-1);
          *
-         *     X(jb)    is a jnb-by-jnb upper-triangular solution
-         *              block, the block reflector T(jb), stored
-         *              in T(0:jnb-1, jb:jb+jnb-1).
+         *        X(jb)     is a jnb-by-jnb upper-triangular solution
+         *                  block, X(jb) is the upper-triangular block
+         *                  reflector T(jb), and X(jb) is stored
+         *                  in T(0:jnb-1, jb:jb+jnb-1).
          *
-         * (2-3a) Set the elements to zero below the diagonal.
+         *      In other words, we perform the triangular solve for the
+         *      upper-triangular block T(jb):
+         *
+         *        T(jb) * (V1(jb)**T) = (-1)*U(jb)*S(jb).
+         *
+         *      Even though the blocks X(jb) and B(jb) are upper-
+         *      triangular, the routine ZTRSM will access all jnb**2
+         *      elements of the square T(0:jnb-1, jb:jb+jnb-1). Therefore,
+         *      we need to set to zero the elements of the block
+         *      T(0:jnb-1, jb:jb+jnb-1) below the diagonal before the call
+         *      to ZTRSM.
+         *
+         * (2-3a) Set the elements to zero.
          */
 
-        /* Fortran: JBTEMP2 = JB - 2
-         * DO J = JB, JB+JNB-2
-         *   DO I = J-JBTEMP2, MIN(NB, N)
-         *     T(I, J) = CZERO
-         *
-         * Fortran J is 1-based. In 0-based:
-         * j goes from jb to jb+jnb-2 (i.e., all but last column of block)
-         * Fortran I start: J - JBTEMP2 = J - (JB-2) = J - JB + 2 (1-based)
-         *   => 0-based: (j+1) - (jb+1) + 2 - 1 = j - jb + 1
-         * Fortran I end: MIN(NB, N) (1-based) => 0-based: min(nb, n) - 1
-         */
         for (j = jb; j < jb + jnb - 1; j++) {
             for (i = j - jb + 1; i < (nb < n ? nb : n); i++) {
                 T[i + j * ldt] = CZERO;

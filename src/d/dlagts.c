@@ -113,7 +113,6 @@ void dlagts(
     }
 
     if (absjob == 1) {
-        /* Forward elimination (apply P*L to y) */
         for (k = 1; k < n; k++) {
             if (in[k - 1] == 0) {
                 Y[k] = Y[k] - C[k - 1] * Y[k - 1];
@@ -125,7 +124,6 @@ void dlagts(
         }
 
         if (job == 1) {
-            /* Back substitution without perturbation */
             for (k = n - 1; k >= 0; k--) {
                 if (k <= n - 3) {
                     temp = Y[k] - B[k] * Y[k + 1] - D[k] * Y[k + 2];
@@ -153,7 +151,6 @@ void dlagts(
                 Y[k] = temp / ak;
             }
         } else {
-            /* Back substitution with perturbation (job == -1) */
             for (k = n - 1; k >= 0; k--) {
                 if (k <= n - 3) {
                     temp = Y[k] - B[k] * Y[k + 1] - D[k] * Y[k + 2];
@@ -188,12 +185,8 @@ void dlagts(
             }
         }
     } else {
-        /*
-         * job == 2 or job == -2
-         * Forward substitution (solve U^T * x = y)
-         */
+        /* Come to here if  JOB = 2 or -2 */
         if (job == 2) {
-            /* Without perturbation */
             for (k = 0; k < n; k++) {
                 if (k >= 2) {
                     temp = Y[k] - B[k - 1] * Y[k - 1] - D[k - 2] * Y[k - 2];
@@ -221,7 +214,6 @@ void dlagts(
                 Y[k] = temp / ak;
             }
         } else {
-            /* With perturbation (job == -2) */
             for (k = 0; k < n; k++) {
                 if (k >= 2) {
                     temp = Y[k] - B[k - 1] * Y[k - 1] - D[k - 2] * Y[k - 2];
@@ -256,7 +248,6 @@ void dlagts(
             }
         }
 
-        /* Back permutation (apply L^T * P^T) */
         for (k = n - 1; k >= 1; k--) {
             if (in[k - 1] == 0) {
                 Y[k - 1] = Y[k - 1] - C[k - 1] * Y[k];

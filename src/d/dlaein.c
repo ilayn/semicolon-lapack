@@ -132,7 +132,6 @@ void dlaein(
                 B[n - 1 + (n - 1) * ldb] = eps3;
             }
 
-            /* Solve using DLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
                 v0norm = cblas_dasum(n, vr, 1);
@@ -195,7 +194,6 @@ void dlaein(
                 B[0] = eps3;
             }
 
-            /* Solve using DLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
                 v0norm = cblas_dasum(n, vr, 1);

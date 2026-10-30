@@ -39,7 +39,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             f32* restrict rwork, const INT lrwork,
             INT* restrict iwork, INT* info)
 {
-    /* Local variables */
     c64 ctemp;
     f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f32 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
@@ -50,7 +49,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
     INT noscal, rowpiv, rsvec, transp;
     INT iwoff = 0;
 
-    /* Workspace query variables */
     INT optwrk, minwrk, minrwrk, miniwrk;
     INT lwcon, lwlqf, lwqp3, lwqrf, lwunmlq, lwunmqr, lwunmqrm;
     INT lwsvdj, lwsvdjv, lrwqp3, lrwcon, lrwsvdj;
@@ -60,7 +58,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
     c64 cdummy[1];
     f32 rdummy[1];
 
-    /* Parse boolean flags */
+    /* Test the input arguments */
     lsvec  = (jobu[0] == 'U' || jobu[0] == 'u' || jobu[0] == 'F' || jobu[0] == 'f');
     jracc  = (jobv[0] == 'J' || jobv[0] == 'j');
     rsvec  = (jobv[0] == 'V' || jobv[0] == 'v') || jracc;
@@ -75,7 +73,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
 
     lquery = (lwork == -1) || (lrwork == -1);
 
-    /* Parameter validation */
     *info = 0;
 
     if (!(rowpiv || l2rank || l2aber || errest ||
@@ -116,7 +113,11 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         *info = -15;
     }
 
-    /* Workspace query */
+    /* .. compute the minimal and the optimal workspace lengths
+     * [[The expressions for computing the minimal and the optimal
+     * values of LCWORK, LRWORK are written with a lot of redundancy and
+     * can be simplified. However, this verbose form is useful for
+     * maintenance and modifications of the code.]] */
     if (*info == 0) {
         lwqp3    = n + 1;
         lwqrf    = (1 > n) ? 1 : n;
@@ -284,7 +285,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (rowpiv || l2tran) miniwrk = miniwrk + m;
 
         } else {
-            /* Full SVD requested */
+            /* .. minimal and optimal sizes of the complex workspace if the
+             * full SVD is requested */
             if (!jracc) {
                 if (errest) {
                     INT t1 = n + lwqp3;
@@ -342,7 +344,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                 miniwrk = miniwrk + n;
                 if (rowpiv || l2tran) miniwrk = miniwrk + m;
             } else {
-                /* JRACC */
                 if (errest) {
                     INT t1 = n + lwqp3;
                     INT t2 = n + lwcon;
@@ -447,7 +448,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                         if (t12 > optwrk) optwrk = t12;
                     }
                 } else {
-                    /* JRACC */
                     cgesvj("L", "U", "V", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
                     lwrk_zgesvjv = (INT)crealf(cdummy[0]);
@@ -568,7 +568,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         if (SVA[p] != ZERO) aaqq = (aaqq < SVA[p]) ? aaqq : SVA[p];
     }
 
-    /* Quick return for zero matrix */
+    /* Quick return for zero M x N matrix */
     if (aapp == ZERO) {
         if (lsvec) claset("G", m, n1, CZERO, CONE, U, ldu);
         if (rsvec) claset("G", n, n, CZERO, CONE, V, ldv);
@@ -722,7 +722,17 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* Scaling */
+    /* Scale the matrix so that its maximal singular value remains less
+     * than SQRT(BIG) -- the matrix is scaled so that its maximal column
+     * has Euclidean norm equal to SQRT(BIG/N). The only reason to keep
+     * SQRT(BIG) instead of BIG is the fact that CGEJSV uses LAPACK and
+     * BLAS routines that, in some implementations, are not capable of
+     * working in the full interval [SFMIN,BIG] and that they may provoke
+     * overflows in the intermediate results. If the singular values spread
+     * from SFMIN to BIG, then CGESVJ will compute them. So, in that case,
+     * one should use CGESVJ instead of CGEJSV.
+     * >> change in the April 2016 update: allow bigger range, i.e. the
+     * largest column is allowed up to BIG/N and CGESVJ will do the rest. */
     big1  = sqrtf(big);
     temp1 = sqrtf(big / (f32)n);
 
@@ -755,7 +765,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* Row pivoting */
+    /* Preconditioning using QR factorization with pivoting */
     if (rowpiv) {
         if ((lsvec && rsvec) && !jracc) {
             iwoff = 2 * n;
@@ -774,11 +784,31 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         claswp(n, A, lda, 0, m - 2, &iwork[iwoff], 1);
     }
 
-    /* First QR factorization with column pivoting */
+    /* End of the preparation phase (scaling, optional sorting and
+     * transposing, optional flushing of small columns).
+     *
+     * Preconditioning
+     *
+     * If the full SVD is needed, the right singular vectors are computed
+     * from a matrix equation, and for that we need theoretical analysis
+     * of the Businger-Golub pivoting. So we use CGEQP3 as the first RR QRF.
+     * In all other cases the first RR QRF can be chosen by other criteria
+     * (eg speed by replacing global with restricted window pivoting, such
+     * as in xGEQPX from TOMS # 782). Good results will be obtained using
+     * xGEQPX with properly (!) chosen numerical parameters.
+     * Any improvement of CGEQP3 improves overall performance of CGEJSV.
+     *
+     * A * P1 = Q1 * [ R1^* 0]^*: */
     for (p = 0; p < n; p++) iwork[p] = 0;
     cgeqp3(m, n, A, lda, iwork, cwork, &cwork[n], lwork - n, rwork, &ierr);
 
-    /* Rank detection */
+    /* The upper triangular matrix R1 from the first QRF is inspected for
+     * rank deficiency and possibilities for deflation, or possible
+     * ill-conditioning. Depending on the user specified flag L2RANK,
+     * the procedure explores possibilities to reduce the numerical
+     * rank by inspecting the computed upper triangular factor. If
+     * L2RANK or L2ABER are up, then CGEJSV will compute the SVD of
+     * A + dA, where ||dA|| <= f(M,N)*EPSLN. */
     nr = 1;
 
     if (l2aber) {
@@ -865,15 +895,11 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
 
     l2pert = l2pert && (cabsf(A[0]) / cabsf(A[(nr - 1) + (nr - 1) * lda]) > sqrtf(big1));
 
-    /* -------------------------------------------------------------------- */
-    /* Phase 3:                                                             */
-    /* -------------------------------------------------------------------- */
+    /* Phase 3: */
 
 
     if (!rsvec && !lsvec) {
-        /* ============================================================== */
-        /* Singular Values only                                           */
-        /* ============================================================== */
+        /* Singular Values only */
 
         /* .. transpose A(1:NR,1:N) */
         for (p = 0; p < (n - 1 < nr ? n - 1 : nr); p++) {
@@ -934,9 +960,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
 
     } else if ((rsvec && !lsvec && !jracc) ||
                (jracc && !lsvec && nr != n)) {
-        /* ============================================================== */
-        /* Singular Values and Right Singular Vectors                     */
-        /* ============================================================== */
+        /* -> Singular Values and Right Singular Vectors <- */
 
         if (almort) {
 
@@ -1000,9 +1024,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         clapmr(0, n, n, V, ldv, iwork);
 
     } else if (lsvec && !rsvec) {
-        /* ============================================================== */
-        /* Singular Values and Left Singular Vectors                      */
-        /* ============================================================== */
+        /* .. Singular Values and Left Singular Vectors .. */
 
         /* .. second preconditioning step to avoid need to accumulate */
         /*    Jacobi rotations in the Jacobi iterations. */
@@ -1049,9 +1071,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         }
 
     } else {
-        /* ============================================================== */
-        /* Full SVD                                                       */
-        /* ============================================================== */
+        /* .. Full SVD .. */
 
         if (!jracc) {
 
@@ -1267,7 +1287,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                        &cwork[2 * n + n * nr], U, ldu,
                        &cwork[2 * n + n * nr + nr],
                        lwork - 2 * n - n * nr - nr, &ierr);
-                /* .. apply the permutation from the second QR factorization */
                 for (q = 0; q < nr; q++) {
                     for (p = 0; p < nr; p++) {
                         cwork[2 * n + n * nr + nr + iwork[n + p]] = U[p + q * ldu];
@@ -1295,7 +1314,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     cblas_csscal(n, xsc, &V[q * ldv], 1);
             }
 
-            /* .. assemble the left singular vector matrix U (M x N). */
+            /* At this moment, V contains the right singular vectors of A.
+             * Next, assemble the left singular vector matrix U (M x N). */
             if (nr < m) {
                 claset("A", m - nr, nr, CZERO, CZERO, &U[nr], ldu);
                 if (nr < n1) {
@@ -1319,10 +1339,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                 claswp(n1, U, ldu, 0, m - 2, &iwork[iwoff], -1);
 
         } else {
-            /* ---------------------------------------------------------- */
-            /* D.1 ALMORT: the initial matrix A has almost orthogonal     */
-            /* columns and the second QRF is not needed                   */
-            /* ---------------------------------------------------------- */
+            /* .. the initial matrix A has almost orthogonal columns and
+             * the second QRF is not needed */
 
             clacpy("U", n, n, A, lda, &cwork[n], n);
             if (l2pert) {
@@ -1383,10 +1401,16 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         }
 
         } else {
-            /* ============================================================ */
-            /* D.2 JRACC: preconditioned Jacobi SVD with explicitly         */
-            /* accumulated rotations                                        */
-            /* ============================================================ */
+            /* This branch deploys a preconditioned Jacobi SVD with explicitly
+             * accumulated rotations. It is included as optional, mainly for
+             * experimental purposes. It does perform well, and can also be used.
+             * In this implementation, this branch will be automatically activated
+             * if the  condition number sigma_max(A) / sigma_min(A) is predicted
+             * to be greater than the overflow threshold. This is because the
+             * a posteriori computation of the singular vectors assumes robust
+             * implementation of BLAS and some LAPACK procedures, capable of working
+             * in presence of extreme values, e.g. when the singular values spread from
+             * the underflow to the overflow threshold. */
 
             for (p = 0; p < nr; p++) {
                 cblas_ccopy(n - p, &A[p + p * lda], lda, &V[p + p * ldv], 1);
@@ -1484,9 +1508,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
     }
     /* end of the full SVD */
 
-    /* -------------------------------------------------------------------- */
-    /* Undo scaling, if necessary (and possible)                            */
-    /* -------------------------------------------------------------------- */
+    /* Undo scaling, if necessary (and possible) */
 
     if (uscal2 <= (big / SVA[0]) * uscal1) {
         slascl("G", 0, 0, uscal1, uscal2, nr, 1, SVA, n, &ierr);

@@ -61,20 +61,23 @@ void dhseqr(const char* job, const char* compz, const INT n,
                           f64* Z, const INT ldz,
                           f64* work, const INT lwork, INT* info)
 {
-    /* Parameters */
-    const INT ntiny = 15;  /* Matrices of order NTINY or smaller use DLAHQR */
-    /* NL = 49: allocates local workspace to help small matrices through
-     * a rare DLAHQR failure. Allows up to six simultaneous shifts and
-     * a 16-by-16 deflation window. */
+    /* Matrices of order NTINY or smaller must be processed by
+     * DLAHQR because of insufficient subdiagonal scratch space.
+     * (This is a hard limit.) */
+    const INT ntiny = 15;
+    /* NL allocates some local workspace to help small matrices
+     * through a rare DLAHQR failure.  NL > NTINY = 15 is
+     * required and NL <= NMIN = ILAENV(ISPEC=12,...) is recom-
+     * mended.  (The default value of NMIN is 75.)  Using NL = 49
+     * allows up to six simultaneous shifts and a 16-by-16
+     * deflation window. */
     const INT nl = 49;
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    /* Local arrays - use explicit size to avoid VLA */
     f64 hl[49 * 49];
     f64 workl[49];
 
-    /* Local scalars */
     INT i, kbot, nmin;
     INT initz, lquery, wantt, wantz;
 
@@ -124,7 +127,6 @@ void dhseqr(const char* job, const char* compz, const INT n,
         return;
     } else {
         /* Copy eigenvalues isolated by DGEBAL */
-        /* These are diagonal elements in rows 0:ilo-1 and ihi+1:n-1 */
         for (i = 0; i < ilo; i++) {
             wr[i] = H[i + i * ldh];
             wi[i] = zero;
@@ -162,7 +164,6 @@ void dhseqr(const char* job, const char* compz, const INT n,
             if (*info > 0) {
                 /* A rare DLAHQR failure! DLAQR0 sometimes succeeds
                  * when DLAHQR fails. */
-                /* info is 1-based from dlahqr, convert to 0-based kbot */
                 kbot = *info - 1;
 
                 if (n >= nl) {
@@ -176,7 +177,7 @@ void dhseqr(const char* job, const char* compz, const INT n,
                      * tiny matrices must be copied into a larger
                      * array before calling DLAQR0. */
                     dlacpy("A", n, n, H, ldh, hl, nl);
-                    hl[n + n * nl] = zero;  /* HL(N+1, N) = ZERO (in 1-based) */
+                    hl[n + n * nl] = zero;
                     dlaset("A", nl, nl - n, zero, zero, &hl[n * nl], nl);
                     dlaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr,
                            wi, ilo, ihi, Z, ldz, workl, nl, info);

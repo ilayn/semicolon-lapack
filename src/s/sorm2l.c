@@ -61,14 +61,13 @@ void sorm2l(const char* side, const char* trans,
     INT left, notran;
     INT i1, i2, i3;
 
-    /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');
     notran = (trans[0] == 'N' || trans[0] == 'n');
 
     /* NQ is the order of Q */
     nq = left ? m : n;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (!left && !(side[0] == 'R' || side[0] == 'r')) {
         *info = -1;
@@ -95,9 +94,6 @@ void sorm2l(const char* side, const char* trans,
         return;
     }
 
-    /* Determine loop direction:
-     * Left+NoTrans or Right+Trans: i = 0, 1, ..., k-1 (forward)
-     * Left+Trans or Right+NoTrans: i = k-1, k-2, ..., 0 (backward) */
     if ((left && notran) || (!left && !notran)) {
         i1 = 0;
         i2 = k - 1;
@@ -123,8 +119,7 @@ void sorm2l(const char* side, const char* trans,
             ni = n - k + i + 1;
         }
 
-        /* Apply H(i) - note: reflector stored in column i of A,
-         * with v(last) = 1, so we use slarf1l */
+        /* Apply H(i) */
         slarf1l(side, mi, ni, &A[0 + i * lda], 1, tau[i],
                 C, ldc, work);
     }

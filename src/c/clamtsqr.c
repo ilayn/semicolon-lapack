@@ -120,7 +120,7 @@ void clamtsqr(const char* side, const char* trans,
         return;
     }
 
-    /* Determine if it is tall skinny or short and wide */
+    /* Determine the block size if it is tall skinny or short and wide */
     {
         INT maxmnk = m > n ? m : n;
         maxmnk = maxmnk > k ? maxmnk : k;
@@ -137,19 +137,17 @@ void clamtsqr(const char* side, const char* trans,
         kk = (m - k) % (mb - k);
         ctr = (m - k) / (mb - k);
         if (kk > 0) {
-            ii = m - kk;  /* 0-based: Fortran II=M-KK+1 */
+            ii = m - kk;
             ctpmqrt("L", "N", kk, n, k, 0, nb, &A[ii], lda,
                     &T[0 + ctr * k * ldt], ldt, &C[0], ldc,
                     &C[ii], ldc, work, info);
         } else {
-            ii = m;  /* 0-based: Fortran II=M+1 means ii=m (past end) */
+            ii = m;
         }
 
-        /* Fortran: DO I=II-(MB-K),MB+1,-(MB-K) */
-        /* C 0-based: i starts at ii-(mb-k), goes down to mb (0-based row mb), step -(mb-k) */
         for (i = ii - (mb - k); i >= mb; i -= (mb - k)) {
             /*
-             * Multiply Q to the current block of C
+             * Multiply Q to the current block of C (i:i+mb-k-1, 0:n-1)
              */
             ctr = ctr - 1;
             ctpmqrt("L", "N", mb - k, n, k, 0, nb, &A[i], lda,
@@ -158,24 +156,22 @@ void clamtsqr(const char* side, const char* trans,
         }
 
         /*
-         * Multiply Q to the first block of C
+         * Multiply Q to the first block of C (0:mb-1, 0:n-1)
          */
         cgemqrt("L", "N", mb, n, k, nb, &A[0], lda, T, ldt, &C[0], ldc, work, info);
 
     } else if (left && tran) {
         /*
-         * Multiply Q^H to the first block of C
+         * Multiply Q to the first block of C
          */
         kk = (m - k) % (mb - k);
-        ii = m - kk;  /* 0-based */
+        ii = m - kk;
         ctr = 1;
         cgemqrt("L", "C", mb, n, k, nb, &A[0], lda, T, ldt, &C[0], ldc, work, info);
 
-        /* Fortran: DO I=MB+1,II-MB+K,(MB-K) */
-        /* C 0-based: i starts at mb, goes up to ii-mb+k-1, step (mb-k) */
         for (i = mb; i <= ii - mb + k; i += (mb - k)) {
             /*
-             * Multiply Q^H to the current block of C
+             * Multiply Q to the current block of C (i:i+mb-k-1, 0:n-1)
              */
             ctpmqrt("L", "C", mb - k, n, k, 0, nb, &A[i], lda,
                     &T[0 + ctr * k * ldt], ldt, &C[0], ldc,
@@ -185,7 +181,7 @@ void clamtsqr(const char* side, const char* trans,
 
         if (ii < m) {
             /*
-             * Multiply Q^H to the last block of C
+             * Multiply Q to the last block of C
              */
             ctpmqrt("L", "C", kk, n, k, 0, nb, &A[ii], lda,
                     &T[0 + ctr * k * ldt], ldt, &C[0], ldc,
@@ -194,23 +190,22 @@ void clamtsqr(const char* side, const char* trans,
 
     } else if (right && tran) {
         /*
-         * Multiply Q^H from the right to the last block of C
+         * Multiply Q to the last block of C
          */
         kk = (n - k) % (mb - k);
         ctr = (n - k) / (mb - k);
         if (kk > 0) {
-            ii = n - kk;  /* 0-based */
+            ii = n - kk;
             ctpmqrt("R", "C", m, kk, k, 0, nb, &A[ii], lda,
                     &T[0 + ctr * k * ldt], ldt, &C[0], ldc,
                     &C[0 + ii * ldc], ldc, work, info);
         } else {
-            ii = n;  /* 0-based: past end */
+            ii = n;
         }
 
-        /* Fortran: DO I=II-(MB-K),MB+1,-(MB-K) */
         for (i = ii - (mb - k); i >= mb; i -= (mb - k)) {
             /*
-             * Multiply Q^H to the current block of C
+             * Multiply Q to the current block of C (0:m-1, i:i+mb-k-1)
              */
             ctr = ctr - 1;
             ctpmqrt("R", "C", m, mb - k, k, 0, nb, &A[i], lda,
@@ -219,23 +214,22 @@ void clamtsqr(const char* side, const char* trans,
         }
 
         /*
-         * Multiply Q^H to the first block of C
+         * Multiply Q to the first block of C (0:m-1, 0:mb-1)
          */
         cgemqrt("R", "C", m, mb, k, nb, &A[0], lda, T, ldt, &C[0], ldc, work, info);
 
     } else if (right && notran) {
         /*
-         * Multiply Q from the right to the first block of C
+         * Multiply Q to the first block of C
          */
         kk = (n - k) % (mb - k);
-        ii = n - kk;  /* 0-based */
+        ii = n - kk;
         ctr = 1;
         cgemqrt("R", "N", m, mb, k, nb, &A[0], lda, T, ldt, &C[0], ldc, work, info);
 
-        /* Fortran: DO I=MB+1,II-MB+K,(MB-K) */
         for (i = mb; i <= ii - mb + k; i += (mb - k)) {
             /*
-             * Multiply Q to the current block of C
+             * Multiply Q to the current block of C (0:m-1, i:i+mb-k-1)
              */
             ctpmqrt("R", "N", m, mb - k, k, 0, nb, &A[i], lda,
                     &T[0 + ctr * k * ldt], ldt, &C[0], ldc,

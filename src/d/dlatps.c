@@ -52,23 +52,20 @@ void dlatps(
     f64* restrict cnorm,
     INT* info)
 {
-    // dlatps.f lines 245-246: Parameters
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
     const f64 ONE = 1.0;
 
-    // dlatps.f lines 248-252: Local variables
     INT upper, notran, nounit;
     INT i, imax, ip, j, jfirst, jinc, jlast, jlen;
     f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
-    // dlatps.f lines 268-271
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     notran = (trans[0] == 'N' || trans[0] == 'n');
     nounit = (diag[0] == 'N' || diag[0] == 'n');
 
-    // dlatps.f lines 275-291: Test the input parameters
+    // Test the input parameters.
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (!notran && !(trans[0] == 'T' || trans[0] == 't') && !(trans[0] == 'C' || trans[0] == 'c')) {
@@ -85,27 +82,27 @@ void dlatps(
         return;
     }
 
-    // dlatps.f lines 295-296: Quick return if possible
+    // Quick return if possible
     if (n == 0) {
         return;
     }
 
-    // dlatps.f lines 300-302: Determine machine dependent parameters
+    // Determine machine dependent parameters to control overflow.
     smlnum = dlamch("S") / dlamch("P");
     bignum = ONE / smlnum;
     *scale = ONE;
 
-    // dlatps.f lines 304-328: Compute the 1-norm of each column if needed
+    // Compute the 1-norm of each column, not including the diagonal.
     if (normin[0] == 'N' || normin[0] == 'n') {
         if (upper) {
-            // dlatps.f lines 312-316: A is upper triangular
+            // A is upper triangular.
             ip = 0;
             for (j = 0; j < n; j++) {
                 cnorm[j] = cblas_dasum(j, &AP[ip], 1);
                 ip = ip + (j + 1);
             }
         } else {
-            // dlatps.f lines 321-326: A is lower triangular
+            // A is lower triangular.
             ip = 0;
             for (j = 0; j < n - 1; j++) {
                 cnorm[j] = cblas_dasum(n - j - 1, &AP[ip + 1], 1);
@@ -115,7 +112,8 @@ void dlatps(
         }
     }
 
-    // dlatps.f lines 333-340: Scale the column norms by TSCAL
+    // Scale the column norms by TSCAL if the maximum element in CNORM is
+    // greater than BIGNUM.
     imax = cblas_idamax(n, cnorm, 1);
     tmax = cnorm[imax];
     if (tmax <= bignum) {
@@ -125,13 +123,14 @@ void dlatps(
         cblas_dscal(n, tscal, cnorm, 1);
     }
 
-    // dlatps.f lines 345-347: Compute a bound on the computed solution vector
+    // Compute a bound on the computed solution vector to see if the
+    // Level 2 BLAS routine DTPSV can be used.
     j = cblas_idamax(n, X, 1);
     xmax = fabs(X[j]);
     xbnd = xmax;
 
     if (notran) {
-        // dlatps.f lines 352-360: Compute the growth in A * x = b
+        // Compute the growth in A * x = b.
         if (upper) {
             jfirst = n - 1;
             jlast = 0;
@@ -148,12 +147,10 @@ void dlatps(
         }
 
         if (nounit) {
-            // dlatps.f lines 374-403: A is non-unit triangular
+            // A is non-unit triangular.
             grow = ONE / (xbnd > smlnum ? xbnd : smlnum);
             xbnd = grow;
-            // dlatps.f line 376: IP = JFIRST*(JFIRST+1)/2
-            // In 0-based: ip = jfirst*(jfirst+1)/2 but need diagonal position
-            ip = (jfirst + 1) * (jfirst + 2) / 2 - 1;  // Position of diagonal A(jfirst,jfirst) 0-based
+            ip = (jfirst + 1) * (jfirst + 2) / 2 - 1;
             jlen = n;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) {
@@ -172,7 +169,7 @@ void dlatps(
             }
             grow = xbnd;
         } else {
-            // dlatps.f lines 410-422: A is unit triangular
+            // A is unit triangular.
             grow = ONE / (xbnd > smlnum ? xbnd : smlnum);
             grow = (grow < ONE ? grow : ONE);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
@@ -184,7 +181,7 @@ void dlatps(
         }
 L50:;
     } else {
-        // dlatps.f lines 429-437: Compute the growth in A**T * x = b
+        // Compute the growth in A**T * x = b.
         if (upper) {
             jfirst = 0;
             jlast = n - 1;
@@ -201,7 +198,7 @@ L50:;
         }
 
         if (nounit) {
-            // dlatps.f lines 451-475: A is non-unit triangular
+            // A is non-unit triangular.
             grow = ONE / (xbnd > smlnum ? xbnd : smlnum);
             xbnd = grow;
             ip = (jfirst + 1) * (jfirst + 2) / 2 - 1;
@@ -221,7 +218,7 @@ L50:;
             }
             grow = (grow < xbnd ? grow : xbnd);
         } else {
-            // dlatps.f lines 482-494: A is unit triangular
+            // A is unit triangular.
             grow = ONE / (xbnd > smlnum ? xbnd : smlnum);
             grow = (grow < ONE ? grow : ONE);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
@@ -236,13 +233,14 @@ L80:;
     }
 
     if ((grow * tscal) > smlnum) {
-        // dlatps.f lines 499-504: Use the Level 2 BLAS solve
+        // Use the Level 2 BLAS solve if the reciprocal of the bound on
+        // elements of X is not too small.
         CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
         CBLAS_TRANSPOSE cblas_trans = notran ? CblasNoTrans : CblasTrans;
         CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
         cblas_dtpsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag, n, AP, X, 1);
     } else {
-        // dlatps.f lines 509-517: Use a Level 1 BLAS solve, scaling intermediate results
+        // Use a Level 1 BLAS solve, scaling intermediate results.
         if (xmax > bignum) {
             *scale = bignum / xmax;
             cblas_dscal(n, *scale, X, 1);
@@ -250,7 +248,7 @@ L80:;
         }
 
         if (notran) {
-            // dlatps.f lines 523-639: Solve A * x = b
+            // Solve A * x = b
             ip = (jfirst + 1) * (jfirst + 2) / 2 - 1;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 xj = fabs(X[j]);
@@ -287,7 +285,8 @@ L80:;
                     X[j] = X[j] / tjjs;
                     xj = fabs(X[j]);
                 } else {
-                    // A(j,j) = 0: Set x(1:n) = 0, x(j) = 1, scale = 0
+                    // A(j,j) = 0:  Set x(0:n-1) = 0, x(j) = 1, and
+                    // scale = 0, and compute a solution to A*x = 0.
                     for (i = 0; i < n; i++) {
                         X[i] = ZERO;
                     }
@@ -297,7 +296,8 @@ L80:;
                     xmax = ZERO;
                 }
 L100:
-                // Scale x if necessary to avoid overflow when adding column j
+                // Scale x if necessary to avoid overflow when adding a
+                // multiple of column j of A.
                 if (xj > ONE) {
                     rec = ONE / xj;
                     if (cnorm[j] > (bignum - xmax) * rec) {
@@ -312,7 +312,8 @@ L100:
 
                 if (upper) {
                     if (j > 0) {
-                        // x(0:j-1) := x(0:j-1) - x(j) * A(0:j-1,j)
+                        // Compute the update
+                        //    x(0:j-1) := x(0:j-1) - x(j) * A(0:j-1,j)
                         cblas_daxpy(j, -X[j] * tscal, &AP[ip - j], 1, X, 1);
                         i = cblas_idamax(j, X, 1);
                         xmax = fabs(X[i]);
@@ -320,7 +321,8 @@ L100:
                     ip = ip - (j + 1);
                 } else {
                     if (j < n - 1) {
-                        // x(j+1:n-1) := x(j+1:n-1) - x(j) * A(j+1:n-1,j)
+                        // Compute the update
+                        //    x(j+1:n-1) := x(j+1:n-1) - x(j) * A(j+1:n-1,j)
                         cblas_daxpy(n - j - 1, -X[j] * tscal, &AP[ip + 1], 1, &X[j + 1], 1);
                         i = j + 1 + cblas_idamax(n - j - 1, &X[j + 1], 1);
                         xmax = fabs(X[i]);
@@ -329,7 +331,7 @@ L100:
                 }
             }
         } else {
-            // dlatps.f lines 645-777: Solve A**T * x = b
+            // Solve A**T * x = b
             ip = (jfirst + 1) * (jfirst + 2) / 2 - 1;
             jlen = 1;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
@@ -405,7 +407,8 @@ L100:
                         }
                         X[j] = X[j] / tjjs;
                     } else {
-                        // A(j,j) = 0: Set x(1:n) = 0, x(j) = 1, scale = 0
+                        // A(j,j) = 0:  Set x(0:n-1) = 0, x(j) = 1, and
+                        // scale = 0, and compute a solution to A**T*x = 0.
                         for (i = 0; i < n; i++) {
                             X[i] = ZERO;
                         }
@@ -425,7 +428,7 @@ L150:;
         *scale = (*scale) / tscal;
     }
 
-    // dlatps.f lines 784-786: Scale the column norms by 1/TSCAL for return
+    // Scale the column norms by 1/TSCAL for return.
     if (tscal != ONE) {
         cblas_dscal(n, ONE / tscal, cnorm, 1);
     }

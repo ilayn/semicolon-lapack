@@ -58,14 +58,13 @@ void sgemqr(const char* side, const char* trans,
     INT left, right, tran, notran, lquery;
     INT mb, nb, lw, mn, minmnk, lwmin;
 
-    /* Decode arguments */
+    /* Test the input arguments */
     lquery = (lwork == -1);
     notran = (trans[0] == 'N' || trans[0] == 'n');
     tran   = (trans[0] == 'T' || trans[0] == 't');
     left   = (side[0] == 'L' || side[0] == 'l');
     right  = (side[0] == 'R' || side[0] == 'r');
 
-    /* Read block sizes from T array (stored by SGEQR) */
     mb = (INT)T[1];
     nb = (INT)T[2];
 
@@ -77,7 +76,6 @@ void sgemqr(const char* side, const char* trans,
         mn = n;
     }
 
-    /* Compute minimum workspace */
     minmnk = m < n ? m : n;
     minmnk = minmnk < k ? minmnk : k;
     if (minmnk == 0) {
@@ -86,10 +84,8 @@ void sgemqr(const char* side, const char* trans,
         lwmin = lw > 1 ? lw : 1;
     }
 
-    /* NBLCKS computation: present in Fortran but result unused */
     (void)((mb > k) && (mn > k));
 
-    /* Parameter validation */
     *info = 0;
     if (!left && !right) {
         *info = -1;
@@ -127,14 +123,11 @@ void sgemqr(const char* side, const char* trans,
         return;
     }
 
-    /* Choose between SGEMQRT (standard) and SLAMTSQR (tall-skinny) */
     if ((left && m <= k) || (right && n <= k)
         || (mb <= k) || (mb >= (m > n ? (m > k ? m : k) : (n > k ? n : k)))) {
-        /* Use standard blocked algorithm */
         sgemqrt(side, trans, m, n, k, nb,
                 A, lda, &T[5], nb, C, ldc, work, info);
     } else {
-        /* Use tall-skinny algorithm */
         slamtsqr(side, trans, m, n, k, mb, nb,
                  A, lda, &T[5], nb, C, ldc, work, lwork, info);
     }

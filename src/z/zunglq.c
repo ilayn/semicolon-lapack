@@ -49,7 +49,7 @@ void zunglq(const INT m, const INT n, const INT k,
     INT lquery;
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     nb = lapack_get_nb("UNGLQ");
     lwkopt = (m > 1 ? m : 1) * nb;
@@ -84,7 +84,7 @@ void zunglq(const INT m, const INT n, const INT k,
     nx = 0;
     iws = m;
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("UNGLQ");
         if (nx < 0) nx = 0;
         if (nx < k) {

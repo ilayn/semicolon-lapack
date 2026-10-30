@@ -54,12 +54,11 @@ void spttrf(
         return;
 
     // Compute the L*D*L**T (or U**T*D*U) factorization of A.
-    // Unrolled loop: handle remainder first (Fortran: I4 = MOD(N-1, 4))
     i4 = (n - 1) % 4;
 
     for (i = 0; i < i4; i++) {
         if (D[i] <= ZERO) {
-            *info = i + 1;  // 1-based info
+            *info = i + 1;
             return;
         }
         ei = E[i];
@@ -67,7 +66,6 @@ void spttrf(
         D[i + 1] = D[i + 1] - E[i] * ei;
     }
 
-    // Main loop, unrolled by 4
     for (i = i4; i < n - 4; i += 4) {
         // Drop out of the loop if d(i) <= 0: the matrix is not positive definite.
         if (D[i] <= ZERO) {
@@ -111,7 +109,7 @@ void spttrf(
         D[i + 4] = D[i + 4] - E[i + 3] * ei;
     }
 
-    // Check d(n-1) for positive definiteness (0-based: D[n-1])
+    // Check d(n-1) for positive definiteness.
     if (D[n - 1] <= ZERO) {
         *info = n;
     }

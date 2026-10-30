@@ -109,7 +109,6 @@ void slatbs(
         if (upper) {
             /* A is upper triangular */
             for (j = 0; j < n; j++) {
-                /* 0-based: jlen = min(kd, j) elements above diagonal */
                 jlen = (kd < j) ? kd : j;
                 if (jlen > 0) {
                     cnorm[j] = cblas_sasum(jlen, &AB[kd - jlen + j * ldab], 1);
@@ -120,7 +119,6 @@ void slatbs(
         } else {
             /* A is lower triangular */
             for (j = 0; j < n; j++) {
-                /* 0-based: jlen = min(kd, n-1-j) elements below diagonal */
                 jlen = (kd < n - 1 - j) ? kd : n - 1 - j;
                 if (jlen > 0) {
                     cnorm[j] = cblas_sasum(jlen, &AB[1 + j * ldab], 1);
@@ -154,12 +152,12 @@ void slatbs(
             jfirst = n - 1;
             jlast = 0;
             jinc = -1;
-            maind = kd;  /* 0-based: diagonal at row kd for upper */
+            maind = kd;
         } else {
             jfirst = 0;
             jlast = n - 1;
             jinc = 1;
-            maind = 0;   /* 0-based: diagonal at row 0 for lower */
+            maind = 0;
         }
 
         if (tscal != ONE) {
@@ -280,7 +278,8 @@ void slatbs(
                         X[j] = X[j] / tjjs;
                         xj = fabsf(X[j]);
                     } else {
-                        /* A(j,j) = 0: Set x(1:n) = 0, x(j) = 1, and scale = 0 */
+                        /* A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+                           scale = 0, and compute a solution to A*x = 0. */
                         for (i = 0; i < n; i++) {
                             X[i] = ZERO;
                         }

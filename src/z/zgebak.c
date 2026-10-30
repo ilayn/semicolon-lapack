@@ -45,10 +45,8 @@ void zgebak(const char* job, const char* side, const INT n, const INT ilo,
             const INT ihi, const f64* scale, const INT m, c128* V,
             const INT ldv, INT* info)
 {
-    /* Constants */
     const f64 ONE = 1.0;
 
-    /* Local variables */
     INT leftv, rightv;
     INT i, ii, k;
     f64 s;
@@ -115,14 +113,11 @@ L30:
         if (rightv) {
             for (ii = 0; ii < n; ii++) {
                 i = ii;
-                /* Skip indices in range [ilo, ihi] */
                 if (i >= ilo && i <= ihi) continue;
                 if (i < ilo) {
-                    /* i = ilo - 1 - ii */
                     i = ilo - 1 - ii;
                     if (i < 0) continue;
                 }
-                /* scale stores 0-based indices */
                 k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_zswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);
@@ -132,13 +127,11 @@ L30:
         if (leftv) {
             for (ii = 0; ii < n; ii++) {
                 i = ii;
-                /* Skip indices in range [ilo, ihi] */
                 if (i >= ilo && i <= ihi) continue;
                 if (i < ilo) {
                     i = ilo - 1 - ii;
                     if (i < 0) continue;
                 }
-                /* scale stores 0-based indices */
                 k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_zswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);

@@ -87,7 +87,7 @@ void zppsv(
     const INT ldb,
     INT* info)
 {
-    // zppsv.f lines 172-186: Test the input parameters
+    // Test the input parameters
     *info = 0;
     if (!((uplo[0] == 'U' || uplo[0] == 'u') ||
           (uplo[0] == 'L' || uplo[0] == 'l'))) {
@@ -104,10 +104,10 @@ void zppsv(
         return;
     }
 
-    // zppsv.f lines 190-197: Compute the Cholesky factorization A = U**H*U or A = L*L**H
+    // Compute the Cholesky factorization A = U**H*U or A = L*L**H
     zpptrf(uplo, n, AP, info);
     if (*info == 0) {
-        // zppsv.f line 195: Solve the system A*X = B, overwriting B with X
+        // Solve the system A*X = B, overwriting B with X
         zpptrs(uplo, n, nrhs, AP, B, ldb, info);
     }
 }

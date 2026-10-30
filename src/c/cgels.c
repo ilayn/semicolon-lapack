@@ -168,7 +168,6 @@ void cgels(const char* trans,
 
     if (m >= n) {
         /* Compute QR factorization of A */
-        /* work[0..mn-1] = tau, work[mn..] = sub-workspace */
         cgeqrf(m, n, A, lda, work, &work[mn], lwork - mn, &iinfo);
 
         if (!tpsd) {
@@ -203,7 +202,7 @@ void cgels(const char* trans,
                 }
             }
 
-            /* B(0:m-1, 0:nrhs-1) := Q * B(0:n-1, 0:nrhs-1) */
+            /* B(0:m-1, 0:nrhs-1) := Q(0:n-1,:) * B(0:n-1, 0:nrhs-1) */
             cunmqr("L", "N", m, nrhs, n, A, lda,
                    work, B, ldb, &work[mn], lwork - mn, &iinfo);
 
@@ -211,7 +210,6 @@ void cgels(const char* trans,
         }
     } else {
         /* Compute LQ factorization of A */
-        /* work[0..mn-1] = tau, work[mn..] = sub-workspace */
         cgelqf(m, n, A, lda, work, &work[mn], lwork - mn, &iinfo);
 
         if (!tpsd) {
@@ -231,7 +229,7 @@ void cgels(const char* trans,
                 }
             }
 
-            /* B(0:n-1, 0:nrhs-1) := Q^H * B(0:m-1, 0:nrhs-1) */
+            /* B(0:n-1, 0:nrhs-1) := Q(0:n-1,:)^H * B(0:m-1, 0:nrhs-1) */
             cunmlq("L", "C", n, nrhs, m, A, lda,
                    work, B, ldb, &work[mn], lwork - mn, &iinfo);
 

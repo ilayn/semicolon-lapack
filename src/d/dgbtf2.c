@@ -115,22 +115,15 @@ void dgbtf2(
 
     /* Gaussian elimination with partial pivoting */
 
-    /* Set fill-in elements in columns ku+1 to kv-1 to zero.
-       0-based: columns ku+1 to kv-1 (if kv > ku+1)
-       LAPACK 1-based: columns KU+2 to KV */
+    /* Set fill-in elements in columns ku+1 to kv-1 to zero. */
     for (j = ku + 1; j < kv && j < n; j++) {
-        /*
-         * 0-based: rows from kv-j to kl-1
-         * LAPACK 1-based: I = KV-J+2 to KL, maps to I-1 = KV-J+1 to KL-1
-         * In 0-based: row indices from (kv - j) to (kl - 1)
-         */
         for (i = kv - j; i < kl; i++) {
             AB[i + j * ldab] = ZERO;
         }
     }
 
     /* ju is the index of the last column affected by the current stage
-       of the factorization. 0-based, initialized to 0. */
+       of the factorization. */
     ju = 0;
 
     INT minmn = (m < n) ? m : n;
@@ -148,32 +141,22 @@ void dgbtf2(
         km = (kl < m - 1 - j) ? kl : m - 1 - j;
         if (km < 0) km = 0;
 
-        /*
-         * Search for pivot in column j, rows kv to kv+km (0-based).
-         * cblas_idamax returns 0-based index relative to start.
-         * Diagonal is at row kv in band storage.
-         */
         jp = cblas_idamax(km + 1, &AB[kv + j * ldab], 1);
-        ipiv[j] = jp + j;  /* Convert to global 0-based row index */
+        ipiv[j] = jp + j;
 
         if (AB[kv + jp + j * ldab] != ZERO) {
-            /* Update ju: index of last column affected by current stage
-               0-based: ju = max(ju, min(j + ku + jp, n - 1)) */
             INT new_ju = j + ku + jp;
             if (new_ju > n - 1) new_ju = n - 1;
             if (new_ju > ju) ju = new_ju;
 
-            /* Apply interchange to columns j to ju.
-               Swap row kv+jp with row kv (in band storage).
-               Stride is ldab-1 because we're moving along a row in column-major band storage. */
+            /* Apply interchange to columns j to ju. */
             if (jp != 0) {
                 cblas_dswap(ju - j + 1, &AB[kv + jp + j * ldab], ldab - 1,
                             &AB[kv + j * ldab], ldab - 1);
             }
 
             if (km > 0) {
-                /* Compute multipliers.
-                   Scale elements in column j, rows kv+1 to kv+km (0-based) */
+                /* Compute multipliers. */
                 if (fabs(AB[kv + j * ldab]) >= sfmin) {
                     cblas_dscal(km, ONE / AB[kv + j * ldab], &AB[kv + 1 + j * ldab], 1);
                 } else {
@@ -182,23 +165,17 @@ void dgbtf2(
                     }
                 }
 
-                /* Update trailing submatrix within the band.
-                   A[kv+1:kv+km, j+1:ju] -= A[kv+1:kv+km, j] * A[kv, j+1:ju]
-
-                   Note: The row vector A[kv, j+1:ju] has stride ldab-1 in band storage.
-                   The column vector A[kv+1:kv+km, j] has stride 1.
-                   The submatrix A[kv+1:kv+km, j+1:ju] has leading dimension ldab-1. */
+                /* Update trailing submatrix within the band. */
                 if (ju > j) {
                     cblas_dger(CblasColMajor, km, ju - j, -ONE,
-                               &AB[kv + 1 + j * ldab], 1,           /* column vector */
-                               &AB[kv - 1 + (j + 1) * ldab], ldab - 1,  /* row vector at row kv-1 of next col */
-                               &AB[kv + (j + 1) * ldab], ldab - 1); /* submatrix */
+                               &AB[kv + 1 + j * ldab], 1,
+                               &AB[kv - 1 + (j + 1) * ldab], ldab - 1,
+                               &AB[kv + (j + 1) * ldab], ldab - 1);
                 }
             }
         } else {
             /* If pivot is zero, set INFO to the index of the pivot
-               unless a zero pivot has already been found.
-               Report 1-based index for compatibility. */
+               unless a zero pivot has already been found. */
             if (*info == 0) {
                 *info = j + 1;
             }

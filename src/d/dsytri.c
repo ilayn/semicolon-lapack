@@ -68,12 +68,10 @@ void dsytri(
 
     /* Check that the diagonal matrix D is nonsingular. */
     if (upper) {
-        /* Upper triangular storage: examine D from bottom to top.
-         * Fortran: DO INFO = N, 1, -1: checks IPIV(INFO)>0 .AND. A(INFO,INFO)==0
-         * 0-based: check ipiv[k] >= 0 && A[k,k] == 0 */
+        /* Upper triangular storage: examine D from bottom to top */
         for (INT k = n - 1; k >= 0; k--) {
             if (ipiv[k] >= 0 && A[k + k * lda] == 0.0) {
-                *info = k + 1;  /* 1-based info */
+                *info = k + 1;
                 return;
             }
         }
@@ -90,19 +88,18 @@ void dsytri(
     if (upper) {
         /* Compute inv(A) from the factorization A = U*D*U**T.
          *
-         * K increases from 0 to n-1 in steps of 1 or 2. */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = 0;
         while (k < n) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = 1.0 / A[k + k * lda];
 
-                /* Compute column k of the inverse.
-                 * Fortran: DCOPY(K-1, A(1,K), 1, WORK, 1)
-                 *          DSYMV(UPLO, K-1, -1, A, LDA, WORK, 1, 0, A(1,K), 1)
-                 *          A(K,K) -= DDOT(K-1, WORK, 1, A(1,K), 1)
-                 * 0-based: count = k */
+                /* Compute column k of the inverse. */
                 if (k > 0) {
                     cblas_dcopy(k, &A[0 + k * lda], 1, work, 1);
                     cblas_dsymv(CblasColMajor, CblasUpper,
@@ -112,9 +109,9 @@ void dsytri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block.
-                 * Fortran: T = ABS(A(K, K+1))
-                 * 0-based: t = |A[k + (k+1)*lda]| */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 f64 t = fabs(A[k + (k + 1) * lda]);
                 f64 ak = A[k + k * lda] / t;
                 f64 akp1 = A[(k + 1) + (k + 1) * lda] / t;
@@ -124,8 +121,7 @@ void dsytri(
                 A[(k + 1) + (k + 1) * lda] = ak / d;
                 A[k + (k + 1) * lda] = -akkp1 / d;
 
-                /* Compute columns k and k+1 of the inverse.
-                 * 0-based: count = k */
+                /* Compute columns k and k+1 of the inverse. */
                 if (k > 0) {
                     cblas_dcopy(k, &A[0 + k * lda], 1, work, 1);
                     cblas_dsymv(CblasColMajor, CblasUpper,
@@ -144,9 +140,8 @@ void dsytri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp.
-             * Fortran: KP = ABS(IPIV(K)) (1-based)
-             * 0-based: for 1x1, kp = ipiv[k]; for 2x2, kp = -(ipiv[k]+1) */
+            /* Interchange rows and columns k and kp in the leading
+             * submatrix A(0:k+1,0:k+1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -155,25 +150,19 @@ void dsytri(
             }
 
             if (kp != k) {
-                /* Fortran: DSWAP(KP-1, A(1,K), 1, A(1,KP), 1) — count KP-1 (1-based) = kp
-                 * 0-based: swap A(0:kp-1, k) with A(0:kp-1, kp), count = kp */
                 if (kp > 0) {
                     cblas_dswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
                 }
 
-                /* Fortran: DSWAP(K-KP-1, A(KP+1,K), 1, A(KP,KP+1), LDA)
-                 * 0-based: swap A(kp+1:k-1, k) with A(kp, kp+1:k-1), count = k-kp-1 */
                 if (k - kp - 1 > 0) {
                     cblas_dswap(k - kp - 1, &A[(kp + 1) + k * lda], 1,
                                 &A[kp + (kp + 1) * lda], lda);
                 }
 
-                /* Swap diagonal elements */
                 f64 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k+1) with A(kp, k+1) */
                 if (kstep == 2) {
                     temp = A[k + (k + 1) * lda];
                     A[k + (k + 1) * lda] = A[kp + (k + 1) * lda];
@@ -187,19 +176,18 @@ void dsytri(
     } else {
         /* Compute inv(A) from the factorization A = L*D*L**T.
          *
-         * K decreases from n-1 to 0 in steps of 1 or 2. */
+         * K is the main loop index, decreasing from n-1 to 0 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = n - 1;
         while (k >= 0) {
             INT kstep;
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block: invert it. */
+                /* 1 x 1 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 A[k + k * lda] = 1.0 / A[k + k * lda];
 
-                /* Compute column k of the inverse.
-                 * Fortran: DCOPY(N-K, A(K+1,K), 1, WORK, 1)
-                 *          DSYMV(UPLO, N-K, -1, A(K+1,K+1), LDA, WORK, 1, 0, A(K+1,K), 1)
-                 *          A(K,K) -= DDOT(N-K, WORK, 1, A(K+1,K), 1)
-                 * 0-based: count = n-k-1, submatrix starts at (k+1, k+1) */
+                /* Compute column k of the inverse. */
                 if (k < n - 1) {
                     cblas_dcopy(n - k - 1, &A[(k + 1) + k * lda], 1, work, 1);
                     cblas_dsymv(CblasColMajor, CblasLower,
@@ -210,9 +198,9 @@ void dsytri(
                 }
                 kstep = 1;
             } else {
-                /* 2x2 diagonal block: invert the 2x2 block.
-                 * Fortran: T = ABS(A(K, K-1))
-                 * 0-based: t = |A[k + (k-1)*lda]| */
+                /* 2 x 2 diagonal block
+                 *
+                 * Invert the diagonal block. */
                 f64 t = fabs(A[k + (k - 1) * lda]);
                 f64 ak = A[(k - 1) + (k - 1) * lda] / t;
                 f64 akp1 = A[k + k * lda] / t;
@@ -222,8 +210,7 @@ void dsytri(
                 A[k + k * lda] = ak / d;
                 A[k + (k - 1) * lda] = -akkp1 / d;
 
-                /* Compute columns k-1 and k of the inverse.
-                 * 0-based: count = n-k-1, submatrix at (k+1, k+1) */
+                /* Compute columns k-1 and k of the inverse. */
                 if (k < n - 1) {
                     cblas_dcopy(n - k - 1, &A[(k + 1) + k * lda], 1, work, 1);
                     cblas_dsymv(CblasColMajor, CblasLower,
@@ -244,7 +231,8 @@ void dsytri(
                 kstep = 2;
             }
 
-            /* Interchange rows and columns k and kp. */
+            /* Interchange rows and columns k and kp in the trailing
+             * submatrix A(k-1:n-1,k-1:n-1) */
             INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
@@ -253,26 +241,20 @@ void dsytri(
             }
 
             if (kp != k) {
-                /* Fortran: DSWAP(N-KP, A(KP+1,K), 1, A(KP+1,KP), 1)
-                 * 0-based: count = n-kp-1 */
                 if (kp < n - 1) {
                     cblas_dswap(n - kp - 1, &A[(kp + 1) + k * lda], 1,
                                 &A[(kp + 1) + kp * lda], 1);
                 }
 
-                /* Fortran: DSWAP(KP-K-1, A(K+1,K), 1, A(KP,K+1), LDA)
-                 * 0-based: count = kp-k-1 */
                 if (kp - k - 1 > 0) {
                     cblas_dswap(kp - k - 1, &A[(k + 1) + k * lda], 1,
                                 &A[kp + (k + 1) * lda], lda);
                 }
 
-                /* Swap diagonal elements */
                 f64 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
-                /* For 2x2 block, also swap A(k, k-1) with A(kp, k-1) */
                 if (kstep == 2) {
                     temp = A[k + (k - 1) * lda];
                     A[k + (k - 1) * lda] = A[kp + (k - 1) * lda];

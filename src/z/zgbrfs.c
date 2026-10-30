@@ -147,7 +147,7 @@ void zgbrfs(
         count = 1;
         lstres = THREE;
 
-        /* Iterative refinement loop until stopping criterion is satisfied */
+        /* Loop until stopping criterion is satisfied. */
         while (1) {
             /* Compute residual R = B - op(A) * X,
              * where op(A) = A, A**T, or A**H, depending on TRANS.
@@ -159,7 +159,13 @@ void zgbrfs(
                         &CONE, work, 1);
 
             /* Compute componentwise relative backward error from formula
-             *   max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+             *
+             * max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+             *
+             * where abs(Z) is the componentwise absolute value of the matrix
+             * or vector Z.  If the i-th component of the denominator is less
+             * than SAFE2, then SAFE1 is added to the i-th components of the
+             * numerator and denominator before dividing.
              */
             for (i = 0; i < n; i++) {
                 rwork[i] = cabs1(B[i + j * ldb]);
@@ -200,10 +206,11 @@ void zgbrfs(
             }
             berr[j] = s;
 
-            /* Stop iterating if
-             *   1) The residual BERR(J) is not larger than machine epsilon, or
-             *   2) BERR(J) did not decrease by at least a factor of 2, or
-             *   3) More than ITMAX iterations tried.
+            /* Test stopping criterion. Continue iterating if
+             *    1) The residual BERR(J) is larger than machine epsilon, and
+             *    2) BERR(J) decreased by at least a factor of 2 during the
+             *       last iteration, and
+             *    3) At most ITMAX iterations tried.
              */
             if (!(berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX)) {
                 break;
@@ -217,8 +224,26 @@ void zgbrfs(
         }
 
         /* Bound error from formula
-         *   norm(X - XTRUE) / norm(X) .le. FERR =
-         *   norm( abs(inv(op(A)))* ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+         *
+         * norm(X - XTRUE) / norm(X) .le. FERR =
+         * norm( abs(inv(op(A)))*
+         *    ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+         *
+         * where
+         *   norm(Z) is the magnitude of the largest component of Z
+         *   inv(op(A)) is the inverse of op(A)
+         *   abs(Z) is the componentwise absolute value of the matrix or
+         *      vector Z
+         *   NZ is the maximum number of nonzeros in any row of A, plus 1
+         *   EPS is machine epsilon
+         *
+         * The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
+         * is incremented by SAFE1 if the i-th component of
+         * abs(op(A))*abs(X) + abs(B) is less than SAFE2.
+         *
+         * Use ZLACN2 to estimate the infinity-norm of the matrix
+         *    inv(op(A)) * diag(W),
+         * where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
          */
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {

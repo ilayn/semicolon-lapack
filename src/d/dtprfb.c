@@ -108,8 +108,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
          * B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
          */
-        mp = (m - l + 1) < m ? (m - l + 1) : m;  /* MIN(M-L+1, M) */
-        kp = (l + 1) < k ? (l + 1) : k;          /* MIN(L+1, K) */
+        mp = (m - l + 1) < m ? (m - l + 1) : m;
+        kp = (l + 1) < k ? (l + 1) : k;
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -165,8 +165,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V) T      or  A = A - (A + B V) T**T
          * B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
          */
-        np = (n - l + 1) < n ? (n - l + 1) : n;  /* MIN(N-L+1, N) */
-        kp = (l + 1) < k ? (l + 1) : k;          /* MIN(L+1, K) */
+        np = (n - l + 1) < n ? (n - l + 1) : n;
+        kp = (l + 1) < k ? (l + 1) : k;
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -223,8 +223,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
          * B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
          */
-        mp = (l + 1) < m ? (l + 1) : m;          /* MIN(L+1, M) */
-        kp = (k - l + 1) < k ? (k - l + 1) : k;  /* MIN(K-L+1, K) */
+        mp = (l + 1) < m ? (l + 1) : m;
+        kp = (k - l + 1) < k ? (k - l + 1) : k;
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -283,8 +283,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V) T      or  A = A - (A + B V) T**T
          * B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
          */
-        np = (l + 1) < n ? (l + 1) : n;          /* MIN(L+1, N) */
-        kp = (k - l + 1) < k ? (k - l + 1) : k;  /* MIN(K-L+1, K) */
+        np = (l + 1) < n ? (l + 1) : n;
+        kp = (k - l + 1) < k ? (k - l + 1) : k;
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -342,8 +342,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
          * B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
          */
-        mp = (m - l + 1) < m ? (m - l + 1) : m;  /* MIN(M-L+1, M) */
-        kp = (l + 1) < k ? (l + 1) : k;          /* MIN(L+1, K) */
+        mp = (m - l + 1) < m ? (m - l + 1) : m;
+        kp = (l + 1) < k ? (l + 1) : k;
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -398,8 +398,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
          * B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
          */
-        np = (n - l + 1) < n ? (n - l + 1) : n;  /* MIN(N-L+1, N) */
-        kp = (l + 1) < k ? (l + 1) : k;          /* MIN(L+1, K) */
+        np = (n - l + 1) < n ? (n - l + 1) : n;
+        kp = (l + 1) < k ? (l + 1) : k;
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -455,8 +455,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
          * B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
          */
-        mp = (l + 1) < m ? (l + 1) : m;          /* MIN(L+1, M) */
-        kp = (k - l + 1) < k ? (k - l + 1) : k;  /* MIN(K-L+1, K) */
+        mp = (l + 1) < m ? (l + 1) : m;
+        kp = (k - l + 1) < k ? (k - l + 1) : k;
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -513,8 +513,8 @@ void dtprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
          * B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
          */
-        np = (l + 1) < n ? (l + 1) : n;          /* MIN(L+1, N) */
-        kp = (k - l + 1) < k ? (k - l + 1) : k;  /* MIN(K-L+1, K) */
+        np = (l + 1) < n ? (l + 1) : n;
+        kp = (k - l + 1) < k ? (k - l + 1) : k;
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {

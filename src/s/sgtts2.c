@@ -69,7 +69,6 @@ void sgtts2(
          * overwriting each right hand side vector with its solution.
          */
         if (nrhs <= 1) {
-            /* Optimized path for single or no RHS */
             for (j = 0; j < nrhs; j++) {
                 /* Solve L*x = b */
                 for (i = 0; i < n - 1; i++) {
@@ -93,7 +92,6 @@ void sgtts2(
                 }
             }
         } else {
-            /* General path for multiple RHS */
             for (j = 0; j < nrhs; j++) {
                 /* Solve L*x = b */
                 for (i = 0; i < n - 1; i++) {

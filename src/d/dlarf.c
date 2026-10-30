@@ -53,7 +53,7 @@ void dlarf(const char* side, const INT m, const INT n,
         }
 
         if (incv > 0) {
-            i = (lastv - 1) * incv;  /* 0-based index of last element */
+            i = (lastv - 1) * incv;
         } else {
             i = 0;
         }
@@ -73,34 +73,35 @@ void dlarf(const char* side, const INT m, const INT n,
         }
 
         /* Set index for V. If INCV < 0, then I points to the end of V.
-         * For INCV > 0, set I = 1 */
+         * For INCV > 0, set I = 0 */
         if (incv > 0) {
             i = 0;
         }
     }
 
-    /* Note that lastc == 0 renders the BLAS operations null */
+    /* Note that lastc == 0 renders the BLAS operations null; no special
+     * case is needed at this level. */
     if (applyleft) {
         /* Form H * C */
         if (lastv > 0) {
-            /* w(0:lastc-1) := C(0:lastv-1, 0:lastc-1)^T * v(0:lastv-1) */
+            /* w(0:lastc-1,0) := C(0:lastv-1,0:lastc-1)**T * v(0:lastv-1,0) */
             cblas_dgemv(CblasColMajor, CblasTrans,
                         lastv, lastc, ONE, C, ldc,
                         &v[i], incv, ZERO, work, 1);
 
-            /* C(0:lastv-1, 0:lastc-1) -= tau * v(0:lastv-1) * w^T */
+            /* C(0:lastv-1,0:lastc-1) := C(...) - v(0:lastv-1,0) * w(0:lastc-1,0)**T */
             cblas_dger(CblasColMajor, lastv, lastc,
                        -tau, &v[i], incv, work, 1, C, ldc);
         }
     } else {
         /* Form C * H */
         if (lastv > 0) {
-            /* w(0:lastc-1) := C(0:lastc-1, 0:lastv-1) * v(0:lastv-1) */
+            /* w(0:lastc-1,0) := C(0:lastc-1,0:lastv-1) * v(0:lastv-1,0) */
             cblas_dgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv, ONE, C, ldc,
                         &v[i], incv, ZERO, work, 1);
 
-            /* C(0:lastc-1, 0:lastv-1) -= tau * w * v^T */
+            /* C(0:lastc-1,0:lastv-1) := C(...) - w(0:lastc-1,0) * v(0:lastv-1,0)**T */
             cblas_dger(CblasColMajor, lastc, lastv,
                        -tau, work, 1, &v[i], incv, C, ldc);
         }

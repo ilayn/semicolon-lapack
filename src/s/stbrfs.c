@@ -118,13 +118,21 @@ void stbrfs(
     CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     for (j = 0; j < nrhs; j++) {
-        // Compute residual R = B - op(A) * X
+        // Compute residual R = B - op(A) * X,
+        // where op(A) = A or A**T, depending on TRANS.
         cblas_scopy(n, &X[j * ldx], 1, &work[n], 1);
         cblas_stbmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, kd, AB, ldab, &work[n], 1);
         cblas_saxpy(n, -ONE, &B[j * ldb], 1, &work[n], 1);
 
-        // Compute componentwise relative backward error
+        // Compute componentwise relative backward error from formula
+        //
+        // max(i) ( abs(R(i)) / ( abs(op(A))*abs(X) + abs(B) )(i) )
+        //
+        // where abs(Z) is the componentwise absolute value of the matrix
+        // or vector Z.  If the i-th component of the denominator is less
+        // than SAFE2, then SAFE1 is added to the i-th components of the
+        // numerator and denominator before dividing.
         for (i = 0; i < n; i++) {
             work[i] = fabsf(B[i + j * ldb]);
         }
@@ -135,10 +143,8 @@ void stbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = fabsf(X[k + j * ldx]);
-                        // Fortran: DO I = MAX(1,K-KD), K -> 0-based: i from max(0,k-kd) to k
                         INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
-                            // AB(kd+1+i-k, k) in Fortran 1-based -> AB[kd+i-k + k*ldab] in 0-based
                             work[i] = work[i] + fabsf(AB[kd + i - k + k * ldab]) * xk;
                         }
                     }
@@ -156,10 +162,8 @@ void stbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = fabsf(X[k + j * ldx]);
-                        // Fortran: DO I = K, MIN(N,K+KD) -> 0-based: i from k to min(n-1,k+kd)
                         INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
-                            // AB(1+i-k, k) in Fortran 1-based -> AB[i-k + k*ldab] in 0-based
                             work[i] = work[i] + fabsf(AB[i - k + k * ldab]) * xk;
                         }
                     }
@@ -231,6 +235,26 @@ void stbrfs(
         berr[j] = s;
 
         // Bound error from formula
+        //
+        // norm(X - XTRUE) / norm(X) .le. FERR =
+        // norm( abs(inv(op(A)))*
+        //    ( abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) ))) / norm(X)
+        //
+        // where
+        //   norm(Z) is the magnitude of the largest component of Z
+        //   inv(op(A)) is the inverse of op(A)
+        //   abs(Z) is the componentwise absolute value of the matrix or
+        //      vector Z
+        //   NZ is the maximum number of nonzeros in any row of A, plus 1
+        //   EPS is machine epsilon
+        //
+        // The i-th component of abs(R)+NZ*EPS*(abs(op(A))*abs(X)+abs(B))
+        // is incremented by SAFE1 if the i-th component of
+        // abs(op(A))*abs(X) + abs(B) is less than SAFE2.
+        //
+        // Use SLACN2 to estimate the infinity-norm of the matrix
+        //    inv(op(A)) * diag(W),
+        // where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
         for (i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 work[i] = fabsf(work[n + i]) + nz * eps * work[i];

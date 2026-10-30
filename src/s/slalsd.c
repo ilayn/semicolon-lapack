@@ -100,7 +100,6 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
 
     /* Rotate the matrix if it is lower bidiagonal. */
     if (uplo[0] == 'L' || uplo[0] == 'l') {
-        /* DO 10 I = 1, N - 1 (Fortran) -> i = 0..n-2 (C) */
         for (i = 0; i < n - 1; i++) {
             slartg(D[i], E[i], &cs, &sn, &r);
             D[i] = r;
@@ -114,9 +113,7 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             }
         }
         if (nrhs > 1) {
-            /* DO 30 I = 1, NRHS (Fortran) -> i = 0..nrhs-1 (C) */
             for (i = 0; i < nrhs; i++) {
-                /* DO 20 J = 1, N - 1 (Fortran) -> j = 0..n-2 (C) */
                 for (j = 0; j < n - 1; j++) {
                     cs = work[j * 2];
                     sn = work[j * 2 + 1];
@@ -143,13 +140,11 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
     if (n <= smlsiz) {
         nwork = 1 + n * n;
         slaset("A", n, n, ZERO, ONE, work, n);
-        /* NRU=0: U not referenced */
         slasdq("U", 0, n, n, 0, nrhs, D, E, work, n, NULL, n, B, ldb, &work[nwork], info);
         if (*info != 0) {
             return;
         }
         tol = rcnd * fabsf(D[cblas_isamax(n, D, 1)]);
-        /* DO 40 I = 1, N (Fortran) -> i = 0..n-1 (C) */
         for (i = 0; i < n; i++) {
             if (D[i] <= tol) {
                 slaset("A", 1, nrhs, ZERO, ZERO, &B[i], ldb);
@@ -187,7 +182,7 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
     bx = givnum + 2 * nlvl * n;
     nwork = bx + n * nrhs;
 
-    sizei = n;  /* Fortran: SIZEI = 1 + N, but our indices are shifted by 1 for 0-based */
+    sizei = n;
     k_idx = sizei + n;
     givptr = k_idx + n;
     perm = givptr + n;
@@ -200,14 +195,12 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
     icmpq2 = 0;
     nsub = 0;
 
-    /* DO 50 I = 1, N (Fortran) -> i = 0..n-1 (C) */
     for (i = 0; i < n; i++) {
         if (fabsf(D[i]) < eps) {
             D[i] = copysignf(eps, D[i]);
         }
     }
 
-    /* DO 60 I = 1, NM1 (Fortran) -> i = 0..nm1-1 (C) */
     for (i = 0; i < nm1; i++) {
         if (fabsf(E[i]) < eps || i == nm1 - 1) {
             nsub = nsub + 1;
@@ -242,7 +235,6 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             } else if (nsize <= smlsiz) {
                 /* This is a small subproblem and is solved by SLASDQ. */
                 slaset("A", nsize, nsize, ZERO, ONE, &work[vt_idx + st1], n);
-                /* NRU=0: U not referenced */
                 slasdq("U", 0, nsize, nsize, 0, nrhs, &D[st], &E[st],
                        &work[vt_idx + st1], n, NULL, n,
                        &B[st], ldb, &work[nwork], info);
@@ -284,7 +276,6 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
     /* Apply the singular values and treat the tiny ones as zero. */
     tol = rcnd * fabsf(D[cblas_isamax(n, D, 1)]);
 
-    /* DO 70 I = 1, N (Fortran) -> i = 0..n-1 (C) */
     for (i = 0; i < n; i++) {
         /* Some of the elements in D can be negative because 1-by-1
          * subproblems were not solved explicitly.
@@ -300,7 +291,6 @@ void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
 
     /* Now apply back the right singular vectors. */
     icmpq2 = 1;
-    /* DO 80 I = 1, NSUB (Fortran) -> i = 0..nsub-1 (C) */
     for (i = 0; i < nsub; i++) {
         st = iwork[i];
         st1 = st;

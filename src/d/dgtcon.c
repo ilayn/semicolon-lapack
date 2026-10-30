@@ -114,7 +114,6 @@ void dgtcon(
     kase = 0;
     ldb = (n > 1) ? n : 1;
 
-    /* Reverse communication loop for norm estimation */
     for (;;) {
         dlacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
 

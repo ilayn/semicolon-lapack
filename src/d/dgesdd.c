@@ -73,9 +73,9 @@ void dgesdd(const char* jobz, const INT m, const INT n,
     INT lwork_dormbr_prt_mn, lwork_dormbr_qln_mn;
     INT lwork_dormbr_prt_nn, lwork_dormbr_qln_nn;
     f64 anrm, bignum, eps, smlnum;
-    f64 dum[1];   /* For dlange work and dbdsdc Q when not used */
-    f64 dum1[1];  /* For workspace query results */
-    INT idum[1];     /* For dbdsdc IQ when not used */
+    f64 dum[1];
+    f64 dum1[1];
+    INT idum[1];
 
     /* Test the input arguments */
     *info = 0;
@@ -117,7 +117,7 @@ void dgesdd(const char* jobz, const INT m, const INT n,
                 bdspac = 3 * n * n + 4 * n;
             }
 
-            /* Query workspace sizes - pass NULL for unused arrays, only work returns result */
+            /* Compute space preferred for each routine */
             dgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
             lwork_dgebrd_mn = (INT)dum1[0];
 
@@ -210,7 +210,6 @@ void dgesdd(const char* jobz, const INT m, const INT n,
                 }
             }
         } else if (minmn > 0) {
-            /* M < N */
             /* Compute space needed for DBDSDC */
             if (wntqn) {
                 bdspac = 7 * m;
@@ -218,7 +217,7 @@ void dgesdd(const char* jobz, const INT m, const INT n,
                 bdspac = 3 * m * m + 4 * m;
             }
 
-            /* Query workspace sizes - pass NULL for unused arrays, only work returns result */
+            /* Compute space preferred for each routine */
             dgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
             lwork_dgebrd_mn = (INT)dum1[0];
 
@@ -354,7 +353,8 @@ void dgesdd(const char* jobz, const INT m, const INT n,
 
     if (m >= n) {
         /* A has at least as many rows as columns. If A has sufficiently
-         * more rows than columns, first reduce using the QR decomposition */
+         * more rows than columns, first reduce using the QR
+         * decomposition (if sufficient workspace available) */
         if (m >= mnthr) {
             if (wntqn) {
                 /* Path 1 (M >> N, JOBZ='N') */
@@ -557,8 +557,9 @@ void dgesdd(const char* jobz, const INT m, const INT n,
             }
         }
     } else {
-        /* A has more columns than rows. If A has sufficiently more columns
-         * than rows, first reduce using the LQ decomposition */
+        /* A has more columns than rows. If A has sufficiently more
+         * columns than rows, first reduce using the LQ decomposition (if
+         * sufficient workspace available) */
         if (n >= mnthr) {
             if (wntqn) {
                 /* Path 1t (N >> M, JOBZ='N') */

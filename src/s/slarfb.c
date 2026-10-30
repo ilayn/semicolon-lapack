@@ -45,7 +45,6 @@ void slarfb(const char* side, const char* trans, const char* direct,
     /* Quick return if possible */
     if (m <= 0 || n <= 0) return;
 
-    /* Determine opposite transpose for T multiplication */
     if (trans[0] == 'N' || trans[0] == 'n') {
         transt = CblasTrans;
     } else {
@@ -54,53 +53,53 @@ void slarfb(const char* side, const char* trans, const char* direct,
 
     if (storev[0] == 'C' || storev[0] == 'c') {
         if (direct[0] == 'F' || direct[0] == 'f') {
-            /* STOREV='C', DIRECT='F':
-             * V = (V1) where V1 is unit lower triangular (first k rows)
-             *     (V2)
-             */
+            /* Let  V =  ( V1 )    (first K rows)
+             *           ( V2 )
+             * where  V1  is unit lower triangular. */
             if (side[0] == 'L' || side[0] == 'l') {
-                /* Form H*C or H^T*C where C = (C1)
-                 *                              (C2)
-                 * W := C^T * V = C1^T*V1 + C2^T*V2 */
+                /* Form  H * C  or  H**T * C  where  C = ( C1 )
+                 *                                       ( C2 )
+                 *
+                 * W := C**T * V  =  (C1**T * V1 + C2**T * V2)  (stored in WORK) */
 
-                /* W := C1^T (copy rows 0..k-1 of C, transposed) */
+                /* W := C1**T */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(n, &C[j], ldc, &work[j * ldwork], 1);
                 }
 
-                /* W := W * V1 (unit lower triangular) */
+                /* W := W * V1 */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasUnit,
                             n, k, ONE, V, ldv, work, ldwork);
 
                 if (m > k) {
-                    /* W := W + C2^T * V2 */
+                    /* W := W + C2**T * V2 */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 n, k, m - k, ONE,
                                 &C[k], ldc, &V[k], ldv,
                                 ONE, work, ldwork);
                 }
 
-                /* W := W * T^T or W * T */
+                /* W := W * T**T  or  W * T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             transt, CblasNonUnit,
                             n, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - V * W^T */
+                /* C := C - V * W**T */
                 if (m > k) {
-                    /* C2 := C2 - V2 * W^T */
+                    /* C2 := C2 - V2 * W**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m - k, n, k, NEG_ONE,
                                 &V[k], ldv, work, ldwork,
                                 ONE, &C[k], ldc);
                 }
 
-                /* W := W * V1^T */
+                /* W := W * V1**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasUnit,
                             n, k, ONE, V, ldv, work, ldwork);
 
-                /* C1 := C1 - W^T */
+                /* C1 := C1 - W**T */
                 for (j = 0; j < k; j++) {
                     for (i = 0; i < n; i++) {
                         C[j + i * ldc] -= work[i + j * ldwork];
@@ -108,15 +107,16 @@ void slarfb(const char* side, const char* trans, const char* direct,
                 }
 
             } else {
-                /* SIDE='R': Form C*H or C*H^T where C = (C1 C2)
-                 * W := C * V = C1*V1 + C2*V2 */
+                /* Form  C * H  or  C * H**T  where  C = ( C1  C2 )
+                 *
+                 * W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK) */
 
-                /* W := C1 (copy columns 0..k-1 of C) */
+                /* W := C1 */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(m, &C[j * ldc], 1, &work[j * ldwork], 1);
                 }
 
-                /* W := W * V1 (unit lower triangular) */
+                /* W := W * V1 */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasUnit,
                             m, k, ONE, V, ldv, work, ldwork);
@@ -129,22 +129,22 @@ void slarfb(const char* side, const char* trans, const char* direct,
                                 ONE, work, ldwork);
                 }
 
-                /* W := W * T or W * T^T */
+                /* W := W * T  or  W * T**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             (trans[0] == 'N' || trans[0] == 'n' ? CblasNoTrans : CblasTrans),
                             CblasNonUnit,
                             m, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - W * V^T */
+                /* C := C - W * V**T */
                 if (n > k) {
-                    /* C2 := C2 - W * V2^T */
+                    /* C2 := C2 - W * V2**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m, n - k, k, NEG_ONE,
                                 work, ldwork, &V[k], ldv,
                                 ONE, &C[k * ldc], ldc);
                 }
 
-                /* W := W * V1^T */
+                /* W := W * V1**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasUnit,
                             m, k, ONE, V, ldv, work, ldwork);
@@ -158,52 +158,52 @@ void slarfb(const char* side, const char* trans, const char* direct,
             }
 
         } else {
-            /* STOREV='C', DIRECT='B':
-             * V = (V1) where V2 is unit upper triangular (last k rows)
-             *     (V2)
-             */
+            /* Let  V =  ( V1 )
+             *           ( V2 )    (last K rows)
+             * where  V2  is unit upper triangular. */
             if (side[0] == 'L' || side[0] == 'l') {
-                /* Form H*C or H^T*C where C = (C1)
-                 *                              (C2)
-                 * W := C^T * V = C1^T*V1 + C2^T*V2 */
+                /* Form  H * C  or  H**T * C  where  C = ( C1 )
+                 *                                       ( C2 )
+                 *
+                 * W := C**T * V  =  (C1**T * V1 + C2**T * V2)  (stored in WORK) */
 
-                /* W := C2^T (copy rows m-k..m-1 of C, transposed) */
+                /* W := C2**T */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(n, &C[(m - k + j)], ldc,
                                 &work[j * ldwork], 1);
                 }
 
-                /* W := W * V2 (unit upper triangular) */
+                /* W := W * V2 */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasUnit,
                             n, k, ONE, &V[m - k], ldv, work, ldwork);
 
                 if (m > k) {
-                    /* W := W + C1^T * V1 */
+                    /* W := W + C1**T * V1 */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 n, k, m - k, ONE,
                                 C, ldc, V, ldv, ONE, work, ldwork);
                 }
 
-                /* W := W * T^T or W * T */
+                /* W := W * T**T  or  W * T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             transt, CblasNonUnit,
                             n, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - V * W^T */
+                /* C := C - V * W**T */
                 if (m > k) {
-                    /* C1 := C1 - V1 * W^T */
+                    /* C1 := C1 - V1 * W**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m - k, n, k, NEG_ONE,
                                 V, ldv, work, ldwork, ONE, C, ldc);
                 }
 
-                /* W := W * V2^T */
+                /* W := W * V2**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasUnit,
                             n, k, ONE, &V[m - k], ldv, work, ldwork);
 
-                /* C2 := C2 - W^T */
+                /* C2 := C2 - W**T */
                 for (j = 0; j < k; j++) {
                     for (i = 0; i < n; i++) {
                         C[(m - k + j) + i * ldc] -= work[i + j * ldwork];
@@ -211,16 +211,17 @@ void slarfb(const char* side, const char* trans, const char* direct,
                 }
 
             } else {
-                /* SIDE='R': Form C*H or C*H^T where C = (C1 C2)
-                 * W := C * V = C1*V1 + C2*V2 */
+                /* Form  C * H  or  C * H**T  where  C = ( C1  C2 )
+                 *
+                 * W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK) */
 
-                /* W := C2 (copy columns n-k..n-1 of C) */
+                /* W := C2 */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(m, &C[(n - k + j) * ldc], 1,
                                 &work[j * ldwork], 1);
                 }
 
-                /* W := W * V2 (unit upper triangular) */
+                /* W := W * V2 */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasUnit,
                             m, k, ONE, &V[n - k], ldv, work, ldwork);
@@ -232,21 +233,21 @@ void slarfb(const char* side, const char* trans, const char* direct,
                                 C, ldc, V, ldv, ONE, work, ldwork);
                 }
 
-                /* W := W * T or W * T^T */
+                /* W := W * T  or  W * T**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             (trans[0] == 'N' || trans[0] == 'n' ? CblasNoTrans : CblasTrans),
                             CblasNonUnit,
                             m, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - W * V^T */
+                /* C := C - W * V**T */
                 if (n > k) {
-                    /* C1 := C1 - W * V1^T */
+                    /* C1 := C1 - W * V1**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m, n - k, k, NEG_ONE,
                                 work, ldwork, V, ldv, ONE, C, ldc);
                 }
 
-                /* W := W * V2^T */
+                /* W := W * V2**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasUnit,
                             m, k, ONE, &V[n - k], ldv, work, ldwork);
@@ -261,42 +262,41 @@ void slarfb(const char* side, const char* trans, const char* direct,
         }
 
     } else {
-        /* STOREV = 'R' */
         if (direct[0] == 'F' || direct[0] == 'f') {
-            /* STOREV='R', DIRECT='F':
-             * V = (V1 V2) where V1 is unit upper triangular (first k columns)
-             */
+            /* Let  V =  ( V1  V2 )    (V1: first K columns)
+             * where  V1  is unit upper triangular. */
             if (side[0] == 'L' || side[0] == 'l') {
-                /* Form H*C or H^T*C where C = (C1)
-                 *                              (C2)
-                 * W := C^T * V^T = C1^T*V1^T + C2^T*V2^T */
+                /* Form  H * C  or  H**T * C  where  C = ( C1 )
+                 *                                       ( C2 )
+                 *
+                 * W := C**T * V**T  =  (C1**T * V1**T + C2**T * V2**T) (stored in WORK) */
 
-                /* W := C1^T */
+                /* W := C1**T */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(n, &C[j], ldc, &work[j * ldwork], 1);
                 }
 
-                /* W := W * V1^T (unit upper triangular) */
+                /* W := W * V1**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasUnit,
                             n, k, ONE, V, ldv, work, ldwork);
 
                 if (m > k) {
-                    /* W := W + C2^T * V2^T */
+                    /* W := W + C2**T * V2**T */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasTrans,
                                 n, k, m - k, ONE,
                                 &C[k], ldc, &V[k * ldv], ldv,
                                 ONE, work, ldwork);
                 }
 
-                /* W := W * T^T or W * T */
+                /* W := W * T**T  or  W * T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             transt, CblasNonUnit,
                             n, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - V^T * W^T */
+                /* C := C - V**T * W**T */
                 if (m > k) {
-                    /* C2 := C2 - V2^T * W^T */
+                    /* C2 := C2 - V2**T * W**T */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasTrans,
                                 m - k, n, k, NEG_ONE,
                                 &V[k * ldv], ldv, work, ldwork,
@@ -308,7 +308,7 @@ void slarfb(const char* side, const char* trans, const char* direct,
                             CblasNoTrans, CblasUnit,
                             n, k, ONE, V, ldv, work, ldwork);
 
-                /* C1 := C1 - W^T */
+                /* C1 := C1 - W**T */
                 for (j = 0; j < k; j++) {
                     for (i = 0; i < n; i++) {
                         C[j + i * ldc] -= work[i + j * ldwork];
@@ -316,28 +316,29 @@ void slarfb(const char* side, const char* trans, const char* direct,
                 }
 
             } else {
-                /* SIDE='R': Form C*H or C*H^T where C = (C1 C2)
-                 * W := C * V^T = C1*V1^T + C2*V2^T */
+                /* Form  C * H  or  C * H**T  where  C = ( C1  C2 )
+                 *
+                 * W := C * V**T  =  (C1*V1**T + C2*V2**T)  (stored in WORK) */
 
                 /* W := C1 */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(m, &C[j * ldc], 1, &work[j * ldwork], 1);
                 }
 
-                /* W := W * V1^T (unit upper triangular) */
+                /* W := W * V1**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasUnit,
                             m, k, ONE, V, ldv, work, ldwork);
 
                 if (n > k) {
-                    /* W := W + C2 * V2^T */
+                    /* W := W + C2 * V2**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m, k, n - k, ONE,
                                 &C[k * ldc], ldc, &V[k * ldv], ldv,
                                 ONE, work, ldwork);
                 }
 
-                /* W := W * T or W * T^T */
+                /* W := W * T  or  W * T**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             (trans[0] == 'N' || trans[0] == 'n' ? CblasNoTrans : CblasTrans),
                             CblasNonUnit,
@@ -366,41 +367,41 @@ void slarfb(const char* side, const char* trans, const char* direct,
             }
 
         } else {
-            /* STOREV='R', DIRECT='B':
-             * V = (V1 V2) where V2 is unit lower triangular (last k columns)
-             */
+            /* Let  V =  ( V1  V2 )    (V2: last K columns)
+             * where  V2  is unit lower triangular. */
             if (side[0] == 'L' || side[0] == 'l') {
-                /* Form H*C or H^T*C where C = (C1)
-                 *                              (C2)
-                 * W := C^T * V^T = C1^T*V1^T + C2^T*V2^T */
+                /* Form  H * C  or  H**T * C  where  C = ( C1 )
+                 *                                       ( C2 )
+                 *
+                 * W := C**T * V**T  =  (C1**T * V1**T + C2**T * V2**T) (stored in WORK) */
 
-                /* W := C2^T */
+                /* W := C2**T */
                 for (j = 0; j < k; j++) {
                     cblas_scopy(n, &C[(m - k + j)], ldc,
                                 &work[j * ldwork], 1);
                 }
 
-                /* W := W * V2^T (unit lower triangular) */
+                /* W := W * V2**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasUnit,
                             n, k, ONE, &V[(m - k) * ldv], ldv,
                             work, ldwork);
 
                 if (m > k) {
-                    /* W := W + C1^T * V1^T */
+                    /* W := W + C1**T * V1**T */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasTrans,
                                 n, k, m - k, ONE,
                                 C, ldc, V, ldv, ONE, work, ldwork);
                 }
 
-                /* W := W * T^T or W * T */
+                /* W := W * T**T  or  W * T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             transt, CblasNonUnit,
                             n, k, ONE, T, ldt, work, ldwork);
 
-                /* C := C - V^T * W^T */
+                /* C := C - V**T * W**T */
                 if (m > k) {
-                    /* C1 := C1 - V1^T * W^T */
+                    /* C1 := C1 - V1**T * W**T */
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasTrans,
                                 m - k, n, k, NEG_ONE,
                                 V, ldv, work, ldwork, ONE, C, ldc);
@@ -412,7 +413,7 @@ void slarfb(const char* side, const char* trans, const char* direct,
                             n, k, ONE, &V[(m - k) * ldv], ldv,
                             work, ldwork);
 
-                /* C2 := C2 - W^T */
+                /* C2 := C2 - W**T */
                 for (j = 0; j < k; j++) {
                     for (i = 0; i < n; i++) {
                         C[(m - k + j) + i * ldc] -= work[i + j * ldwork];
@@ -420,8 +421,9 @@ void slarfb(const char* side, const char* trans, const char* direct,
                 }
 
             } else {
-                /* SIDE='R': Form C*H or C*H^T where C = (C1 C2)
-                 * W := C * V^T = C1*V1^T + C2*V2^T */
+                /* Form  C * H  or  C * H'  where  C = ( C1  C2 )
+                 *
+                 * W := C * V**T  =  (C1*V1**T + C2*V2**T)  (stored in WORK) */
 
                 /* W := C2 */
                 for (j = 0; j < k; j++) {
@@ -429,20 +431,20 @@ void slarfb(const char* side, const char* trans, const char* direct,
                                 &work[j * ldwork], 1);
                 }
 
-                /* W := W * V2^T (unit lower triangular) */
+                /* W := W * V2**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasUnit,
                             m, k, ONE, &V[(n - k) * ldv], ldv,
                             work, ldwork);
 
                 if (n > k) {
-                    /* W := W + C1 * V1^T */
+                    /* W := W + C1 * V1**T */
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 m, k, n - k, ONE,
                                 C, ldc, V, ldv, ONE, work, ldwork);
                 }
 
-                /* W := W * T or W * T^T */
+                /* W := W * T  or  W * T**T */
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             (trans[0] == 'N' || trans[0] == 'n' ? CblasNoTrans : CblasTrans),
                             CblasNonUnit,

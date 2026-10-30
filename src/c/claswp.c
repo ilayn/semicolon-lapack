@@ -50,7 +50,7 @@ void claswp(
     c64 temp;
 
     // Interchange row i with row ipiv[k1 + (i - k1) * abs(incx)] for each of
-    // rows k1 through k2. All indices are 0-based.
+    // rows k1 through k2.
 
     if (incx > 0) {
         ix0 = k1;
@@ -66,10 +66,8 @@ void claswp(
         return;
     }
 
-    // Process columns in blocks of 32 for cache efficiency
     n32 = n & ~31;
 
-    // Main loop over column blocks
     for (j = 0; j < n32; j += 32) {
         ix = ix0;
         for (i = i1; inc > 0 ? i <= i2 : i >= i2; i += inc) {
@@ -85,7 +83,6 @@ void claswp(
         }
     }
 
-    // Handle remaining columns, if any
     if (n32 < n) {
         ix = ix0;
         for (i = i1; inc > 0 ? i <= i2 : i >= i2; i += inc) {

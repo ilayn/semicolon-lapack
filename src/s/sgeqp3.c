@@ -69,7 +69,7 @@ void sgeqp3(const INT m, const INT n,
     INT lquery;
     INT iinfo;
 
-    /* Parameter validation */
+    /* Test input arguments */
     *info = 0;
     lquery = (lwork == -1);
 
@@ -110,8 +110,6 @@ void sgeqp3(const INT m, const INT n,
 
     /*
      * Move initial columns up front.
-     * In 0-based indexing: nfxd counts how many fixed columns we have.
-     * Fixed columns (jpvt[j] != 0) are swapped to positions 0..nfxd-1.
      */
     nfxd = 0;
     for (j = 0; j < n; j++) {
@@ -119,13 +117,13 @@ void sgeqp3(const INT m, const INT n,
             if (j != nfxd) {
                 cblas_sswap(m, &A[j * lda], 1, &A[nfxd * lda], 1);
                 jpvt[j] = jpvt[nfxd];
-                jpvt[nfxd] = j;  /* 0-based original column index */
+                jpvt[nfxd] = j;
             } else {
-                jpvt[j] = j;  /* 0-based original column index */
+                jpvt[j] = j;
             }
             nfxd++;
         } else {
-            jpvt[j] = j;  /* 0-based original column index */
+            jpvt[j] = j;
         }
     }
 
@@ -144,12 +142,10 @@ void sgeqp3(const INT m, const INT n,
     if (nfxd > 0) {
         na = m < nfxd ? m : nfxd;
 
-        /* QR factorization of the fixed columns */
         sgeqrf(m, na, A, lda, tau, work, lwork, &iinfo);
         iws = iws > (INT)work[0] ? iws : (INT)work[0];
 
         if (na < n) {
-            /* Apply Q^T to remaining columns: A(:, na:n-1) */
             sormqr("L", "T", m, n - na, na, A, lda, tau,
                    &A[na * lda], lda, work, lwork, &iinfo);
             iws = iws > (INT)work[0] ? iws : (INT)work[0];
@@ -201,15 +197,6 @@ void sgeqp3(const INT m, const INT n,
         /*
          * Initialize partial column norms. The first N elements of work
          * store the exact column norms.
-         *
-         * Workspace layout (0-based):
-         *   work[0..n-1]    = vn1 (partial column norms)
-         *   work[n..2n-1]   = vn2 (exact column norms)
-         *   work[2n..]      = used by slaqps (auxv + F matrix)
-         *
-         * In the Fortran source, vn1 and vn2 are indexed from NFXD+1..N
-         * (1-based). Here we use 0-based: work[nfxd..n-1] = vn1 for free
-         * columns, work[n+nfxd..2n-1] = vn2 for free columns.
          */
         for (j = nfxd; j < n; j++) {
             work[j] = cblas_snrm2(sm, &A[nfxd + j * lda], 1);
@@ -220,13 +207,10 @@ void sgeqp3(const INT m, const INT n,
 
             /*
              * Use blocked code initially.
-             *
-             * j is 0-based column index into the full matrix.
-             * The Fortran GOTO 30 loop becomes a while loop.
              */
             j = nfxd;
 
-            /* topbmn = minmn - nx (0-based: last column for blocked code) */
+            /* Compute factorization: while loop. */
             topbmn = minmn - nx;
 
             while (j < topbmn) {
@@ -234,22 +218,6 @@ void sgeqp3(const INT m, const INT n,
 
                 /*
                  * Factorize JB columns among columns j:n-1.
-                 *
-                 * slaqps arguments (translated from Fortran 1-based):
-                 *   M      = m
-                 *   N      = n - j       (number of remaining columns)
-                 *   OFFSET = j           (rows already factorized)
-                 *   NB     = jb          (block size to try)
-                 *   KB     = fjb         (actual columns factorized, output)
-                 *   A      = &A[j*lda]   (start at column j)
-                 *   LDA    = lda
-                 *   JPVT   = &jpvt[j]
-                 *   TAU    = &tau[j]
-                 *   VN1    = &work[j]
-                 *   VN2    = &work[n+j]
-                 *   AUXV   = &work[2*n]
-                 *   F      = &work[2*n+jb]
-                 *   LDF    = n - j
                  */
                 slaqps(m, n - j, j, jb, &fjb,
                        &A[j * lda], lda,
@@ -266,18 +234,6 @@ void sgeqp3(const INT m, const INT n,
 
         /*
          * Use unblocked code to factor the last or only block.
-         *
-         * slaqp2 arguments (translated from Fortran 1-based):
-         *   M      = m
-         *   N      = n - j       (remaining columns)
-         *   OFFSET = j           (rows already factorized)
-         *   A      = &A[j*lda]  (start at column j)
-         *   LDA    = lda
-         *   JPVT   = &jpvt[j]
-         *   TAU    = &tau[j]
-         *   VN1    = &work[j]
-         *   VN2    = &work[n+j]
-         *   WORK   = &work[2*n]
          */
         if (j < minmn) {
             slaqp2(m, n - j, j,

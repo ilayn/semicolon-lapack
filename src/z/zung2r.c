@@ -45,7 +45,7 @@ void zung2r(const INT m, const INT n, const INT k,
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -75,7 +75,7 @@ void zung2r(const INT m, const INT n, const INT k,
     }
 
     for (i = k - 1; i >= 0; i--) {
-        /* Apply H(i) to A(i:m-1, i+1:n-1) from the left */
+        /* Apply H(i) to A(i:m-1, i:n-1) from the left */
         if (i < n - 1) {
             zlarf1f("L", m - i, n - i - 1, &A[i + i * lda], 1, tau[i],
                     &A[i + (i + 1) * lda], lda, work);

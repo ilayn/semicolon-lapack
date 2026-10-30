@@ -82,38 +82,37 @@ void zsytrs(
         INT k = n - 1;
         while (k >= 0) {
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block.
+                /* 1 x 1 diagonal block
+                 *
                  * Interchange rows k and ipiv[k]. */
                 INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
 
-                /* Multiply by inv(U(k)), where U(k) is stored in column k.
-                 * Fortran: ZGERU(K-1, NRHS, -ONE, A(1,K), 1, B(K,1), LDB, B(1,1), LDB)
-                 * 0-based: M = k, rows 0..k-1 */
+                /* Multiply by inv(U(k)), where U(k) is the transformation
+                 * stored in column k of A. */
                 if (k > 0) {
                     cblas_zgeru(CblasColMajor, k, nrhs,
                                &NEG_ONE, &A[0 + k * lda], 1, &B[k], ldb,
                                &B[0], ldb);
                 }
 
-                /* Multiply by inverse of diagonal block.
-                 * Fortran: ZSCAL(NRHS, ONE/A(K,K), B(K,1), LDB) */
+                /* Multiply by the inverse of the diagonal block. */
                 c128 inv_akk = ONE / A[k + k * lda];
                 cblas_zscal(nrhs, &inv_akk, &B[k], ldb);
                 k--;
             } else {
-                /* 2x2 diagonal block.
-                 * Interchange rows k-1 and kp = -(ipiv[k]+1). */
+                /* 2 x 2 diagonal block
+                 *
+                 * Interchange rows k-1 and -ipiv[k]-1. */
                 INT kp = -(ipiv[k] + 1);
                 if (kp != k - 1) {
                     cblas_zswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
                 }
 
-                /* Multiply by inv(U(k)), stored in columns k-1 and k.
-                 * Fortran: ZGERU(K-2, NRHS, -ONE, A(1,K), ...) and ZGERU(K-2, ..., A(1,K-1), ...)
-                 * 0-based: M = k-1, rows 0..k-2 */
+                /* Multiply by inv(U(k)), where U(k) is the transformation
+                 * stored in columns k-1 and k of A. */
                 if (k > 1) {
                     cblas_zgeru(CblasColMajor, k - 1, nrhs,
                                &NEG_ONE, &A[0 + k * lda], 1, &B[k], ldb,
@@ -123,9 +122,7 @@ void zsytrs(
                                &B[0], ldb);
                 }
 
-                /* Multiply by inverse of 2x2 diagonal block.
-                 * D = [ A(k-1,k-1)  A(k-1,k) ]
-                 *     [ A(k-1,k)    A(k,k)   ] */
+                /* Multiply by the inverse of the diagonal block. */
                 c128 akm1k = A[(k - 1) + k * lda];
                 c128 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
                 c128 ak = A[k + k * lda] / akm1k;
@@ -140,16 +137,17 @@ void zsytrs(
             }
         }
 
-        /* Next solve U**T * X = B, overwriting B with X.
+        /* Next solve U**T *X = B, overwriting B with X.
          *
-         * K increases from 0 to n-1 in steps of 1 or 2. */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         k = 0;
         while (k < n) {
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block.
-                 * Multiply by inv(U**T(k)).
-                 * Fortran: ZGEMV('T', K-1, NRHS, -ONE, B, LDB, A(1,K), 1, ONE, B(K,1), LDB)
-                 * 0-based: M = k, source = B(0:k-1, :), vector = A(0:k-1, k) */
+                /* 1 x 1 diagonal block
+                 *
+                 * Multiply by inv(U**T(k)), where U(k) is the transformation
+                 * stored in column k of A. */
                 if (k > 0) {
                     cblas_zgemv(CblasColMajor, CblasTrans,
                                 k, nrhs,
@@ -164,10 +162,10 @@ void zsytrs(
                 }
                 k++;
             } else {
-                /* 2x2 diagonal block.
-                 * Multiply by inv(U**T(k+1)).
-                 * Fortran: ZGEMV('T', K-1, ...) on columns K and K+1
-                 * 0-based: M = k */
+                /* 2 x 2 diagonal block
+                 *
+                 * Multiply by inv(U**T(k+1)), where U(k+1) is the transformation
+                 * stored in columns k and k+1 of A. */
                 if (k > 0) {
                     cblas_zgemv(CblasColMajor, CblasTrans,
                                 k, nrhs,
@@ -179,7 +177,7 @@ void zsytrs(
                                 &ONE, &B[k + 1], ldb);
                 }
 
-                /* Interchange rows k and kp = -(ipiv[k]+1). */
+                /* Interchange rows k and -ipiv[k]-1. */
                 INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -194,41 +192,42 @@ void zsytrs(
          *
          * First solve L*D*X = B, overwriting B with X.
          *
-         * K increases from 0 to n-1 in steps of 1 or 2. */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         INT k = 0;
         while (k < n) {
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block.
+                /* 1 x 1 diagonal block
+                 *
                  * Interchange rows k and ipiv[k]. */
                 INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
 
-                /* Multiply by inv(L(k)).
-                 * Fortran: ZGERU(N-K, NRHS, -ONE, A(K+1,K), 1, B(K,1), LDB, B(K+1,1), LDB)
-                 * 0-based: M = n-k-1, rows k+1..n-1 */
+                /* Multiply by inv(L(k)), where L(k) is the transformation
+                 * stored in column k of A. */
                 if (k < n - 1) {
                     cblas_zgeru(CblasColMajor, n - k - 1, nrhs,
                                &NEG_ONE, &A[(k + 1) + k * lda], 1, &B[k], ldb,
                                &B[k + 1], ldb);
                 }
 
-                /* Multiply by inverse of diagonal block. */
+                /* Multiply by the inverse of the diagonal block. */
                 c128 inv_akk = ONE / A[k + k * lda];
                 cblas_zscal(nrhs, &inv_akk, &B[k], ldb);
                 k++;
             } else {
-                /* 2x2 diagonal block.
-                 * Interchange rows k+1 and kp = -(ipiv[k]+1). */
+                /* 2 x 2 diagonal block
+                 *
+                 * Interchange rows k+1 and -ipiv[k]-1. */
                 INT kp = -(ipiv[k] + 1);
                 if (kp != k + 1) {
                     cblas_zswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
                 }
 
-                /* Multiply by inv(L(k)).
-                 * Fortran: ZGERU(N-K-1, ..., A(K+2,K), ...) and ZGERU(..., A(K+2,K+1), ...)
-                 * 0-based: M = n-k-2, rows k+2..n-1 */
+                /* Multiply by inv(L(k)), where L(k) is the transformation
+                 * stored in columns k and k+1 of A. */
                 if (k < n - 2) {
                     cblas_zgeru(CblasColMajor, n - k - 2, nrhs,
                                &NEG_ONE, &A[(k + 2) + k * lda], 1, &B[k], ldb,
@@ -238,9 +237,7 @@ void zsytrs(
                                &B[k + 2], ldb);
                 }
 
-                /* Multiply by inverse of 2x2 diagonal block.
-                 * D = [ A(k,k)    A(k+1,k) ]
-                 *     [ A(k+1,k)  A(k+1,k+1) ] */
+                /* Multiply by the inverse of the diagonal block. */
                 c128 akm1k = A[(k + 1) + k * lda];
                 c128 akm1 = A[k + k * lda] / akm1k;
                 c128 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
@@ -255,16 +252,17 @@ void zsytrs(
             }
         }
 
-        /* Next solve L**T * X = B, overwriting B with X.
+        /* Next solve L**T *X = B, overwriting B with X.
          *
-         * K decreases from n-1 to 0 in steps of 1 or 2. */
+         * K is the main loop index, decreasing from n-1 to 0 in steps of
+         * 1 or 2, depending on the size of the diagonal blocks. */
         k = n - 1;
         while (k >= 0) {
             if (ipiv[k] >= 0) {
-                /* 1x1 diagonal block.
-                 * Multiply by inv(L**T(k)).
-                 * Fortran: ZGEMV('T', N-K, NRHS, -ONE, B(K+1,1), LDB, A(K+1,K), 1, ONE, B(K,1), LDB)
-                 * 0-based: M = n-k-1, source = B(k+1:n-1, :), vector = A(k+1:n-1, k) */
+                /* 1 x 1 diagonal block
+                 *
+                 * Multiply by inv(L**T(k)), where L(k) is the transformation
+                 * stored in column k of A. */
                 if (k < n - 1) {
                     cblas_zgemv(CblasColMajor, CblasTrans,
                                 n - k - 1, nrhs,
@@ -279,10 +277,10 @@ void zsytrs(
                 }
                 k--;
             } else {
-                /* 2x2 diagonal block.
-                 * Multiply by inv(L**T(k-1)).
-                 * Fortran: ZGEMV('T', N-K, ...) on columns K and K-1
-                 * 0-based: M = n-k-1 */
+                /* 2 x 2 diagonal block
+                 *
+                 * Multiply by inv(L**T(k-1)), where L(k-1) is the transformation
+                 * stored in columns k-1 and k of A. */
                 if (k < n - 1) {
                     cblas_zgemv(CblasColMajor, CblasTrans,
                                 n - k - 1, nrhs,
@@ -294,7 +292,7 @@ void zsytrs(
                                 &ONE, &B[k - 1], ldb);
                 }
 
-                /* Interchange rows k and kp = -(ipiv[k]+1). */
+                /* Interchange rows k and -ipiv[k]-1. */
                 INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);

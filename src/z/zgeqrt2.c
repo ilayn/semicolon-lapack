@@ -57,7 +57,7 @@ void zgeqrt2(const INT m, const INT n,
     INT i, k;
     c128 aii, alpha;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (n < 0) {
         *info = -2;
@@ -75,13 +75,8 @@ void zgeqrt2(const INT m, const INT n,
 
     k = m < n ? m : n;
 
-    /*
-     * First loop: generate reflectors and apply them.
-     * tau(i) is stored temporarily in T(i, 0).
-     */
     for (i = 0; i < k; i++) {
-        /* Generate elementary reflector H(i) to annihilate A(i+1:m-1, i),
-         * tau(i) -> T(i, 0) */
+        /* Generate elem. refl. H(i) to annihilate A(i+1:m-1, i), tau(i) -> T(i, 0) */
         zlarfg(m - i, &A[i + i * lda],
                &A[((i + 1) < m ? (i + 1) : i) + i * lda], 1,
                &T[i + 0 * ldt]);
@@ -91,15 +86,14 @@ void zgeqrt2(const INT m, const INT n,
             aii = A[i + i * lda];
             A[i + i * lda] = ONE;
 
-            /* W(0:n-i-2) := A(i:m-1, i+1:n-1)^H * A(i:m-1, i)
-             * Store W in T(0:n-i-2, n-1) (last column of T as workspace) */
+            /* W(0:n-i-2) := A(i:m-1, i+1:n-1)^H * A(i:m-1, i) [W = T(:, n-1)] */
             cblas_zgemv(CblasColMajor, CblasConjTrans,
                         m - i, n - i - 1, &ONE,
                         &A[i + (i + 1) * lda], lda,
                         &A[i + i * lda], 1,
                         &ZERO, &T[0 + (n - 1) * ldt], 1);
 
-            /* A(i:m-1, i+1:n-1) += alpha * A(i:m-1, i) * W^H */
+            /* A(i:m-1, i+1:n-1) = A(i:m-1, i+1:n-1) + alpha*A(i:m-1, i)*W(0:n-i-2)^H */
             alpha = -conj(T[i + 0 * ldt]);
             cblas_zgerc(CblasColMajor,
                         m - i, n - i - 1, &alpha,
@@ -111,16 +105,11 @@ void zgeqrt2(const INT m, const INT n,
         }
     }
 
-    /*
-     * Second loop: build the T matrix from the stored tau values.
-     * On entry, T(i, 0) holds tau(i) for i = 0..k-1.
-     * On exit, T is upper triangular with T(i, i) = tau(i).
-     */
     for (i = 1; i < n; i++) {
         aii = A[i + i * lda];
         A[i + i * lda] = ONE;
 
-        /* T(0:i-1, i) := -tau(i) * A(i:m-1, 0:i-1)^H * A(i:m-1, i) */
+        /* T(0:i-1, i) := alpha * A(i:m-1, 0:i-1)**H * A(i:m-1, i) */
         alpha = -T[i + 0 * ldt];
         cblas_zgemv(CblasColMajor, CblasConjTrans,
                     m - i, i, &alpha,
@@ -138,6 +127,4 @@ void zgeqrt2(const INT m, const INT n,
         T[i + i * ldt] = T[i + 0 * ldt];
         T[i + 0 * ldt] = ZERO;
     }
-
-    /* T(0, 0) = tau(0) is already in place from the first loop */
 }

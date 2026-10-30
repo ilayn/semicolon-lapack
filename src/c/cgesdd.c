@@ -76,8 +76,8 @@ void cgesdd(const char* jobz, const INT m, const INT n,
     INT lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
     INT lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
     f32 anrm, bignum, eps, smlnum;
-    f32 dum[1];   /* For clange work */
-    c64 wkopt[1]; /* For workspace query results */
+    f32 dum[1];
+    c64 wkopt[1];
 
     *info = 0;
     minmn = (m < n) ? m : n;

@@ -114,12 +114,11 @@ void sgbcon(
     } else {
         kase1 = 2;
     }
-    kd = kl + ku;  /* Row index of diagonal in band storage (0-based: row kl+ku) */
+    kd = kl + ku;
     lnoti = (kl > 0);
     kase = 0;
 
     while (1) {
-        /* work[0:n-1] = X, work[n:2n-1] = V */
         slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
 
         if (kase == 0) {
@@ -137,7 +136,6 @@ void sgbcon(
                         work[jp] = work[j];
                         work[j] = t;
                     }
-                    /* work[j+1:j+lm] -= t * AB[kd+1:kd+lm, j] */
                     cblas_saxpy(lm, -t, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1);
                 }
             }
@@ -154,7 +152,6 @@ void sgbcon(
             if (lnoti) {
                 for (j = n - 2; j >= 0; j--) {
                     lm = (kl < n - 1 - j) ? kl : n - 1 - j;
-                    /* work[j] -= dot(AB[kd+1:kd+lm, j], work[j+1:j+lm]) */
                     work[j] -= cblas_sdot(lm, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1);
                     jp = ipiv[j];
                     if (jp != j) {

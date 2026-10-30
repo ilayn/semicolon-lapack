@@ -44,7 +44,7 @@ void zpptrs(
     const INT ldb,
     INT* info)
 {
-    // zpptrs.f lines 140-154: Test the input parameters
+    // Test the input parameters
     *info = 0;
     INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -61,28 +61,28 @@ void zpptrs(
         return;
     }
 
-    // zpptrs.f lines 158-159: Quick return if possible
+    // Quick return if possible
     if (n == 0 || nrhs == 0) {
         return;
     }
 
     if (upper) {
-        // zpptrs.f lines 161-177: Solve A*X = B where A = U**H * U.
-        for (INT i = 0; i < nrhs; i++) {  // zpptrs.f line 165: DO 10 I = 1, NRHS
-            // zpptrs.f lines 169-171: Solve U**H *X = B, overwriting B with X.
+        // Solve A*X = B where A = U**H * U.
+        for (INT i = 0; i < nrhs; i++) {
+            // Solve U**H *X = B, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasUpper, CblasConjTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
-            // zpptrs.f lines 175-176: Solve U*X = B, overwriting B with X.
+            // Solve U*X = B, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
         }
     } else {
-        // zpptrs.f lines 178-195: Solve A*X = B where A = L * L**H.
-        for (INT i = 0; i < nrhs; i++) {  // zpptrs.f line 182: DO 20 I = 1, NRHS
-            // zpptrs.f lines 186-187: Solve L*Y = B, overwriting B with X.
+        // Solve A*X = B where A = L * L**H.
+        for (INT i = 0; i < nrhs; i++) {
+            // Solve L*Y = B, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
-            // zpptrs.f lines 191-193: Solve L**H *X = Y, overwriting B with X.
+            // Solve L**H *X = Y, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasLower, CblasConjTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
         }

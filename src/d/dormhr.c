@@ -88,7 +88,6 @@ SEMICOLON_API void dormhr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        /* Get optimal block size */
         nb = lapack_get_nb("ORMQR");
         lwkopt = nw * nb;
         work[0] = (f64)lwkopt;

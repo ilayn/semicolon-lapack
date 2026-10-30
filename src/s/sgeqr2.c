@@ -44,7 +44,7 @@ void sgeqr2(const INT m, const INT n,
     INT i, k;
     f32 aii;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;

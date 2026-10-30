@@ -115,7 +115,7 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
     emptsw = n1 * (n - n1);
     fastr[0] = ZERO;
 
-    /* Tuning parameters */
+    /* Row-cyclic pivot strategy with de Rijk's pivoting */
     kbl = (8 < n) ? 8 : n;
     nblr = n1 / kbl;
     if (nblr * kbl != n1) nblr = nblr + 1;
@@ -127,30 +127,27 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
     rowskip = (5 < kbl) ? 5 : kbl;
     swband = 0;
 
-    /* Main sweep loop */
+    /* .. go go go ... */
     for (i = 0; i < nsweep; i++) {
         mxaapq = ZERO;
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
 
-        /* Block loop over row blocks */
         for (ibr = 0; ibr < nblr; ibr++) {
             igl = ibr * kbl;
 
-            /* Loop over column blocks (off-diagonal) */
+            /* ... go to the off diagonal blocks */
             for (jbc = 0; jbc < nblc; jbc++) {
                 jgl = n1 + jbc * kbl;
                 ijblsk = 0;
 
-                /* p-loop within row block */
                 for (p = igl; p < ((igl + kbl < n1) ? igl + kbl : n1); p++) {
                     aapp = SVA[p];
 
                     if (aapp > ZERO) {
                         pskipped = 0;
 
-                        /* q-loop within column block */
                         for (q = jgl; q < ((jgl + kbl < n) ? jgl + kbl : n); q++) {
                             aaqq = SVA[q];
 
@@ -158,7 +155,6 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                 aapp0 = aapp;
                                 INT rotok;
 
-                                /* Safe Gram matrix computation */
                                 if (aaqq >= ONE) {
                                     if (aapp >= aaqq) {
                                         rotok = (small * aapp) <= aaqq;
@@ -191,7 +187,7 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
 
                                 mxaapq = (mxaapq > fabs(aapq)) ? mxaapq : fabs(aapq);
 
-                                /* TO rotate or NOT to rotate */
+                                /* TO rotate or NOT to rotate, THAT is the question ... */
                                 if (fabs(aapq) > tol) {
                                     notrot = 0;
                                     pskipped = 0;
@@ -286,7 +282,6 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                             }
                                         }
                                     } else {
-                                        /* Modified Gram-Schmidt */
                                         if (aapp > aaqq) {
                                             cblas_dcopy(m, &A[p * lda], 1, work, 1);
                                             dlascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
@@ -310,7 +305,8 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                         }
                                     }
 
-                                    /* Recompute SVA if needed */
+                                    /* In the case of cancellation in updating SVA(q)
+                                     * .. recompute SVA(q) */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_dnrm2(m, &A[q * lda], 1) * D[q];
@@ -353,7 +349,7 @@ void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                 notrot = 0;
                                 goto L2203;
                             }
-                        } /* end q-loop */
+                        } /* end of the q-loop */
 L2203:
                         SVA[p] = aapp;
                     } else {
@@ -362,17 +358,17 @@ L2203:
                         }
                         if (aapp < ZERO) notrot = 0;
                     }
-                } /* end p-loop */
-            } /* end jbc-loop */
+                } /* end of the p-loop */
+            } /* end of the jbc-loop */
 
 L2011:
-            /* Make SVA positive */
+            /* bailed out of the jbc-loop */
             for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
                 SVA[p] = fabs(SVA[p]);
             }
-        } /* end ibr-loop */
+        } /* end of the ibr-loop */
 
-        /* Update SVA(n) */
+        /* .. update SVA(n-1) */
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_dnrm2(m, &A[(n - 1) * lda], 1) * D[n - 1];
         } else {
@@ -382,7 +378,7 @@ L2011:
             SVA[n - 1] = t * sqrt(aapp) * D[n - 1];
         }
 
-        /* Additional steering */
+        /* Additional steering devices */
         if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
             swband = i;
         }
@@ -392,14 +388,16 @@ L2011:
         }
 
         if (notrot >= emptsw) goto L1994;
-    } /* end sweep loop */
+    } /* end i=0:NSWEEP-1 loop */
 
-    /* Procedure completed given number of iterations */
+    /* Reaching this point means that the procedure has completed the given
+     * number of sweeps. */
     *info = nsweep - 1;
     goto L1995;
 
 L1994:
-    /* Early exit - all pivots below threshold */
+    /* Reaching this point means that during the i-th sweep all pivots were
+     * below the given threshold, causing early exit. */
     *info = 0;
 
 L1995:

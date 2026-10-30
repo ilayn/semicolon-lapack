@@ -47,10 +47,9 @@ void dlarfy(const char* uplo, const INT n, const f64* restrict V,
 
     cblas_uplo = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
 
-    /* Form w := C * v */
+    /* Form  w:= C * v */
     cblas_dsymv(CblasColMajor, cblas_uplo, n, 1.0, C, ldc, V, incv, 0.0, work, 1);
 
-    /* alpha := -0.5 * tau * dot(w, v) */
     alpha = -0.5 * tau * cblas_ddot(n, work, 1, V, incv);
     cblas_daxpy(n, alpha, V, incv, work, 1);
 

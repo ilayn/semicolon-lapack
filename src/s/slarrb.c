@@ -89,7 +89,6 @@ void slarrb(const INT n, const f32* D, const f32* lld,
     maxitr = (INT)((logf(spdiam + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
     mnwdth = TWO * pivmin;
 
-    /* twist is 0-based; valid range is [0, n-1] */
     r = twist;
     if ((r < 0) || (r > n - 1)) r = n - 1;
 

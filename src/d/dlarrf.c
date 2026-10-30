@@ -62,7 +62,6 @@ void dlarrf(const INT n, const f64* restrict D,
             f64* restrict dplus, f64* restrict lplus,
             f64* restrict work, INT* info)
 {
-    /* Constants */
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 FOUR = 4.0;
@@ -73,7 +72,6 @@ void dlarrf(const INT n, const f64* restrict D,
     const INT SLEFT = 1;
     const INT SRIGHT = 2;
 
-    /* Local variables */
     INT i, indx, ktry, shift;
     INT forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
     f64 avgap, bestshift, clwdth, eps, fact, fail, fail2;
@@ -88,7 +86,7 @@ void dlarrf(const INT n, const f64* restrict D,
         return;
     }
 
-    fact = (f64)(1 << KTRYMAX);  /* 2^KTRYMAX */
+    fact = (f64)(1 << KTRYMAX);
     eps = dlamch("P");
     forcer = 0;
 
@@ -134,12 +132,10 @@ void dlarrf(const INT n, const f64* restrict D,
     fail2 = (f64)(n - 1) * mingap / (spdiam * sqrt(eps));
     bestshift = lsigma;
 
-    /* Main retry loop: while (ktry <= KTRYMAX) */
     ktry = 0;
     growthbound = MAXGROWTH1 * spdiam;
 
     for (;;) {
-        /* Label 5 in Fortran */
         sawnan1 = 0;
         sawnan2 = 0;
 
@@ -305,7 +301,6 @@ backoff:
             ldelta = TWO * ldelta;
             rdelta = TWO * rdelta;
             ktry = ktry + 1;
-            /* continue the for(;;) loop (equivalent to GOTO 5) */
         } else {
             /* None of the representations investigated satisfied our
              * criteria. Take the best one we found. */
@@ -313,17 +308,15 @@ backoff:
                 lsigma = bestshift;
                 rsigma = bestshift;
                 forcer = 1;
-                /* continue the for(;;) loop (equivalent to GOTO 5) */
             } else {
                 *info = 1;
                 return;
             }
         }
-    } /* end for (;;) */
+    }
 
 done:
     if (shift == SLEFT) {
-        /* dplus and lplus already contain the factorization */
     } else if (shift == SRIGHT) {
         /* store new L and D back into DPLUS, LPLUS */
         cblas_dcopy(n, work, 1, dplus, 1);

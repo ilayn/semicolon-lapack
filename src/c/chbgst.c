@@ -118,7 +118,21 @@ void chbgst(
     m = (n + kb) / 2;
 
     /*
-     * Phase 1: Process rows n, n-1, ..., m+1 then propagate bulges
+     * **************************** Phase 1 *****************************
+     *
+     * The logical structure of this phase is:
+     *
+     * UPDATE = .TRUE.
+     * DO I = N, M + 1, -1
+     *    use S(i) to update A and create a new bulge
+     *    apply rotations to push all bulges KA positions downward
+     * END DO
+     * UPDATE = .FALSE.
+     * DO I = M + KA + 1, N - 1
+     *    apply rotations to push all bulges KA positions downward
+     * END DO
+     *
+     * To avoid duplicating code, the two loops are merged.
      */
     update = 1;
     i = n + 1;
@@ -547,10 +561,24 @@ void chbgst(
         }
     }
 
-    } /* end Phase 1 while loop */
+    }
 
     /*
-     * Phase 2: Process rows 1, 2, ..., m then propagate bulges upward
+     * **************************** Phase 2 *****************************
+     *
+     * The logical structure of this phase is:
+     *
+     * UPDATE = .TRUE.
+     * DO I = 1, M
+     *    use S(i) to update A and create a new bulge
+     *    apply rotations to push all bulges KA positions upward
+     * END DO
+     * UPDATE = .FALSE.
+     * DO I = M - KA - 1, 2, -1
+     *    apply rotations to push all bulges KA positions upward
+     * END DO
+     *
+     * To avoid duplicating code, the two loops are merged.
      */
     update = 1;
     i = 0;
@@ -997,5 +1025,5 @@ void chbgst(
         }
     }
 
-    } /* end Phase 2 while loop */
+    }
 }

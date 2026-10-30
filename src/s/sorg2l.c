@@ -44,7 +44,7 @@ void sorg2l(const INT m, const INT n, const INT k,
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -74,16 +74,15 @@ void sorg2l(const INT m, const INT n, const INT k,
     }
 
     for (i = 0; i < k; i++) {
-        /* ii is the column index (0-based) for reflector H(i) */
         ii = n - k + i;
 
-        /* Apply H(i) to A(0:m-n+ii, 0:ii-1) from the left */
+        /* Apply H(i) to A(0:m-k+i, 0:n-k+i) from the left */
         slarf1l("L", m - n + ii + 1, ii, &A[0 + ii * lda], 1, tau[i],
                 A, lda, work);
         cblas_sscal(m - n + ii, -tau[i], &A[0 + ii * lda], 1);
         A[(m - n + ii) + ii * lda] = ONE - tau[i];
 
-        /* Set A(m-n+ii+1:m-1, ii) to zero */
+        /* Set A(m-k+i+1:m-1, n-k+i) to zero */
         for (l = m - n + ii + 1; l < m; l++) {
             A[l + ii * lda] = ZERO;
         }

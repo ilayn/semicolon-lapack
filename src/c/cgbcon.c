@@ -116,12 +116,11 @@ void cgbcon(
     } else {
         kase1 = 2;
     }
-    kd = kl + ku;  /* Row index of diagonal in band storage (0-based: row kl+ku) */
+    kd = kl + ku;
     lnoti = (kl > 0);
     kase = 0;
 
     while (1) {
-        /* work[0:n-1] = X, work[n:2n-1] = V */
         clacn2(n, &work[n], work, &ainvnm, &kase, isave);
 
         if (kase == 0) {
@@ -139,7 +138,6 @@ void cgbcon(
                         work[jp] = work[j];
                         work[j] = t;
                     }
-                    /* work[j+1:j+lm] -= t * AB[kd+1:kd+lm, j] */
                     c64 neg_t = -t;
                     cblas_caxpy(lm, &neg_t, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1);
                 }
@@ -157,7 +155,6 @@ void cgbcon(
             if (lnoti) {
                 for (j = n - 2; j >= 0; j--) {
                     lm = (kl < n - 1 - j) ? kl : n - 1 - j;
-                    /* work[j] -= zdotc(AB[kd+1:kd+lm, j], work[j+1:j+lm]) */
                     c64 dotc;
                     cblas_cdotc_sub(lm, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1, &dotc);
                     work[j] -= dotc;

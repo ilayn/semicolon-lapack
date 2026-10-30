@@ -44,7 +44,7 @@ void sorgl2(const INT m, const INT n, const INT k,
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -78,7 +78,7 @@ void sorgl2(const INT m, const INT n, const INT k,
     }
 
     for (i = k - 1; i >= 0; i--) {
-        /* Apply H(i) to A(i+1:m-1, i:n-1) from the right */
+        /* Apply H(i) to A(i:m-1, i:n-1) from the right */
         if (i < n - 1) {
             if (i < m - 1) {
                 slarf1f("R", m - i - 1, n - i, &A[i + i * lda], lda,

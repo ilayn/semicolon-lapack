@@ -52,13 +52,11 @@
 void sgebal(const char* job, const INT n, f32* A, const INT lda,
             INT* ilo, INT* ihi, f32* scale, INT* info)
 {
-    /* Constants */
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 SCLFAC = 2.0f;
     const f32 FACTOR = 0.95f;
 
-    /* Local variables */
     INT noconv, canswap;
     INT i, ica, ira, j, k, l;
     f32 c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
@@ -83,7 +81,7 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
     /* Quick returns */
     if (n == 0) {
         *ilo = 0;
-        *ihi = -1;  /* Empty range */
+        *ihi = -1;
         return;
     }
 
@@ -117,11 +115,9 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
                 }
 
                 if (canswap) {
-                    scale[l] = (f32)i;  /* Store 0-based index */
+                    scale[l] = (f32)i;
                     if (i != l) {
-                        /* Swap columns i and l */
                         cblas_sswap(l + 1, &A[0 + i * lda], 1, &A[0 + l * lda], 1);
-                        /* Swap rows i and l from column k onwards */
                         cblas_sswap(n - k, &A[i + k * lda], lda, &A[l + k * lda], lda);
                     }
                     noconv = 1;
@@ -152,11 +148,9 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
                 }
 
                 if (canswap) {
-                    scale[k] = (f32)j;  /* Store 0-based index */
+                    scale[k] = (f32)j;
                     if (j != k) {
-                        /* Swap columns j and k */
                         cblas_sswap(l + 1, &A[0 + j * lda], 1, &A[0 + k * lda], 1);
-                        /* Swap rows j and k from column k onwards */
                         cblas_sswap(n - k, &A[j + k * lda], lda, &A[k + k * lda], lda);
                     }
                     noconv = 1;
@@ -192,14 +186,10 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
         noconv = 0;
 
         for (i = k; i <= l; i++) {
-            /* Compute column norm (rows k to l) */
             c = cblas_snrm2(l - k + 1, &A[k + i * lda], 1);
-            /* Compute row norm (columns k to l) */
             r = cblas_snrm2(l - k + 1, &A[i + k * lda], lda);
-            /* Find max absolute value in column (rows 0 to l) */
             ica = cblas_isamax(l + 1, &A[0 + i * lda], 1);
             ca = fabsf(A[ica + i * lda]);
-            /* Find max absolute value in row (columns k to n-1) */
             ira = cblas_isamax(n - k, &A[i + k * lda], lda);
             ra = fabsf(A[i + (ira + k) * lda]);
 
@@ -261,9 +251,7 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
             scale[i] = scale[i] * f;
             noconv = 1;
 
-            /* Scale row i */
             cblas_sscal(n - k, g, &A[i + k * lda], lda);
-            /* Scale column i */
             cblas_sscal(l + 1, f, &A[0 + i * lda], 1);
         }
     }

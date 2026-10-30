@@ -183,15 +183,9 @@ void ssyev_2stage(const char* jobz, const char* uplo, const INT n,
     if (!wantz) {
         ssterf(n, W, &work[inde], info);
     } else {
-        /* Eigenvector computation not available in 2-stage algorithm;
-           argument checking should prevent reaching here */
+        /* Not available in this release, and argument checking should not
+           let it getting here */
         return;
-        /* TODO: Enable when eigenvector support is added
-        sorgtr(uplo, n, A, lda, &work[indtau],
-               &work[indwrk], llwork, &iinfo);
-        ssteqr(jobz, n, W, &work[inde], A, lda,
-               &work[indtau], info);
-        */
     }
 
     if (iscale == 1) {

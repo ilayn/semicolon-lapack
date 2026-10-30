@@ -55,7 +55,7 @@ void dgeqr2p(const INT m, const INT n,
 {
     INT i, k;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -72,8 +72,7 @@ void dgeqr2p(const INT m, const INT n,
     k = m < n ? m : n;
 
     for (i = 0; i < k; i++) {
-        /* Generate elementary reflector H(i) to annihilate A(i+1:m-1, i)
-         * with non-negative diagonal (beta >= 0) */
+        /* Generate elementary reflector H(i) to annihilate A(i+1:m-1, i) */
         dlarfgp(m - i, &A[i + i * lda],
                 &A[((i + 1) < m ? (i + 1) : i) + i * lda], 1, &tau[i]);
 

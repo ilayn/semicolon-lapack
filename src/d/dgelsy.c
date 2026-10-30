@@ -70,7 +70,6 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
             f64* restrict work, const INT lwork,
             INT* info)
 {
-    /* Constants from Fortran source: IMAX=1, IMIN=2 */
     const INT IMAX = 1;
     const INT IMIN = 2;
 
@@ -81,10 +80,9 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
     f64 anrm, bignum, bnrm, smlnum;
     f64 c1, c2, s1, s2, smax, smaxpr, smin, sminpr;
 
-    /* Initialization */
     mn = m < n ? m : n;
-    ismin = mn;       /* 0-based offset: Fortran ISMIN = MN+1 */
-    ismax = 2 * mn;   /* 0-based offset: Fortran ISMAX = 2*MN+1 */
+    ismin = mn;
+    ismax = 2 * mn;
 
     /* Test the input arguments */
     *info = 0;
@@ -116,7 +114,6 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
             if (nb3 > nb) nb = nb3;
             if (nb4 > nb) nb = nb4;
 
-            /* LWKMIN = MN + MAX(2*MN, N+1, MN+NRHS) */
             INT t1 = 2 * mn;
             INT t2 = n + 1;
             INT t3 = mn + nrhs;
@@ -125,7 +122,6 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
             if (t3 > tmax) tmax = t3;
             lwkmin = mn + tmax;
 
-            /* LWKOPT = MAX(LWKMIN, MN+2*N+NB*(N+1), 2*MN+NB*NRHS) */
             INT w1 = mn + 2 * n + nb * (n + 1);
             INT w2 = 2 * mn + nb * nrhs;
             lwkopt = lwkmin;
@@ -189,14 +185,13 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
     }
 
     /* Compute QR factorization with column pivoting of A:
-     *   A * P = Q * R
-     * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
+     *   A * P = Q * R */
     dgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, &iinfo);
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = 1.0;
     work[ismax] = 1.0;
-    smax = fabs(A[0]);  /* |A(0,0)| = |R(1,1)| */
+    smax = fabs(A[0]);
     smin = smax;
 
     if (fabs(A[0]) == 0.0) {
@@ -209,9 +204,8 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
         *rank = 1;
     }
 
-    /* Rank determination loop (Fortran GO TO 10 pattern → while loop) */
     while (*rank < mn) {
-        INT i = *rank;  /* 0-based column index: Fortran I = RANK+1 */
+        INT i = *rank;
         dlaic1(IMIN, *rank, &work[ismin], smin,
                &A[0 + i * lda], A[i + i * lda],
                &sminpr, &s1, &c1);
@@ -242,14 +236,11 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
      *
      * [R11,R12] = [ T11, 0 ] * Y */
     if (*rank < n) {
-        /* RZ factorization of [R11 R12]:
-         * tau stored in work[mn..2*mn-1], sub-workspace in work[2*mn..] */
         dtzrzf(*rank, n, A, lda, &work[mn], &work[2 * mn],
                lwork - 2 * mn, &iinfo);
     }
 
-    /* B(0:m-1, 0:nrhs-1) := Q^T * B(0:m-1, 0:nrhs-1)
-     * sub-workspace in work[2*mn..] */
+    /* B(0:m-1, 0:nrhs-1) := Q^T * B(0:m-1, 0:nrhs-1) */
     dormqr("L", "T", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
 
@@ -257,22 +248,19 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
     cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
                 CblasNonUnit, *rank, nrhs, 1.0, A, lda, B, ldb);
 
-    /* B(rank:n-1, 0:nrhs-1) = 0 */
     for (INT j = 0; j < nrhs; j++) {
         for (INT i = *rank; i < n; i++) {
             B[i + j * ldb] = 0.0;
         }
     }
 
-    /* B(0:n-1, 0:nrhs-1) := Z^T * B(0:n-1, 0:nrhs-1)
-     * sub-workspace in work[2*mn..] */
+    /* B(0:n-1, 0:nrhs-1) := Y^T * B(0:n-1, 0:nrhs-1) */
     if (*rank < n) {
         dormrz("L", "T", n, nrhs, *rank, n - *rank, A, lda,
                &work[mn], B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
     }
 
-    /* B(0:n-1, 0:nrhs-1) := P * B(0:n-1, 0:nrhs-1)
-     * Apply column permutation: result[jpvt[i]] = B[i] */
+    /* B(0:n-1, 0:nrhs-1) := P * B(0:n-1, 0:nrhs-1) */
     for (INT j = 0; j < nrhs; j++) {
         for (INT i = 0; i < n; i++) {
             work[jpvt[i]] = B[i + j * ldb];

@@ -319,9 +319,6 @@ void zlahef_rook(
          *
          * computing blocks of NB columns at a time (note that conjg(W) is
          * actually stored)
-         *
-         * Fortran: DO 50 J = ((K-1)/NB)*NB + 1, 1, -NB
-         * 0-based: j goes from (k/nb)*nb down to 0 in steps of nb
          */
         for (j = (k / nb) * nb; j >= 0; j -= nb) {
             jb = nb < (k + 1 - j) ? nb : (k + 1 - j);
@@ -576,10 +573,6 @@ void zlahef_rook(
          *
          * computing blocks of NB columns at a time (note that conjg(W) is
          * actually stored)
-         *
-         * Fortran: DO 110 J = K, N, NB
-         * 0-based: Fortran K is our k+1, Fortran N is n.
-         *          j goes from k to n-1 in steps of nb (0-based)
          */
         for (j = k; j < n; j += nb) {
             jb = nb < (n - j) ? nb : (n - j);

@@ -83,7 +83,6 @@ void zlatrs3(
     const INT lwork,
     INT* info)
 {
-    /* Parameters from Fortran - match LAPACK exactly */
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
@@ -94,11 +93,9 @@ void zlatrs3(
 #define NBMIN 8
 #define NBMAX 64
 
-    /* Local arrays - match Fortran local arrays */
     f64 W[NBMAX];
     f64 XNRM[NBRHS];
 
-    /* Local scalars */
     INT upper, notran, nounit, lquery;
     INT awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
     INT jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
@@ -176,7 +173,7 @@ void zlatrs3(
         return;
     }
 
-    /* Determine machine dependent constants to control overflow */
+    /* Determine machine dependent constant to control overflow. */
     bignum = dlamch("O");
     smlnum = dlamch("S");
 
@@ -221,19 +218,27 @@ void zlatrs3(
     }
 
     if (!(tmax <= dlamch("O"))) {
-        /* Some matrix entries have huge absolute value. Fall back to LATRS. */
+        /* Some matrix entries have huge absolute value. At least one upper
+         * bound norm( A(i1:i2-1, j1:j2-1), 'I') is not a valid floating-point
+         * number, either due to overflow in LANGE or due to Inf in A.
+         * Fall back to LATRS. Set normin = 'N' for every right-hand side to
+         * force computation of TSCAL in LATRS to avoid the likely overflow
+         * in the computation of the column norms CNORM. */
         for (k = 0; k < nrhs; k++) {
             zlatrs(uplo, trans, diag, "N", n, A, lda, &X[k * ldx], &scale[k], cnorm, info);
         }
         return;
     }
 
-    /* Loop over block columns of X */
+    /* Every right-hand side requires workspace to store NBA local scale
+     * factors. To save workspace, X is computed successively in block columns
+     * of width NBRHS, requiring a total of NBA x NBRHS space. If sufficient
+     * workspace is available, larger values of NBRHS or NBRHS = NRHS are viable. */
     for (k = 0; k < nbx; k++) {
         k1 = k * NBRHS;
         k2 = ((k + 1) * NBRHS < nrhs) ? (k + 1) * NBRHS : nrhs;
 
-        /* Initialize local scaling factors of current block column */
+        /* Initialize local scaling factors of current block column X( J, K ) */
         for (kk = 0; kk < k2 - k1; kk++) {
             for (i = 0; i < nba; i++) {
                 work[i + (kk + 1) * lds] = ONE;
@@ -252,7 +257,8 @@ void zlatrs3(
                 jinc = 1;
             }
         } else {
-            /* Solve op(A) * X(:, K1:K2-1) = B * diag(scale(K1:K2-1)) */
+            /* Solve op(A) * X(:, K1:K2-1) = B * diag(scale(K1:K2-1))
+             * where op(A) = A**T or op(A) = A**H */
             if (upper) {
                 jfirst = 0;
                 jlast = nba - 1;
@@ -281,11 +287,16 @@ void zlatrs3(
                            &scaloc, cnorm, info);
                 }
 
-                /* Find largest absolute value entry in X( J1:J2-1, RHS ) */
+                /* Find largest absolute value entry in the vector segment
+                 * X( J1:J2-1, RHS ) as an upper bound for the worst case
+                 * growth in the linear updates. */
                 XNRM[kk] = zlange("I", j2 - j1, 1, &X[j1 + rhs * ldx], ldx, W);
 
                 if (scaloc == ZERO) {
-                    /* LATRS found that A is singular through A(j,j) = 0. */
+                    /* LATRS found that A is singular through A(j,j) = 0.
+                     * Reset the computation x(0:n-1) = 0, x(j) = 1, SCALE = 0
+                     * and compute op(A)*x = 0. Note that X(J1:J2-1, KK) is
+                     * set by LATRS. */
                     scale[rhs] = ZERO;
                     for (ii = 0; ii < j1; ii++) {
                         X[ii + kk * ldx] = CZERO;
@@ -350,14 +361,19 @@ void zlatrs3(
                 i1 = i * nb;
                 i2 = ((i + 1) * nb < n) ? (i + 1) * nb : n;
 
-                /* Prepare the linear update to be executed with GEMM. */
+                /* Prepare the linear update to be executed with GEMM.
+                 * For each column, compute a consistent scaling, a
+                 * scaling factor to survive the linear update, and
+                 * rescale the column segments, if necessary. Then
+                 * the linear update is safely executed. */
                 for (kk = 0; kk < k2 - k1; kk++) {
                     rhs = k1 + kk;
                     /* Compute consistent scaling */
                     scamin = work[i + (kk + 1) * lds];
                     scamin = (scamin < work[j + (kk + 1) * lds]) ? scamin : work[j + (kk + 1) * lds];
 
-                    /* Compute scaling factor to survive the linear update */
+                    /* Compute scaling factor to survive the linear update
+                     * simulating consistent scaling. */
                     bnrm = zlange("I", i2 - i1, 1, &X[i1 + rhs * ldx], ldx, W);
                     bnrm = bnrm * (scamin / work[i + (kk + 1) * lds]);
                     XNRM[kk] = XNRM[kk] * (scamin / work[j + (kk + 1) * lds]);
@@ -365,7 +381,7 @@ void zlatrs3(
                     scaloc = dlarmm(anrm, XNRM[kk], bnrm);
 
                     /* Simultaneously apply the robust update factor and the
-                     * consistency scaling factor to B( I, KK ) and B( J, KK ). */
+                     * consistency scaling factor to X( I, KK ) and X( J, KK ). */
                     scal = (scamin / work[i + (kk + 1) * lds]) * scaloc;
                     if (scal != ONE) {
                         cblas_zdscal(i2 - i1, scal, &X[i1 + rhs * ldx], 1);
@@ -386,13 +402,13 @@ void zlatrs3(
                                 &A[i1 + j1 * lda], lda, &X[j1 + k1 * ldx], ldx,
                                 &CONE, &X[i1 + k1 * ldx], ldx);
                 } else if (trans[0] == 'T' || trans[0] == 't') {
-                    /* B( I, K ) := B( I, K ) - A( J, I )**T * X( J, K ) */
+                    /* B( I, K ) := B( I, K ) - A( I, J )**T * X( J, K ) */
                     cblas_zgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 i2 - i1, k2 - k1, j2 - j1, &NEG_CONE,
                                 &A[j1 + i1 * lda], lda, &X[j1 + k1 * ldx], ldx,
                                 &CONE, &X[i1 + k1 * ldx], ldx);
                 } else {
-                    /* B( I, K ) := B( I, K ) - A( J, I )**H * X( J, K ) */
+                    /* B( I, K ) := B( I, K ) - A( I, J )**H * X( J, K ) */
                     cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
                                 i2 - i1, k2 - k1, j2 - j1, &NEG_CONE,
                                 &A[j1 + i1 * lda], lda, &X[j1 + k1 * ldx], ldx,

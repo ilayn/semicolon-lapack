@@ -62,7 +62,6 @@ void slarrf(const INT n, const f32* restrict D,
             f32* restrict dplus, f32* restrict lplus,
             f32* restrict work, INT* info)
 {
-    /* Constants */
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 QUART = 0.25f;
@@ -72,7 +71,6 @@ void slarrf(const INT n, const f32* restrict D,
     const INT SLEFT = 1;
     const INT SRIGHT = 2;
 
-    /* Local variables */
     INT i, indx, ktry, shift;
     INT forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
     f32 avgap, bestshift, clwdth, eps, fact, fail, fail2;
@@ -87,7 +85,7 @@ void slarrf(const INT n, const f32* restrict D,
         return;
     }
 
-    fact = (f32)(1 << KTRYMAX);  /* 2^KTRYMAX */
+    fact = (f32)(1 << KTRYMAX);
     eps = slamch("P");
     forcer = 0;
 
@@ -133,12 +131,10 @@ void slarrf(const INT n, const f32* restrict D,
     fail2 = (f32)(n - 1) * mingap / (spdiam * sqrtf(eps));
     bestshift = lsigma;
 
-    /* Main retry loop: while (ktry <= KTRYMAX) */
     ktry = 0;
     growthbound = MAXGROWTH1 * spdiam;
 
     for (;;) {
-        /* Label 5 in Fortran */
         sawnan1 = 0;
         sawnan2 = 0;
 
@@ -304,7 +300,6 @@ backoff:
             ldelta = TWO * ldelta;
             rdelta = TWO * rdelta;
             ktry = ktry + 1;
-            /* continue the for(;;) loop (equivalent to GOTO 5) */
         } else {
             /* None of the representations investigated satisfied our
              * criteria. Take the best one we found. */
@@ -312,17 +307,15 @@ backoff:
                 lsigma = bestshift;
                 rsigma = bestshift;
                 forcer = 1;
-                /* continue the for(;;) loop (equivalent to GOTO 5) */
             } else {
                 *info = 1;
                 return;
             }
         }
-    } /* end for (;;) */
+    }
 
 done:
     if (shift == SLEFT) {
-        /* dplus and lplus already contain the factorization */
     } else if (shift == SRIGHT) {
         /* store new L and D back into DPLUS, LPLUS */
         cblas_scopy(n, work, 1, dplus, 1);

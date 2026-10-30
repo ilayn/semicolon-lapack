@@ -127,26 +127,27 @@ void dsyrfs(
         count = 1;
         lstres = THREE;
 
-        /* Iterative refinement loop. */
+        /* Loop until stopping criterion is satisfied. */
         while (1) {
-            /* Compute residual R = B - A * X.
-             * For symmetric A, DSYMV computes A*X directly. */
+            /* Compute residual R = B - A * X. */
             cblas_dcopy(n, &B[j * ldb], 1, &work[n], 1);
             cblas_dsymv(CblasColMajor, upper ? CblasUpper : CblasLower,
                         n, -ONE, A, lda, &X[j * ldx], 1, ONE, &work[n], 1);
 
             /* Compute componentwise relative backward error from formula
-             *   max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+             *
+             * max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
              *
              * where abs(Z) is the componentwise absolute value of the matrix
-             * or vector Z. */
+             * or vector Z.  If the i-th component of the denominator is less
+             * than SAFE2, then SAFE1 is added to the i-th components of the
+             * numerator and denominator before dividing. */
 
             for (i = 0; i < n; i++) {
                 work[i] = fabs(B[i + j * ldb]);
             }
 
-            /* Compute abs(A)*abs(X) + abs(B).
-             * Uses symmetric structure: upper or lower triangle only. */
+            /* Compute abs(A)*abs(X) + abs(B). */
             if (upper) {
                 for (k = 0; k < n; k++) {
                     s = ZERO;
@@ -237,8 +238,7 @@ void dsyrfs(
                 break;
             }
             if (kase == 1) {
-                /* Multiply by diag(W)*inv(A**T).
-                 * Since A is symmetric, inv(A**T) = inv(A). */
+                /* Multiply by diag(W)*inv(A**T). */
                 dsytrs(uplo, n, 1, AF, ldaf, ipiv, &work[n], n, &linfo);
                 for (i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];

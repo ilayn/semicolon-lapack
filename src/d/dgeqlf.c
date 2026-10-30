@@ -41,7 +41,7 @@ void dgeqlf(const INT m, const INT n,
     INT ki, kk, mu, nu;
     INT lquery;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     k = m < n ? m : n;
     lquery = (lwork == -1);
@@ -87,7 +87,7 @@ void dgeqlf(const INT m, const INT n,
     ldwork = n;
 
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("GEQLF");
         if (nx < 0) nx = 0;
         if (nx < k) {
@@ -122,7 +122,7 @@ void dgeqlf(const INT m, const INT n,
                        &A[0 + (n - k + i) * lda], lda,
                        &tau[i], work, ldwork);
 
-                /* Apply H^T to A(0:m-k+i+ib-1, 0:n-k+i-1) from the left */
+                /* Apply H**T to A(0:m-k+i+ib-1, 0:n-k+i-1) from the left */
                 dlarfb("L", "T", "B", "C",
                        m - k + i + ib, n - k + i, ib,
                        &A[0 + (n - k + i) * lda], lda,
@@ -132,7 +132,6 @@ void dgeqlf(const INT m, const INT n,
             }
         }
 
-        /* Dimensions of the unblocked remainder */
         mu = m - kk;
         nu = n - kk;
     } else {

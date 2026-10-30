@@ -118,7 +118,6 @@ void zgecon(
     kase = 0;
 
     while (1) {
-        // work[0:n-1] = X, work[n:2n-1] = V
         zlacn2(n, &work[n], work, &ainvnm, &kase, isave);
 
         if (kase == 0) {

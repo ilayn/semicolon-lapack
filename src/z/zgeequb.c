@@ -116,7 +116,6 @@ void zgeequb(
         }
     }
 
-    // Round to power of radix
     for (i = 0; i < m; i++) {
         if (R[i] > ZERO) {
             R[i] = pow(radix, (INT)(log(R[i]) / logrdx));
@@ -136,7 +135,7 @@ void zgeequb(
         // Find the first zero scale factor and return an error code
         for (i = 0; i < m; i++) {
             if (R[i] == ZERO) {
-                *info = i + 1;  // 1-based index for error reporting
+                *info = i + 1;
                 return;
             }
         }
@@ -167,7 +166,6 @@ void zgeequb(
             f64 scaled_val = (fabs(creal(A[i + j * lda])) + fabs(cimag(A[i + j * lda]))) * R[i];
             C[j] = (C[j] > scaled_val) ? C[j] : scaled_val;
         }
-        // Round to power of radix
         if (C[j] > ZERO) {
             C[j] = pow(radix, (INT)(log(C[j]) / logrdx));
         }
@@ -185,7 +183,7 @@ void zgeequb(
         // Find the first zero scale factor and return an error code
         for (j = 0; j < n; j++) {
             if (C[j] == ZERO) {
-                *info = m + j + 1;  // 1-based index for error reporting
+                *info = m + j + 1;
                 return;
             }
         }

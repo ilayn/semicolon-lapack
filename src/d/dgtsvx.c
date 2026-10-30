@@ -155,10 +155,8 @@ void dgtsvx(
 
     if (nofact) {
         /* Compute the LU factorization of A */
-        /* Copy D to DF */
         cblas_dcopy(n, D, 1, DF, 1);
         if (n > 1) {
-            /* Copy DL to DLF and DU to DUF */
             cblas_dcopy(n - 1, DL, 1, DLF, 1);
             cblas_dcopy(n - 1, DU, 1, DUF, 1);
         }
@@ -183,13 +181,13 @@ void dgtsvx(
     dgtcon(&norm, n, DLF, DF, DUF, DU2, ipiv, anorm, rcond, work, iwork, info);
 
     /* Compute the solution vectors X */
-    /* Copy B to X */
     for (j = 0; j < nrhs; j++) {
         cblas_dcopy(n, &B[j * ldb], 1, &X[j * ldx], 1);
     }
     dgttrs(trans, n, nrhs, DLF, DF, DUF, DU2, ipiv, X, ldx, info);
 
-    /* Use iterative refinement to improve the computed solutions */
+    /* Use iterative refinement to improve the computed solutions and
+     * compute error bounds and backward error estimates for them. */
     dgtrfs(trans, n, nrhs, DL, D, DU, DLF, DF, DUF, DU2, ipiv,
            B, ldb, X, ldx, ferr, berr, work, iwork, info);
 

@@ -54,7 +54,7 @@ void slarfg(const INT n, f32* alpha, f32* x,
         /* H = I */
         *tau = 0.0f;
     } else {
-        /* General case */
+        /* general case */
         beta = -copysignf(slapy2(*alpha, xnorm), *alpha);
         safmin = slamch("S") / slamch("E");
         knt = 0;
@@ -70,7 +70,7 @@ void slarfg(const INT n, f32* alpha, f32* x,
                     break;
                 }
             }
-            knt++;  /* Convert from 0-based loop count to iteration count */
+            knt++;
 
             /* New BETA is at most 1, at least SAFMIN */
             xnorm = cblas_snrm2(n - 1, x, incx);

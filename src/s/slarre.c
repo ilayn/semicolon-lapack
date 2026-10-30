@@ -99,7 +99,6 @@ void slarre(const char* range, const INT n, f32* vl, f32* vu,
             INT* iblock, INT* indexw, f32* gers,
             f32* pivmin, f32* work, INT* iwork, INT* info)
 {
-    /* Parameters */
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
@@ -116,7 +115,6 @@ void slarre(const char* range, const INT n, f32* vl, f32* vu,
     const INT INDRNG = 2;
     const INT VALRNG = 3;
 
-    /* Local scalars */
     INT forceb, norep, usedqd;
     INT cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
@@ -126,7 +124,6 @@ void slarre(const char* range, const INT n, f32* vl, f32* vu,
            rtol, s1, s2, safmin, sgndef, sigma, spdiam,
            tau, tmp, tmp1;
 
-    /* Local arrays */
     INT iseed[4];
 
     *info = 0;

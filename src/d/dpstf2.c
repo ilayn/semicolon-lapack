@@ -85,7 +85,7 @@ void dpstf2(
         return;
     }
 
-    // Initialize PIV (0-based)
+    // Initialize PIV
     for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
@@ -118,7 +118,7 @@ void dpstf2(
         work[i] = ZERO;
     }
 
-    INT jstop = -1;  // Track where we stop due to rank deficiency
+    INT jstop = -1;
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**T * U
@@ -135,7 +135,6 @@ void dpstf2(
             }
 
             if (j > 0) {
-                // Find max in work[n+j : n+n-1]
                 INT itemp = 0;
                 while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
                 if (itemp == n - j) itemp = 0;
@@ -208,7 +207,6 @@ void dpstf2(
             }
 
             if (j > 0) {
-                // Find max in work[n+j : n+n-1]
                 INT itemp = 0;
                 while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
                 if (itemp == n - j) itemp = 0;

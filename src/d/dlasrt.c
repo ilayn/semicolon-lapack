@@ -54,8 +54,8 @@ void dlasrt(const char* id, const INT n, f64* restrict D, INT* info)
     if (n <= 1) return;
 
     stkpnt = 1;
-    stack[0][0] = 0;       /* start (0-based) */
-    stack[1][0] = n - 1;   /* end (0-based) */
+    stack[0][0] = 0;
+    stack[1][0] = n - 1;
 
     while (stkpnt > 0) {
         start = stack[0][stkpnt - 1];

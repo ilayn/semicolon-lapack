@@ -31,11 +31,8 @@
 
 #include "semicolon_lapack_double.h"
 
-/* LV = max number of random values generated per call */
 #define LV  128
-/* IPW2 = 2^12 = 4096, the modulus for each 12-bit digit */
 #define IPW2 4096
-/* R = 1.0 / IPW2 */
 #define R (1.0 / 4096.0)
 
 /**

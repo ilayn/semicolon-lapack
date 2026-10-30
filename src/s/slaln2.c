@@ -68,7 +68,6 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
             f32* X, const INT ldx,
             f32* scale, f32* xnorm, INT* info)
 {
-    /* Local scalars */
     INT icmax, j;
     f32 bbnd, bi1, bi2, bignum, bnorm, br1, br2, ci21;
     f32 ci22, cmax, cnorm, cr21, cr22, csi, csr, li21;
@@ -76,24 +75,15 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
     f32 ui12, ui12s, ui22, ur11, ur11r, ur12, ur12s;
     f32 ur22, xi1, xi2, xr1, xr2;
 
-    /* Local arrays - CR and CI are 2x2, stored column-major
-     * CRV and CIV are linear views of CR and CI respectively
-     * CR(i,j) = CRV[i + j*2] for 0-based, or CRV[(i-1) + (j-1)*2] for 1-based */
-    f32 cr[4], ci[4];  /* Column-major: cr[0]=cr(1,1), cr[1]=cr(2,1), cr[2]=cr(1,2), cr[3]=cr(2,2) */
+    f32 cr[4], ci[4];
 
-    /* Pivot tables (converted from 1-based Fortran to 0-based C) */
-    /* ZSWAP: whether to swap rows in final result */
     static const INT zswap[4] = {0, 0, 1, 1};
-    /* RSWAP: whether to swap B rows before solving */
     static const INT rswap[4] = {0, 1, 0, 1};
-    /* IPIVOT: pivot selection table (Fortran: IPIVOT(4,4), stored column-major)
-     * Original Fortran DATA: 1,2,3,4, 2,1,4,3, 3,4,1,2, 4,3,2,1
-     * Converted to 0-based: 0,1,2,3, 1,0,3,2, 2,3,0,1, 3,2,1,0 */
     static const INT ipivot[4][4] = {
-        {0, 1, 2, 3},  /* column 0 (icmax=0) */
-        {1, 0, 3, 2},  /* column 1 (icmax=1) */
-        {2, 3, 0, 1},  /* column 2 (icmax=2) */
-        {3, 2, 1, 0}   /* column 3 (icmax=3) */
+        {0, 1, 2, 3},
+        {1, 0, 3, 2},
+        {2, 3, 0, 1},
+        {3, 2, 1, 0}
     };
 
     /* Compute BIGNUM */
@@ -158,7 +148,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
                 }
             }
 
-            /* Compute X using complex division */
+            /* Compute X */
             sladiv((*scale) * B[0], (*scale) * B[ldb], csr, csi, &X[0], &X[ldx]);
             *xnorm = fabsf(X[0]) + fabsf(X[ldx]);
         }
@@ -166,16 +156,15 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
     } else {
         /* 2x2 System
          *
-         * Compute the real part of  C = ca A - w D  (or  ca A**T - w D )
-         * CR is stored column-major: cr[0]=CR(1,1), cr[1]=CR(2,1), cr[2]=CR(1,2), cr[3]=CR(2,2) */
-        cr[0] = ca * A[0] - wr * d1;           /* CR(1,1) */
-        cr[3] = ca * A[1 + lda] - wr * d2;     /* CR(2,2) */
+         * Compute the real part of  C = ca A - w D  (or  ca A**T - w D ) */
+        cr[0] = ca * A[0] - wr * d1;
+        cr[3] = ca * A[1 + lda] - wr * d2;
         if (ltrans) {
-            cr[2] = ca * A[1];                  /* CR(1,2) = ca*A(2,1) */
-            cr[1] = ca * A[lda];                /* CR(2,1) = ca*A(1,2) */
+            cr[2] = ca * A[1];
+            cr[1] = ca * A[lda];
         } else {
-            cr[1] = ca * A[1];                  /* CR(2,1) = ca*A(2,1) */
-            cr[2] = ca * A[lda];                /* CR(1,2) = ca*A(1,2) */
+            cr[1] = ca * A[1];
+            cr[2] = ca * A[lda];
         }
 
         if (nw == 1) {
@@ -273,12 +262,11 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
         } else {
             /* Complex 2x2 system  (w is complex)
              *
-             * Find the largest element in C
-             * CI is stored column-major like CR */
-            ci[0] = -wi * d1;    /* CI(1,1) */
-            ci[1] = 0.0f;         /* CI(2,1) */
-            ci[2] = 0.0f;         /* CI(1,2) */
-            ci[3] = -wi * d2;    /* CI(2,2) */
+             * Find the largest element in C */
+            ci[0] = -wi * d1;
+            ci[1] = 0.0f;
+            ci[2] = 0.0f;
+            ci[3] = -wi * d2;
 
             cmax = 0.0f;
             icmax = -1;

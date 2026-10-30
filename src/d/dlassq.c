@@ -8,16 +8,11 @@
 #include "semicolon_lapack_double.h"
 
 /*
- * Blue's scaling constants.
- * Computed from IEEE 754 precision parameters (la_constants.f90):
+ * Blue's scaling constants (la_constants.f90):
  *   tsml = 2^ceiling((minexponent - 1) / 2)
  *   tbig = 2^floor((maxexponent - digits + 1) / 2)
  *   ssml = 2^(-floor((minexponent - digits) / 2))
  *   sbig = 2^(-ceiling((maxexponent + digits - 1) / 2))
- *
- * where minexponent = DBL_MIN_EXP, maxexponent = DBL_MAX_EXP,
- * digits = DBL_MANT_DIG. The CEIL_HALF/FLOOR_HALF macros compute
- * ceiling(n/2) and floor(n/2) for integers using C integer division.
  */
 #define CEIL_HALF(n)  (((n) >= 0) ? (((n) + 1) / 2) : ((n) / 2))
 #define FLOOR_HALF(n) (((n) >= 0) ? ((n) / 2) : (((n) - 1) / 2))
@@ -101,7 +96,6 @@ void dlassq(
     amed = ZERO;
     abig = ZERO;
 
-    /* Set starting index */
     if (incx < 0) {
         ix = -(n - 1) * incx;
     } else {

@@ -54,8 +54,8 @@ void slaexc(const INT wantq, const INT n, f32* T, const INT ldt,
     f32 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
     f32 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
     f32 wr1, wr2, xnorm;
-    f32 D[16];  /* 4x4 stored column-major */
-    f32 U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
+    f32 D[16];
+    f32 U[3], U1[3], U2[3], X[4];
 
     *info = 0;
 

@@ -84,14 +84,12 @@ void dgetrf2(
         return;
     }
 
-    // Base case: use unblocked code for small panels
-    // Check minmn, not n, because that's the actual factorization size
     if (minmn <= RECURSION_THRESHOLD) {
         dgetf2(m, n, A, lda, ipiv, info);
         return;
     }
 
-    // Recursive case: split and conquer
+    // Use recursive code
     n1 = minmn / 2;
     n2 = n - n1;
 

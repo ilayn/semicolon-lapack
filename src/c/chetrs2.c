@@ -92,7 +92,7 @@ void chetrs2(
         while (k >= 0) {
             if (ipiv[k] >= 0) {
                 /* 1 x 1 diagonal block */
-                /* Interchange rows k and ipiv[k] (0-based). */
+                /* Interchange rows k and ipiv[k]. */
                 kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -100,7 +100,7 @@ void chetrs2(
                 k = k - 1;
             } else {
                 /* 2 x 2 diagonal block */
-                /* Interchange rows k-1 and -ipiv[k]-1 (0-based). */
+                /* Interchange rows k-1 and -ipiv[k]-1. */
                 kp = -ipiv[k] - 1;
                 if (kp == -ipiv[k - 1] - 1) {
                     cblas_cswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
@@ -146,7 +146,7 @@ void chetrs2(
         while (k < n) {
             if (ipiv[k] >= 0) {
                 /* 1 x 1 diagonal block */
-                /* Interchange rows k and ipiv[k] (0-based). */
+                /* Interchange rows k and ipiv[k]. */
                 kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -154,7 +154,7 @@ void chetrs2(
                 k = k + 1;
             } else {
                 /* 2 x 2 diagonal block */
-                /* Interchange rows k and -ipiv[k]-1 (0-based). */
+                /* Interchange rows k and -ipiv[k]-1. */
                 kp = -ipiv[k] - 1;
                 if (k < n - 1 && kp == -ipiv[k + 1] - 1) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -172,7 +172,7 @@ void chetrs2(
         while (k < n) {
             if (ipiv[k] >= 0) {
                 /* 1 x 1 diagonal block */
-                /* Interchange rows k and ipiv[k] (0-based). */
+                /* Interchange rows k and ipiv[k]. */
                 kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -180,7 +180,7 @@ void chetrs2(
                 k = k + 1;
             } else {
                 /* 2 x 2 diagonal block */
-                /* Interchange rows k+1 and -ipiv[k+1]-1 (0-based). */
+                /* Interchange rows k+1 and -ipiv[k+1]-1. */
                 kp = -ipiv[k + 1] - 1;
                 if (kp == -ipiv[k] - 1) {
                     cblas_cswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
@@ -224,7 +224,7 @@ void chetrs2(
         while (k >= 0) {
             if (ipiv[k] >= 0) {
                 /* 1 x 1 diagonal block */
-                /* Interchange rows k and ipiv[k] (0-based). */
+                /* Interchange rows k and ipiv[k]. */
                 kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
@@ -232,7 +232,7 @@ void chetrs2(
                 k = k - 1;
             } else {
                 /* 2 x 2 diagonal block */
-                /* Interchange rows k and -ipiv[k]-1 (0-based). */
+                /* Interchange rows k and -ipiv[k]-1. */
                 kp = -ipiv[k] - 1;
                 if (k > 0 && kp == -ipiv[k - 1] - 1) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);

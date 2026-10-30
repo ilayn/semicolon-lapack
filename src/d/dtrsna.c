@@ -160,7 +160,7 @@ void dtrsna(const char* job, const char* howmny, const INT* select,
     smlnum = dlamch("S") / eps;
     bignum = ONE / smlnum;
 
-    ks = -1;  /* Will be incremented before first use */
+    ks = -1;
     pair = 0;
     for (k = 0; k < n; k++) {
 

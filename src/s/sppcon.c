@@ -50,18 +50,16 @@ void sppcon(
     INT* restrict iwork,
     INT* info)
 {
-    // sppcon.f lines 136-137: Parameters
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    // sppcon.f lines 140-146: Local Scalars and Arrays
     INT upper;
     char normin;
     INT ix, kase;
     f32 ainvnm, scale, scalel, scaleu, smlnum;
     INT isave[3];
 
-    // sppcon.f lines 164-176: Test the input parameters
+    // Test the input parameters
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -76,7 +74,7 @@ void sppcon(
         return;
     }
 
-    // sppcon.f lines 180-186: Quick return if possible
+    // Quick return if possible
     *rcond = ZERO;
     if (n == 0) {
         *rcond = ONE;
@@ -85,58 +83,47 @@ void sppcon(
         return;
     }
 
-    // sppcon.f line 188
-    smlnum = slamch("S");  // Safe minimum
+    smlnum = slamch("S");
 
-    // sppcon.f lines 192-193: Initialize for norm estimation
+    // Estimate the 1-norm of the inverse.
     kase = 0;
     normin = 'N';
 
-    // sppcon.f lines 194-235: Main iteration loop
     while (1) {
-        // sppcon.f line 195: CALL SLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
         slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
 
-        // sppcon.f line 196
         if (kase == 0) {
             break;
         }
 
         if (upper) {
-            // sppcon.f lines 199-202: Multiply by inv(U**T)
+            // Multiply by inv(U**T)
             slatps("U", "T", "N", &normin, n, AP, work, &scalel, &work[2 * n], info);
-            // sppcon.f line 203
             normin = 'Y';
 
-            // sppcon.f lines 207-209: Multiply by inv(U)
+            // Multiply by inv(U)
             slatps("U", "N", "N", &normin, n, AP, work, &scaleu, &work[2 * n], info);
         } else {
-            // sppcon.f lines 214-216: Multiply by inv(L)
+            // Multiply by inv(L)
             slatps("L", "N", "N", &normin, n, AP, work, &scalel, &work[2 * n], info);
-            // sppcon.f line 217
             normin = 'Y';
 
-            // sppcon.f lines 221-222: Multiply by inv(L**T)
+            // Multiply by inv(L**T)
             slatps("L", "T", "N", &normin, n, AP, work, &scaleu, &work[2 * n], info);
         }
 
-        // sppcon.f lines 227-233: Multiply by 1/SCALE if doing so will not cause overflow
+        // Multiply by 1/SCALE if doing so will not cause overflow
         scale = scalel * scaleu;
         if (scale != ONE) {
-            // sppcon.f line 229: IX = IDAMAX( N, WORK, 1 )
-            // CBLAS idamax returns 0-based index; Fortran IDAMAX returns 1-based
             ix = cblas_isamax(n, work, 1);
-            // sppcon.f lines 230-231
             if (scale < fabsf(work[ix]) * smlnum || scale == ZERO) {
-                return;  // GO TO 20 (exit)
+                return;
             }
-            // sppcon.f line 232
             srscl(n, scale, work, 1);
         }
-        // sppcon.f line 234: GO TO 10 (continue loop)
     }
 
-    // sppcon.f lines 239-240: Compute the estimate of the reciprocal condition number
+    // Compute the estimate of the reciprocal condition number
     if (ainvnm != ZERO) {
         *rcond = (ONE / ainvnm) / anorm;
     }

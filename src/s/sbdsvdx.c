@@ -120,7 +120,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         return;
     }
 
-    /* Quick return if possible (N <= 1) */
+    /* Quick return if possible (N.LE.1) */
     *ns = 0;
     if (n == 0) {
         return;
@@ -143,13 +143,16 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         return;
     }
 
-    abstol = 2.0f * slamch("S");  /* 2 * Safe minimum */
-    ulp = slamch("P");           /* Precision */
-    eps = slamch("E");           /* Epsilon */
+    abstol = 2.0f * slamch("S");
+    ulp = slamch("P");
+    eps = slamch("E");
     sqrt2 = sqrtf(2.0f);
     ortol = sqrtf(ulp);
 
-    /* Criterion for splitting from SBDSQR */
+    /* Criterion for splitting is taken from SBDSQR when singular
+     * values are computed to relative accuracy TOL. (See J. Demmel and
+     * W. Kahan, Accurate singular values of bidiagonal matrices, SIAM
+     * J. Sci. and Stat. Comput., 11:873–912, 1990.) */
     tol = powf(eps, MEIGTH);
     tol = (HNDRD < tol) ? HNDRD : tol;
     tol = ((TEN > tol) ? TEN : tol) * eps;
@@ -182,36 +185,40 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
     }
     if (fabsf(D[n - 1]) <= thresh) D[n - 1] = ZERO;
 
-    /* Pointers for arrays used by SSTEVX (0-based) */
+    /* Pointers for arrays used by SSTEVX. */
     idtgk = 0;
     ietgk = idtgk + 2 * n;
     itemp = ietgk + 2 * n;
     iifail = 0;
     iiwork = iifail + 2 * n;
 
-    /* Set RNGVX, which corresponds to RANGE for SSTEVX in TGK mode */
+    /* Set RNGVX, which corresponds to RANGE for SSTEVX in TGK mode.
+     * VL,VU or IL,IU are redefined to conform to implementation a)
+     * described in the leading comments. */
     iltgk = 0;
     vltgk = ZERO;
     vutgk = ZERO;
 
     if (allsv) {
-        /* All singular values. Use RNGVX='I' with indices set later. */
+        /* All singular values will be found. We aim at -s (see
+         * leading comments) with RNGVX = 'I'. IL and IU are set
+         * later (as ILTGK and IUTGK) according to the dimension
+         * of the active submatrix. */
         rngvx = 'I';
         if (wantz) {
             slaset("F", 2 * n, n + 1, ZERO, ZERO, Z, ldz);
         }
     } else if (valsv) {
-        /* Find singular values in [VL, VU). Swap and negate for negative eigenvalues. */
+        /* Find singular values in a half-open interval. We aim
+         * at -s (see leading comments) and we swap VL and VU
+         * (as VUTGK and VLTGK), changing their signs. */
         rngvx = 'V';
         vltgk = -vu;
         vutgk = -vl;
-        /* Zero out WORK arrays for TGK diagonal */
         for (i = 0; i < 2 * n; i++) {
             work[idtgk + i] = ZERO;
         }
-        /* Copy D to odd positions (1, 3, 5, ...) of IETGK */
         cblas_scopy(n, D, 1, &work[ietgk], 2);
-        /* Copy E to even positions (2, 4, 6, ...) of IETGK */
         if (n > 1) {
             cblas_scopy(n - 1, E, 1, &work[ietgk + 1], 2);
         }
@@ -227,29 +234,29 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
             }
         }
     } else if (indsv) {
-        /* Find IL-th through IU-th singular values.
-         * Map indices to values by finding boundary eigenvalues. */
+        /* Find the IL-th through the IU-th singular values. We aim
+         * at -s (see leading comments) and indices are mapped into
+         * values, therefore mimicking SSTEBZ, where
+         *
+         * GL = GL - FUDGE*TNORM*ULP*N - FUDGE*TWO*PIVMIN
+         * GU = GU + FUDGE*TNORM*ULP*N + FUDGE*PIVMIN */
         iltgk = il;
         iutgk = iu;
         rngvx = 'V';
 
-        /* Zero out WORK arrays for TGK diagonal */
         for (i = 0; i < 2 * n; i++) {
             work[idtgk + i] = ZERO;
         }
-        /* Copy D to odd positions, E to even positions */
         cblas_scopy(n, D, 1, &work[ietgk], 2);
         if (n > 1) {
             cblas_scopy(n - 1, E, 1, &work[ietgk + 1], 2);
         }
 
-        /* Find the IL-th eigenvalue (for lower bound) */
         sstevx("N", "I", 2 * n, &work[idtgk], &work[ietgk], vltgk, vltgk,
                iltgk, iltgk, abstol, &ns_local, S, Z, ldz, &work[itemp],
                &iwork[iiwork], &iwork[iifail], info);
         vltgk = S[0] - FUDGE * smax * ulp * n;
 
-        /* Reset work arrays */
         for (i = 0; i < 2 * n; i++) {
             work[idtgk + i] = ZERO;
         }
@@ -258,14 +265,14 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
             cblas_scopy(n - 1, E, 1, &work[ietgk + 1], 2);
         }
 
-        /* Find the IU-th eigenvalue (for upper bound) */
         sstevx("N", "I", 2 * n, &work[idtgk], &work[ietgk], vutgk, vutgk,
                iutgk, iutgk, abstol, &ns_local, S, Z, ldz, &work[itemp],
                &iwork[iiwork], &iwork[iifail], info);
         vutgk = S[0] + FUDGE * smax * ulp * n;
         vutgk = (vutgk < ZERO) ? vutgk : ZERO;
 
-        /* If VLTGK == VUTGK, SSTEVX returns error, so adjust slightly */
+        /* If VLTGK=VUTGK, SSTEVX returns an error message,
+         * so if needed we change VUTGK slightly. */
         if (vltgk == vutgk) {
             vltgk = vltgk - tol;
         }
@@ -275,21 +282,25 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         }
     }
 
-    /* Initialize variables and pointers for S, Z, and WORK */
+    /* Initialize variables and pointers for S, Z, and WORK.
+     *
+     * NRU, NRV: number of rows in U and V for the active submatrix
+     * IDBEG, ISBEG: offsets for the entries of D and S
+     * IROWZ, ICOLZ: offsets for the rows and columns of Z
+     * IROWU, IROWV: offsets for the rows of U and V */
     ns_local = 0;
     nru = 0;
     nrv = 0;
-    idbeg = 0;  /* 0-based start into D */
-    isbeg = 0;  /* 0-based start into S */
-    irowz = 0;  /* 0-based row offset in Z */
-    icolz = 0;  /* 0-based column offset in Z */
-    irowu = 1;  /* rows for U start at odd indices in Z (0-based: row 1, 3, 5...) */
-    irowv = 0;  /* rows for V start at even indices in Z (0-based: row 0, 2, 4...) */
+    idbeg = 0;
+    isbeg = 0;
+    irowz = 0;
+    icolz = 0;
+    irowu = 1;
+    irowv = 0;
     split = 0;
     sveq0 = 0;
 
 
-    /* Initialize S to zero */
     for (i = 0; i < n; i++) {
         S[i] = ZERO;
     }
@@ -299,22 +310,24 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
     for (i = 0; i < 2 * n; i++) {
         work[idtgk + i] = ZERO;
     }
-    /* D goes to odd positions, E to even */
     cblas_scopy(n, D, 1, &work[ietgk], 2);
     if (n > 1) {
         cblas_scopy(n - 1, E, 1, &work[ietgk + 1], 2);
     }
 
-    /* Check for splits in two levels: outer level in E, inner level in D */
+    /* Check for splits in two levels, outer level
+     * in E and inner level in D. */
     for (ieptr = 1; ieptr < 2 * n; ieptr += 2) {
         if (work[ietgk + ieptr] == ZERO) {
-            /* Split in E (this piece of B is square) or bottom of matrix */
+            /* Split in E (this piece of B is square) or bottom
+             * of the (input bidiagonal) matrix. */
             isplt = idbeg;
-            idend = ieptr - 1;  /* Last index of D in this subproblem */
+            idend = ieptr - 1;
 
             for (idptr = idbeg; idptr <= idend; idptr += 2) {
                 if (work[ietgk + idptr] == ZERO) {
-                    /* Split in D (rectangular submatrix) */
+                    /* Split in D (rectangular submatrix). Set the number
+                     * of rows in U and V (NRU and NRV) accordingly. */
                     if (idptr == idbeg) {
                         /* D=0 at the top */
                         sveq0 = 1;
@@ -358,12 +371,17 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
 
 
                 if (ntgk > 0) {
-                    /* Compute eigenvalues/vectors of the active submatrix */
+                    /* Compute eigenvalues/vectors of the active
+                     * submatrix according to RANGE:
+                     * if RANGE='A' (ALLSV) then RNGVX = 'I'
+                     * if RANGE='V' (VALSV) then RNGVX = 'V'
+                     * if RANGE='I' (INDSV) then RNGVX = 'V' */
                     iltgk = 0;
                     iutgk = ntgk / 2 - 1;
                     if (allsv || vutgk == ZERO) {
                         if (sveq0 || smin < eps || (ntgk % 2) > 0) {
-                            /* Special case: eigenvalue equal to zero or very small */
+                            /* Special case: eigenvalue equal to zero or very
+                             * small, additional eigenvector is needed. */
                             iutgk = iutgk + 1;
                         }
                     }
@@ -402,11 +420,19 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                     }
 
                     if (nsl > 0 && wantz) {
-                        /* Normalize u and v, changing sign of v */
+                        /* Normalize u=Z([1,3,...],:) and v=Z([0,2,...],:),
+                         * changing the sign of v as discussed in the leading
+                         * comments. The norms of u and v may be (slightly)
+                         * different from 1/sqrt(2) if the corresponding
+                         * eigenvalues are very small or too close. We check
+                         * those norms and, if needed, reorthogonalize the
+                         * vectors. */
                         if (nsl > 1 && vutgk == ZERO && (ntgk % 2) == 0 &&
                             emin == ZERO && !split) {
-                            /* D=0 at top or bottom: concatenate eigenvectors
-                             * for the two smallest eigenvalues */
+                            /* D=0 at the top or bottom of the active submatrix:
+                             * one eigenvalue is equal to zero; concatenate the
+                             * eigenvectors corresponding to the two smallest
+                             * eigenvalues. */
                             for (i = 0; i < ntgk; i++) {
                                 Z[irowz + i + (icolz + nsl - 2) * ldz] +=
                                     Z[irowz + i + (icolz + nsl - 1) * ldz];
@@ -414,7 +440,6 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             }
                         }
 
-                        /* Normalize U vectors (rows irowu, irowu+2, ...) */
                         for (i = 0; i < nsl && i < nru; i++) {
                             nrmu = cblas_snrm2(nru, &Z[irowu + (icolz + i) * ldz], 2);
                             if (nrmu == ZERO) {
@@ -423,7 +448,6 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             }
                             cblas_sscal(nru, ONE / nrmu, &Z[irowu + (icolz + i) * ldz], 2);
                             if (nrmu != ONE && fabsf(nrmu - ortol) * sqrt2 > ONE) {
-                                /* Reorthogonalize */
                                 for (j = 0; j < i; j++) {
                                     zjtji = -cblas_sdot(nru, &Z[irowu + (icolz + j) * ldz], 2,
                                                         &Z[irowu + (icolz + i) * ldz], 2);
@@ -435,7 +459,6 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             }
                         }
 
-                        /* Normalize V vectors (rows irowv, irowv+2, ...) with sign change */
                         for (i = 0; i < nsl && i < nrv; i++) {
                             nrmv = cblas_snrm2(nrv, &Z[irowv + (icolz + i) * ldz], 2);
                             if (nrmv == ZERO) {
@@ -444,7 +467,6 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             }
                             cblas_sscal(nrv, -ONE / nrmv, &Z[irowv + (icolz + i) * ldz], 2);
                             if (nrmv != ONE && fabsf(nrmv - ortol) * sqrt2 > ONE) {
-                                /* Reorthogonalize */
                                 for (j = 0; j < i; j++) {
                                     zjtji = -cblas_sdot(nrv, &Z[irowv + (icolz + j) * ldz], 2,
                                                         &Z[irowv + (icolz + i) * ldz], 2);
@@ -457,7 +479,10 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                         }
 
                         if (vutgk == ZERO && idptr < idend && (ntgk % 2) > 0) {
-                            /* D=0 in the middle: save eigenvector for later */
+                            /* D=0 in the middle of the active submatrix (one
+                             * eigenvalue is equal to zero): save the corresponding
+                             * eigenvector for later use (when bottom of the
+                             * active submatrix is reached). */
                             split = 1;
                             for (i = 0; i < ntgk; i++) {
                                 Z[irowz + i + n * ldz] =
@@ -470,25 +495,22 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                     nsl = nsl < nru ? nsl : nru;
                     sveq0 = 0;
 
-                    /* Absolute values of eigenvalues of TGK */
+                    /* Absolute values of the eigenvalues of TGK. */
                     for (i = 0; i < nsl; i++) {
                         S[isbeg + i] = fabsf(S[isbeg + i]);
                     }
 
-                    /* Update pointers */
+                    /* Update pointers for TGK, S and Z. */
                     isbeg = isbeg + nsl;
                     irowz = irowz + ntgk;
                     icolz = icolz + nsl;
-                    /* Fortran: IROWU = IROWZ, IROWV = IROWZ + 1
-                     * Converting 1-based to 0-based: irowu = irowz (new), irowv = irowz + 1 (new)
-                     * But we store in 0-based, so irowu = irowz, irowv = irowz + 1 */
                     irowu = irowz;
                     irowv = irowz + 1;
                     isplt = idptr + 2;
                     ns_local = ns_local + nsl;
                     nru = 0;
                     nrv = 0;
-                } /* NTGK > 0 */
+                } /* NTGK.GT.0 */
 
                 if (irowz < 2 * n && wantz) {
                     for (i = 0; i < irowz; i++) {
@@ -498,7 +520,8 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
             } /* IDPTR loop */
 
             if (split && wantz) {
-                /* Bring back eigenvector corresponding to eigenvalue zero */
+                /* Bring back eigenvector corresponding
+                 * to eigenvalue equal to zero. */
                 for (i = idbeg; i <= idend - ntgk + 1; i++) {
                     Z[i + (isbeg - 1) * ldz] += Z[i + n * ldz];
                     Z[i + n * ldz] = ZERO;
@@ -514,7 +537,8 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
 
     *ns = ns_local;
 
-    /* Sort singular values into decreasing order (insertion sort) */
+    /* Sort the singular values into decreasing order (insertion sort on
+     * singular values, but only one transposition per singular vector) */
     for (i = 0; i < ns_local - 1; i++) {
         k = 0;
         smin = S[0];
@@ -533,7 +557,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         }
     }
 
-    /* If RANGE='I', check for singular values/vectors to be discarded */
+    /* If RANGE=I, check for singular values/vectors to be discarded. */
     if (indsv) {
         k = iu - il + 1;
         if (k < ns_local) {
@@ -551,23 +575,20 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         }
     }
 
-    /* Reorder Z: U = Z(1:N,:), V = Z(N+1:2*N,:).
-     * If B is lower bidiagonal, swap U and V. */
+    /* Reorder Z: U = Z( 0:n-1,0:ns-1 ), V = Z( n:2*n-1,0:ns-1 ).
+     * If B is a lower diagonal, swap U and V. */
     if (wantz) {
         for (i = 0; i < *ns; i++) {
-            /* Copy column to work, then redistribute */
             cblas_scopy(2 * n, &Z[i * ldz], 1, work, 1);
             if (lower) {
-                /* V from even rows, U from odd rows */
                 for (j = 0; j < n; j++) {
-                    Z[n + j + i * ldz] = work[2 * j + 1];  /* V */
-                    Z[j + i * ldz] = work[2 * j];          /* U */
+                    Z[n + j + i * ldz] = work[2 * j + 1];
+                    Z[j + i * ldz] = work[2 * j];
                 }
             } else {
-                /* U from odd rows, V from even rows */
                 for (j = 0; j < n; j++) {
-                    Z[j + i * ldz] = work[2 * j + 1];      /* U */
-                    Z[n + j + i * ldz] = work[2 * j];      /* V */
+                    Z[j + i * ldz] = work[2 * j + 1];
+                    Z[n + j + i * ldz] = work[2 * j];
                 }
             }
         }

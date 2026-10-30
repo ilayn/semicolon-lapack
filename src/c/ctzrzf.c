@@ -53,7 +53,7 @@ void ctzrzf(const INT m, const INT n,
     INT i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
     INT lquery;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     lquery = (lwork == -1);
 
@@ -71,7 +71,7 @@ void ctzrzf(const INT m, const INT n,
             lwkmin = 1;
         } else {
             /* Determine the block size.
-             * Fortran: NB = ILAENV(1, 'CGERQF', ' ', M, N, -1, -1) */
+             * NB from ILAENV(1, 'CGERQF', ' ', M, N, -1, -1) */
             nb = lapack_get_nb("GERQF");
             lwkopt = m * nb;
             lwkmin = m > 1 ? m : 1;
@@ -110,21 +110,20 @@ void ctzrzf(const INT m, const INT n,
     if (nb > 1 && nb < m) {
 
         /* Determine when to cross over from blocked to unblocked code.
-         * Fortran: NX = MAX(0, ILAENV(3, 'CGERQF', ' ', M, N, -1, -1)) */
+         * NX from ILAENV(3, 'CGERQF', ' ', M, N, -1, -1) */
         nx = lapack_get_nx("GERQF");
         if (nx < 0) nx = 0;
 
         if (nx < m) {
 
-            /* Determine if workspace is large enough for blocked code */
+            /* Determine if workspace is large enough for blocked code. */
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
 
-                /* Not enough workspace to use optimal NB: reduce NB and
+                /* Not enough workspace to use optimal NB:  reduce NB and
                  * determine the minimum value of NB.
-                 * Fortran: NB = LWORK / LDWORK
-                 *          NBMIN = MAX(2, ILAENV(2, 'CGERQF', ' ', M, N, -1, -1)) */
+                 * NBMIN from ILAENV(2, 'CGERQF', ' ', M, N, -1, -1) */
                 nb = lwork / ldwork;
                 nbmin = lapack_get_nbmin("GERQF");
                 if (nbmin < 2) nbmin = 2;
@@ -135,55 +134,25 @@ void ctzrzf(const INT m, const INT n,
     if (nb >= nbmin && nb < m && nx < m) {
 
         /* Use blocked code initially.
-         * The last kk rows are handled by the block method.
-         *
-         * Fortran: M1 = MIN(M+1, N)  -- 1-based column index M+1
-         *          In 0-based, column index m (since M+1 in 1-based = m in 0-based)
-         *          KI = ((M-NX-1)/NB)*NB
-         *          KK = MIN(M, KI+NB)
-         */
+         * The last kk rows are handled by the block method. */
         ki = ((m - nx - 1) / nb) * nb;
         kk = m < (ki + nb) ? m : (ki + nb);
 
-        /* Blocked loop, going backward.
-         * Fortran: DO I = M-KK+KI+1, M-KK+1, -NB  (1-based)
-         * In 0-based: for (i = m-kk+ki; i >= m-kk; i -= nb)
-         */
         for (i = m - kk + ki; i >= m - kk; i -= nb) {
             ib = (m - i) < nb ? (m - i) : nb;
 
             /* Compute the TZ factorization of the current block
-             * A(i:i+ib-1, i:n-1)
-             *
-             * Fortran: CLATRZ(IB, N-I+1, N-M, A(I,I), LDA, TAU(I), WORK)
-             * N-I+1 in Fortran with 1-based I corresponds to n-i in 0-based
-             */
+             * A(i:i+ib-1,i:n-1) */
             clatrz(ib, n - i, n - m, &A[i + i * lda], lda, &tau[i], work);
 
             if (i > 0) {
 
                 /* Form the triangular factor of the block reflector
-                 * H = H(i+ib-1) . . . H(i+1) H(i)
-                 *
-                 * Fortran: CLARZT('Backward', 'Rowwise', N-M, IB, A(I,M1), LDA, TAU(I), WORK, LDWORK)
-                 * M1 in Fortran is column M+1 (1-based) = column m (0-based)
-                 */
+                 * H = H(i+ib-1) . . . H(i+1) H(i) */
                 clarzt("B", "R", n - m, ib, &A[i + m * lda], lda,
                        &tau[i], work, ldwork);
 
-                /* Apply H to A(0:i-1, i:n-1) from the right
-                 *
-                 * Fortran: CLARZB('Right', 'No transpose', 'Backward', 'Rowwise',
-                 *                 I-1, N-I+1, IB, N-M, A(I,M1), LDA, WORK, LDWORK,
-                 *                 A(1,I), LDA, WORK(IB+1), LDWORK)
-                 * I-1 in Fortran with 1-based I = i rows in 0-based
-                 * N-I+1 in Fortran with 1-based I = n-i in 0-based
-                 * A(1,I) in Fortran = A[0 + i*lda] in 0-based
-                 * WORK(IB+1) in Fortran = work[ib*ldwork] in 0-based
-                 *   (WORK is used as a 2D array with leading dimension LDWORK;
-                 *    IB+1 means row IB+1, which is the start of the (IB+1)-th row
-                 *    in column-major with LDWORK stride = offset IB)
-                 */
+                /* Apply H to A(0:i-1,i:n-1) from the right */
                 clarzb("R", "N", "B", "R",
                        i, n - i, ib, n - m,
                        &A[i + m * lda], lda,
@@ -193,25 +162,12 @@ void ctzrzf(const INT m, const INT n,
             }
         }
 
-        /* After the DO loop, Fortran I overshoots by -NB:
-         * MU = I + NB - 1 (Fortran 1-based).
-         * In Fortran, after the loop, I still holds its last decremented value.
-         * Fortran: MU = I + NB - 1, this gives the number of remaining rows.
-         * In 0-based: after the loop, i = (m-kk) - nb. So mu = i + nb = m - kk.
-         * But Fortran MU = I + NB - 1 where I is the 1-based value that failed the test.
-         * The Fortran loop runs: I from (m-kk+ki+1) down to (m-kk+1) step -nb.
-         * After the loop, I = (m-kk+1) - nb (the value that failed the >= test).
-         * So MU = (m-kk+1) - nb + nb - 1 = m - kk.
-         * In 0-based, mu = m - kk (number of rows to process with unblocked code).
-         */
         mu = m - kk;
     } else {
         mu = m;
     }
 
-    /* Use unblocked code to factor the last or only block.
-     * Fortran: IF(MU.GT.0) CLATRZ(MU, N, N-M, A, LDA, TAU, WORK)
-     */
+    /* Use unblocked code to factor the last or only block */
     if (mu > 0) {
         clatrz(mu, n, n - m, A, lda, tau, work);
     }

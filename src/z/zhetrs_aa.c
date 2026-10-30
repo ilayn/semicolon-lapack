@@ -123,20 +123,16 @@ void zhetrs_aa(
 
         /*  Compute T \ B -> B   [ T \ (U**H \P**T * B) ]  */
 
-        /* ZLACPY('F', 1, N, A(1,1), LDA+1, WORK(N), 1) -- extract diagonal */
         for (k = 0; k < n; k++) {
             work[n - 1 + k] = A[k + k * lda];
         }
         if (n > 1) {
-            /* ZLACPY('F', 1, N-1, A(1,2), LDA+1, WORK(2*N), 1) -- superdiagonal */
             for (k = 0; k < n - 1; k++) {
                 work[2 * n - 1 + k] = A[k + (k + 1) * lda];
             }
-            /* ZLACPY('F', 1, N-1, A(1,2), LDA+1, WORK(1), 1) -- copy to sub */
             for (k = 0; k < n - 1; k++) {
                 work[k] = A[k + (k + 1) * lda];
             }
-            /* ZLACGV(N-1, WORK(1), 1) -- conjugate the sub-diagonal */
             for (k = 0; k < n - 1; k++) {
                 work[k] = conj(work[k]);
             }
@@ -189,20 +185,16 @@ void zhetrs_aa(
 
         /*  Compute T \ B -> B   [ T \ (L \P**T * B) ]  */
 
-        /* ZLACPY('F', 1, N, A(1,1), LDA+1, WORK(N), 1) -- extract diagonal */
         for (k = 0; k < n; k++) {
             work[n - 1 + k] = A[k + k * lda];
         }
         if (n > 1) {
-            /* ZLACPY('F', 1, N-1, A(2,1), LDA+1, WORK(1), 1) -- subdiagonal */
             for (k = 0; k < n - 1; k++) {
                 work[k] = A[(k + 1) + k * lda];
             }
-            /* ZLACPY('F', 1, N-1, A(2,1), LDA+1, WORK(2*N), 1) -- copy to super */
             for (k = 0; k < n - 1; k++) {
                 work[2 * n - 1 + k] = A[(k + 1) + k * lda];
             }
-            /* ZLACGV(N-1, WORK(2*N), 1) -- conjugate the super-diagonal */
             for (k = 0; k < n - 1; k++) {
                 work[2 * n - 1 + k] = conj(work[2 * n - 1 + k]);
             }

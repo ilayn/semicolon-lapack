@@ -64,16 +64,22 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
                           f32* Z, const INT ldz,
                           f32* work, const INT lwork, INT* info)
 {
-    /* Parameters */
-    const INT ntiny = 15;   /* Matrices of order NTINY or smaller use SLAHQR */
-    const INT kexnw = 5;    /* Exceptional deflation window frequency */
-    const INT kexsh = 6;    /* Exceptional shifts frequency */
+    /* Matrices of order NTINY or smaller must be processed by
+     * SLAHQR because of insufficient subdiagonal scratch space.
+     * (This is a hard limit.) */
+    const INT ntiny = 15;
+    /* Exceptional deflation windows:  try to cure rare
+     * slow convergence by varying the size of the
+     * deflation window after KEXNW iterations. */
+    const INT kexnw = 5;
+    /* Exceptional shifts: try to cure rare slow convergence
+     * with ad-hoc exceptional shifts every KEXSH iterations. */
+    const INT kexsh = 6;
     const f32 wilk1 = 0.75f;
     const f32 wilk2 = -0.4375f;
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    /* Local scalars */
     f32 aa, bb, cc, cs, dd, sn, ss, swap;
     INT i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
     INT kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
@@ -81,7 +87,6 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
     INT nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
     INT sorted;
 
-    /* Local array for dummy Z in SLAHQR/SLAQR4 call */
     f32 zdum[1];
 
     *info = 0;
@@ -105,19 +110,25 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
 
         *info = 0;
 
-        /* Get tuning parameters */
         nh = ihi - ilo + 1;
 
-        /* NWR = recommended deflation window size */
         /* Set up job flags for ILAENV. */
         const char jbcmpz[3] = {wantt ? 'S' : 'E', wantz ? 'V' : 'N', '\0'};
 
+        /* NWR = recommended deflation window size.  At this
+         * point,  N .GT. NTINY = 15, so there is enough
+         * subdiagonal workspace for NWR.GE.2 as required.
+         * (In fact, there is enough subdiagonal space for
+         * NWR.GE.4.) */
         nwr = lapack_get_iparmq(13, "SLAQR0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nwr < 2) nwr = 2;
         if (nwr > (n - 1) / 3) nwr = (n - 1) / 3;
         if (nwr > ihi - ilo + 1) nwr = ihi - ilo + 1;
 
-        /* NSR = recommended number of simultaneous shifts */
+        /* NSR = recommended number of simultaneous shifts.
+         * At this point N .GT. NTINY = 15, so there is at
+         * enough subdiagonal workspace for NSR to be even
+         * and greater than or equal to two as required. */
         nsr = lapack_get_iparmq(15, "SLAQR0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nsr > (n - 3) / 6) nsr = (n - 3) / 6;
         if (nsr > ihi - ilo) nsr = ihi - ilo;
@@ -130,7 +141,7 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
                ihiz, Z, ldz, &ls, &ld, wr, wi, H, ldh, n, H, ldh,
                n, H, ldh, work, -1);
 
-        /* Optimal workspace = MAX(3*NSR/2, SLAQR3 workspace) */
+        /* Optimal workspace = MAX(SLAQR5, SLAQR3) */
         lwkopt = 3 * nsr / 2;
         lwkopt = (lwkopt > (INT)work[0]) ? lwkopt : (INT)work[0];
 
@@ -140,27 +151,28 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
             return;
         }
 
-        /* NMIN = SLAHQR/SLAQR0 crossover point */
+        /* SLAHQR/SLAQR0 crossover point */
         nmin = lapack_get_iparmq(12, "SLAQR0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nmin < ntiny) nmin = ntiny;
 
-        /* NIBBLE crossover point */
+        /* Nibble crossover point */
         nibble = lapack_get_iparmq(14, "SLAQR0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nibble < 0) nibble = 0;
 
-        /* KACC22 = accumulate reflections? Use block 2-by-2 structure? */
+        /* Accumulate reflections during ttswp?  Use block
+         * 2-by-2 structure during matrix-matrix multiply? */
         kacc22 = lapack_get_iparmq(16, "SLAQR0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (kacc22 < 0) kacc22 = 0;
         if (kacc22 > 2) kacc22 = 2;
 
-        /* NWMAX = largest possible deflation window for which there
-         * is sufficient workspace */
+        /* NWMAX = the largest possible deflation window for
+         * which there is sufficient workspace. */
         nwmax = (n - 1) / 3;
         if (nwmax > lwork / 2) nwmax = lwork / 2;
         nw = nwmax;
 
-        /* NSMAX = largest number of simultaneous shifts for which
-         * there is sufficient workspace */
+        /* NSMAX = the Largest number of simultaneous shifts
+         * for which there is sufficient workspace. */
         nsmax = (n - 3) / 6;
         if (nsmax > 2 * lwork / 3) nsmax = 2 * lwork / 3;
         nsmax = nsmax - (nsmax % 2);
@@ -190,13 +202,20 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
             ktop = k;
 
             /* Select deflation window size:
-             * Typical Case: If possible and advisable, nibble the entire
-             * active block. If not, use size MIN(NWR, NWMAX) or
-             * MIN(NWR+1, NWMAX) depending upon which has the smaller
-             * corresponding subdiagonal entry (a heuristic).
+             * Typical Case:
+             *   If possible and advisable, nibble the entire
+             *   active block.  If not, use size MIN(NWR,NWMAX)
+             *   or MIN(NWR+1,NWMAX) depending upon which has
+             *   the smaller corresponding subdiagonal entry
+             *   (a heuristic).
              *
-             * Exceptional Case: If there have been no deflations in KEXNW
-             * or more iterations, then vary the deflation window size. */
+             * Exceptional Case:
+             *   If there have been no deflations in KEXNW or
+             *   more iterations, then vary the deflation window
+             *   size.   At first, because, larger windows are,
+             *   in general, more powerful than smaller ones,
+             *   rapidly increase the window to the maximum possible.
+             *   Then, gradually reduce the window size. */
 
             nh = kbot - ktop + 1;
             nwupbd = nh < nwmax ? nh : nwmax;
@@ -226,19 +245,21 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
 
             /* Aggressive early deflation:
              * split workspace under the subdiagonal into
-             * - an nw-by-nw work array V in the lower left-hand-corner,
-             * - an NW-by-at-least-NW-but-more-is-better (NW-by-NHO)
-             *   horizontal work array along the bottom edge,
-             * - an at-least-NW-but-more-is-better (NVE-by-NW)
-             *   vertical work array along the left-hand-edge. */
+             *   - an nw-by-nw work array V in the lower
+             *     left-hand-corner,
+             *   - an NW-by-at-least-NW-but-more-is-better
+             *     (NW-by-NHO) horizontal work array along
+             *     the bottom edge,
+             *   - an at-least-NW-but-more-is-better (NHV-by-NW)
+             *     vertical work array along the left-hand-edge. */
 
-            kv = n - nw;       /* 0-based: Fortran KV = N - NW + 1 */
-            kt = nw;           /* 0-based: Fortran KT = NW + 1 */
+            kv = n - nw;
+            kt = nw;
             nho = (n - nw - 1) - kt;
-            kwv = nw + 1;      /* 0-based: Fortran KWV = NW + 2 */
+            kwv = nw + 1;
             nve = (n - nw) - kwv;
 
-            /* Aggressive early deflation - uses SLAQR3 (not SLAQR2) */
+            /* Aggressive early deflation */
             slaqr3(wantt, wantz, n, ktop, kbot, nw, H, ldh, iloz,
                    ihiz, Z, ldz, &ls, &ld, wr, wi, &H[kv], ldh,
                    nho, &H[kv + kt * ldh], ldh, nve, &H[kwv], ldh,
@@ -297,15 +318,13 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
 
                     if (kbot - ks + 1 <= ns / 2) {
                         ks = kbot - ns + 1;
-                        kt = n - ns;   /* 0-based: Fortran KT = N - NS + 1 */
+                        kt = n - ns;
                         slacpy("A", ns, ns, &H[ks + ks * ldh], ldh,
                                &H[kt], ldh);
                         if (ns > nmin) {
-                            /* Use SLAQR4 for larger submatrices */
                             slaqr4(0, 0, ns, 0, ns - 1, &H[kt], ldh, &wr[ks],
                                    &wi[ks], 0, 0, zdum, 1, work, lwork, &inf);
                         } else {
-                            /* Use SLAHQR for smaller submatrices */
                             slahqr(0, 0, ns, 0, ns - 1, &H[kt], ldh, &wr[ks],
                                    &wi[ks], 0, 0, zdum, 1, &inf);
                         }
@@ -398,10 +417,10 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
                  *   (NVE-by-KDU) vertical work WV along the left-hand-edge. */
 
                 kdu = 2 * ns;
-                ku = n - kdu;      /* 0-based: Fortran KU = N - KDU + 1 */
-                kwh = kdu;         /* 0-based: Fortran KWH = KDU + 1 */
+                ku = n - kdu;
+                kwh = kdu;
                 nho = (n - kdu + 1 - 4) - kdu;
-                kwv = kdu + 3;     /* 0-based: Fortran KWV = KDU + 4 */
+                kwv = kdu + 3;
                 nve = n - kdu - kwv;
 
                 /* Small-bulge multi-shift QR sweep */
@@ -421,7 +440,6 @@ SEMICOLON_API void slaqr0(const INT wantt, const INT wantz, const INT n,
 
         /* Iteration limit exceeded. Set INFO to show where
          * the problem occurred and exit. */
-        /* Convert KBOT to 1-based for INFO (matching Fortran convention) */
         *info = kbot + 1;
 
 L90:;

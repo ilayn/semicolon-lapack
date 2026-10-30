@@ -10,7 +10,7 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
-/* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
+/* SMLSIZ = ILAENV(9, 'CGELSD', ...) = 25 */
 #define SMLSIZ LAPACK_SMLSIZ
 
 /**
@@ -115,7 +115,12 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
 
     smlsiz = SMLSIZ;
 
-    /* Compute workspace */
+    /* Compute workspace.
+     * (Note: Comments in the code beginning "Workspace:" describe the
+     * minimal amount of workspace needed at that point in the code,
+     * as well as the preferred amount for good performance.
+     * NB refers to the optimal block size for the immediately
+     * following subroutine, as returned by ILAENV.) */
     minwrk = 1;
     maxwrk = 1;
     liwork = 1;
@@ -165,7 +170,8 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
                 nb = lapack_get_nb("UNMLQ");
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + m * nrhs > maxwrk) maxwrk = m * m + 4 * m + m * nrhs;
-                /* Ensure the Path 2a case below is triggered */
+                /* XXX: Ensure the Path 2a case below is triggered.  The workspace
+                 * calculation should use queries for all routines eventually. */
                 INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
                 temp = temp > nrhs ? temp : nrhs;
                 temp = temp > n - 3 * m ? temp : n - 3 * m;
@@ -255,10 +261,14 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
             itau = 0;
             nwork = itau + n;
 
-            /* Compute A=Q*R */
+            /* Compute A=Q*R.
+             * (RWorkspace: need N)
+             * (CWorkspace: need N, prefer N*NB) */
             cgeqrf(m, n, A, lda, &work[itau], &work[nwork], lwork - nwork, &iinfo);
 
-            /* Multiply B by transpose(Q) */
+            /* Multiply B by transpose(Q).
+             * (RWorkspace: need N)
+             * (CWorkspace: need NRHS, prefer NRHS*NB) */
             cunmqr("L", "C", m, nrhs, n, A, lda, &work[itau], B, ldb,
                    &work[nwork], lwork - nwork, &iinfo);
 
@@ -274,11 +284,14 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
         ie = 0;
         nrwork = ie + n;
 
-        /* Bidiagonalize R in A */
+        /* Bidiagonalize R in A.
+         * (RWorkspace: need N)
+         * (CWorkspace: need 2*N+MM, prefer 2*N+(MM+N)*NB) */
         cgebrd(mm, n, A, lda, S, &rwork[ie], &work[itauq], &work[itaup],
                &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors of R */
+        /* Multiply B by transpose of left bidiagonalizing vectors of R.
+         * (CWorkspace: need 2*N+NRHS, prefer 2*N+NRHS*NB) */
         cunmbr("Q", "L", "C", mm, nrhs, n, A, lda, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 
@@ -309,7 +322,8 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
         itau = 0;
         nwork = m;
 
-        /* Compute A=L*Q */
+        /* Compute A=L*Q.
+         * (CWorkspace: need 2*M, prefer M+M*NB) */
         cgelqf(m, n, A, lda, &work[itau], &work[nwork], lwork - nwork, &iinfo);
         il = nwork;
 
@@ -322,11 +336,14 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
         ie = 0;
         nrwork = ie + m;
 
-        /* Bidiagonalize L in WORK(IL) */
+        /* Bidiagonalize L in WORK(IL).
+         * (RWorkspace: need M)
+         * (CWorkspace: need M*M+4*M, prefer M*M+4*M+2*M*NB) */
         cgebrd(m, m, &work[il], ldwork, S, &rwork[ie], &work[itauq],
                &work[itaup], &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors of L */
+        /* Multiply B by transpose of left bidiagonalizing vectors of L.
+         * (CWorkspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB) */
         cunmbr("Q", "L", "C", m, nrhs, m, &work[il], ldwork, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 
@@ -345,7 +362,8 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
         claset("F", n - m, nrhs, CZERO, CZERO, &B[m], ldb);
         nwork = itau + m;
 
-        /* Multiply transpose(Q) by B */
+        /* Multiply transpose(Q) by B.
+         * (CWorkspace: need NRHS, prefer NRHS*NB) */
         cunmlq("L", "C", n, nrhs, m, A, lda, &work[itau], B, ldb,
                &work[nwork], lwork - nwork, &iinfo);
 
@@ -357,11 +375,14 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
         ie = 0;
         nrwork = ie + m;
 
-        /* Bidiagonalize A */
+        /* Bidiagonalize A.
+         * (RWorkspace: need M)
+         * (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB) */
         cgebrd(m, n, A, lda, S, &rwork[ie], &work[itauq], &work[itaup],
                &work[nwork], lwork - nwork, &iinfo);
 
-        /* Multiply B by transpose of left bidiagonalizing vectors */
+        /* Multiply B by transpose of left bidiagonalizing vectors.
+         * (CWorkspace: need 2*M+NRHS, prefer 2*M+NRHS*NB) */
         cunmbr("Q", "L", "C", m, nrhs, n, A, lda, &work[itauq],
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
 

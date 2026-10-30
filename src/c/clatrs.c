@@ -409,7 +409,7 @@ void clatrs(
                 csumj = ZERO;
                 if (crealf(uscal) == ONE && cimagf(uscal) == 0.0f) {
                     // If the scaling needed for A in the dot product is 1,
-                    // call ZDOTU to perform the dot product
+                    // call CDOTU to perform the dot product
                     if (upper) {
                         cblas_cdotu_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {
@@ -501,7 +501,7 @@ void clatrs(
                 csumj = ZERO;
                 if (crealf(uscal) == ONE && cimagf(uscal) == 0.0f) {
                     // If the scaling needed for A in the dot product is 1,
-                    // call ZDOTC to perform the conjugated dot product
+                    // call CDOTC to perform the dot product.
                     if (upper) {
                         cblas_cdotc_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {

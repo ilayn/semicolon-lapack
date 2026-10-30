@@ -81,7 +81,6 @@ void sgttrf(
         DU2[i] = ZERO;
     }
 
-    /* Main elimination loop for columns 0 to n-3 */
     for (i = 0; i < n - 2; i++) {
         if (fabsf(D[i]) >= fabsf(DL[i])) {
             /* No row interchange required, eliminate DL[i] */
@@ -104,9 +103,8 @@ void sgttrf(
         }
     }
 
-    /* Handle the last row (n-1) if n > 1 */
     if (n > 1) {
-        i = n - 2;  /* Last pair of rows: i = n-2, i+1 = n-1 */
+        i = n - 2;
         if (fabsf(D[i]) >= fabsf(DL[i])) {
             if (D[i] != ZERO) {
                 fact = DL[i] / D[i];
@@ -127,7 +125,7 @@ void sgttrf(
     /* Check for a zero on the diagonal of U */
     for (i = 0; i < n; i++) {
         if (D[i] == ZERO) {
-            *info = i + 1;  /* 1-based for compatibility with LAPACK convention */
+            *info = i + 1;
             break;
         }
     }

@@ -98,10 +98,26 @@ void ssbgst(
     if (wantx)
         slaset("Full", n, n, ZERO, ONE, X, ldx);
 
-    // Set M to the splitting point m (same as SPBSTF)
+    // Set M to the splitting point m. It must be the same value as is
+    // used in SPBSTF. The chosen value allows the arrays WORK and RWORK
+    // to be of dimension (N).
     m = (n + kb) / 2;
 
-    // Phase 1: Process rows n, n-1, ..., m+1 then propagate bulges
+    // **************************** Phase 1 *****************************
+    //
+    // The logical structure of this phase is:
+    //
+    // UPDATE = .TRUE.
+    // DO I = N, M + 1, -1
+    //    use S(i) to update A and create a new bulge
+    //    apply rotations to push all bulges KA positions downward
+    // END DO
+    // UPDATE = .FALSE.
+    // DO I = M + KA + 1, N - 1
+    //    apply rotations to push all bulges KA positions downward
+    // END DO
+    //
+    // To avoid duplicating code, the two loops are merged.
     update = 1;
     i = n + 1;
 
@@ -130,7 +146,7 @@ L10:
         // Transform A, working with the upper triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[kb + (i - 1) * ldbb];  // BB(KB1, I) in 1-based
+            bii = BB[kb + (i - 1) * ldbb];
             for (j = i; j <= i1; j++) {
                 AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
@@ -176,12 +192,14 @@ L10:
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 if (i - k + ka < n && i - k > 1) {
                     // generate rotation to annihilate a(i,i-k+ka+1)
                     slartg(AB[k + (i - k + ka - 1) * ldab], ra1,
                            &work[n + i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
-                    // create nonzero element a(i-k,i-k+ka+1) outside the band
+                    // create nonzero element a(i-k,i-k+ka+1) outside the
+                    // band and store it in WORK(i-k)
                     t = -BB[kb - k + (i - 1) * ldbb] * ra1;
                     work[i - k - 1] = work[n + i - k + ka - m - 1] * t
                         - work[i - k + ka - m - 1] * AB[0 + (i - k + ka - 1) * ldab];
@@ -201,11 +219,13 @@ L10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
                 // create nonzero element a(j-ka,j+1) outside the band
+                // and store it in WORK(j-m)
                 work[j - m - 1] = work[j - m - 1] * AB[0 + (j) * ldab];
                 AB[0 + (j) * ldab] = work[n + j - m - 1] * AB[0 + (j) * ldab];
             }
 
-            // generate rotations in 1st set to annihilate elements outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             if (nrt > 0)
                 slargv(nrt, &AB[0 + (j2t - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &work[n + j2t - m - 1], ka1);
@@ -243,7 +263,8 @@ L10:
 
         if (update) {
             if (i2 <= n && kbt > 0) {
-                // create nonzero element a(i-kbt,i-kbt+ka+1) outside the band
+                // create nonzero element a(i-kbt,i-kbt+ka+1) outside the
+                // band and store it in WORK(i-kbt)
                 work[i - kbt - 1] = -BB[kb - kbt + (i - 1) * ldbb] * ra1;
             }
         }
@@ -271,6 +292,7 @@ L10:
             }
             for (j = j2; j <= j1; j += ka1) {
                 // create nonzero element a(j-ka,j+1) outside the band
+                // and store it in WORK(j)
                 work[j - 1] = work[j - 1] * AB[0 + (j) * ldab];
                 AB[0 + (j) * ldab] = work[n + j - 1] * AB[0 + (j) * ldab];
             }
@@ -285,7 +307,8 @@ L10:
             nr = (n - j2 + ka) / ka1;
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
-                // generate rotations in 2nd set to annihilate elements outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 slargv(nr, &AB[0 + (j2 - 1) * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
 
                 // apply rotations in 2nd set from the right
@@ -343,7 +366,7 @@ L10:
         // Transform A, working with the lower triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[0 + (i - 1) * ldbb];  // BB(1, I) in 1-based
+            bii = BB[0 + (i - 1) * ldbb];
             for (j = i; j <= i1; j++) {
                 AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
@@ -389,12 +412,14 @@ L10:
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 if (i - k + ka < n && i - k > 1) {
                     // generate rotation to annihilate a(i-k+ka+1,i)
                     slartg(AB[ka1 - k - 1 + (i - 1) * ldab], ra1,
                            &work[n + i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
-                    // create nonzero element a(i-k+ka+1,i-k) outside the band
+                    // create nonzero element a(i-k+ka+1,i-k) outside the
+                    // band and store it in WORK(i-k)
                     t = -BB[k + (i - k - 1) * ldbb] * ra1;
                     work[i - k - 1] = work[n + i - k + ka - m - 1] * t
                         - work[i - k + ka - m - 1] * AB[ka + (i - k - 1) * ldab];
@@ -414,11 +439,13 @@ L10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
                 // create nonzero element a(j+1,j-ka) outside the band
+                // and store it in WORK(j-m)
                 work[j - m - 1] = work[j - m - 1] * AB[ka + (j - ka) * ldab];
                 AB[ka + (j - ka) * ldab] = work[n + j - m - 1] * AB[ka + (j - ka) * ldab];
             }
 
-            // generate rotations in 1st set to annihilate elements outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             if (nrt > 0)
                 slargv(nrt, &AB[ka + (j2t - ka - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &work[n + j2t - m - 1], ka1);
@@ -456,7 +483,8 @@ L10:
 
         if (update) {
             if (i2 <= n && kbt > 0) {
-                // create nonzero element a(i-kbt+ka+1,i-kbt) outside the band
+                // create nonzero element a(i-kbt+ka+1,i-kbt) outside the
+                // band and store it in WORK(i-kbt)
                 work[i - kbt - 1] = -BB[kbt + (i - kbt - 1) * ldbb] * ra1;
             }
         }
@@ -484,6 +512,7 @@ L10:
             }
             for (j = j2; j <= j1; j += ka1) {
                 // create nonzero element a(j+1,j-ka) outside the band
+                // and store it in WORK(j)
                 work[j - 1] = work[j - 1] * AB[ka + (j - ka) * ldab];
                 AB[ka + (j - ka) * ldab] = work[n + j - 1] * AB[ka + (j - ka) * ldab];
             }
@@ -498,7 +527,8 @@ L10:
             nr = (n - j2 + ka) / ka1;
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
-                // generate rotations in 2nd set to annihilate elements outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 slargv(nr, &AB[ka + (j2 - ka - 1) * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
 
                 // apply rotations in 2nd set from the left
@@ -556,7 +586,21 @@ L10:
     goto L10;
 
 L480:
-    // Phase 2: Process rows 1, 2, ..., m then propagate bulges upward
+    // **************************** Phase 2 *****************************
+    //
+    // The logical structure of this phase is:
+    //
+    // UPDATE = .TRUE.
+    // DO I = 1, M
+    //    use S(i) to update A and create a new bulge
+    //    apply rotations to push all bulges KA positions upward
+    // END DO
+    // UPDATE = .FALSE.
+    // DO I = M - KA - 1, 2, -1
+    //    apply rotations to push all bulges KA positions upward
+    // END DO
+    //
+    // To avoid duplicating code, the two loops are merged.
     update = 1;
     i = 0;
 
@@ -637,12 +681,14 @@ L490:
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 if (i + k - ka1 > 0 && i + k < m) {
                     // generate rotation to annihilate a(i+k-ka-1,i)
                     slartg(AB[k + (i - 1) * ldab], ra1,
                            &work[n + i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
-                    // create nonzero element a(i+k-ka-1,i+k) outside the band
+                    // create nonzero element a(i+k-ka-1,i+k) outside the
+                    // band and store it in WORK(m-kb+i+k)
                     t = -BB[kb - k + (i + k - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = work[n + i + k - ka - 1] * t
                         - work[i + k - ka - 1] * AB[0 + (i + k - 1) * ldab];
@@ -662,11 +708,13 @@ L490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
                 // create nonzero element a(j-1,j+ka) outside the band
+                // and store it in WORK(j)
                 work[j - 1] = work[j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
                 AB[0 + (j + ka - 1 - 1) * ldab] = work[n + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
             }
 
-            // generate rotations in 1st set to annihilate elements outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             if (nrt > 0)
                 slargv(nrt, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &work[n + j1 - 1], ka1);
@@ -705,7 +753,8 @@ L490:
 
         if (update) {
             if (i2 > 0 && kbt > 0) {
-                // create nonzero element a(i+kbt-ka-1,i+kbt) outside the band
+                // create nonzero element a(i+kbt-ka-1,i+kbt) outside the
+                // band and store it in WORK(m-kb+i+kbt)
                 work[m - kb + i + kbt - 1] = -BB[kb - kbt + (i + kbt - 1) * ldbb] * ra1;
             }
         }
@@ -734,6 +783,7 @@ L490:
             }
             for (j = j1; j <= j2; j += ka1) {
                 // create nonzero element a(j-1,j+ka) outside the band
+                // and store it in WORK(m-kb+j)
                 work[m - kb + j - 1] = work[m - kb + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
                 AB[0 + (j + ka - 1 - 1) * ldab] = work[n + m - kb + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
             }
@@ -748,7 +798,8 @@ L490:
             nr = (j2 + ka - 1) / ka1;
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
-                // generate rotations in 2nd set to annihilate elements outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 slargv(nr, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &work[n + m - kb + j1 - 1], ka1);
 
@@ -856,12 +907,14 @@ L490:
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 // Determine the rotations which would annihilate the bulge
+                // which has in theory just been created
                 if (i + k - ka1 > 0 && i + k < m) {
                     // generate rotation to annihilate a(i,i+k-ka-1)
                     slartg(AB[ka1 - k - 1 + (i + k - ka - 1) * ldab], ra1,
                            &work[n + i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
-                    // create nonzero element a(i+k,i+k-ka-1) outside the band
+                    // create nonzero element a(i+k,i+k-ka-1) outside the
+                    // band and store it in WORK(m-kb+i+k)
                     t = -BB[k + (i - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = work[n + i + k - ka - 1] * t
                         - work[i + k - ka - 1] * AB[ka + (i + k - ka - 1) * ldab];
@@ -881,11 +934,13 @@ L490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
                 // create nonzero element a(j+ka,j-1) outside the band
+                // and store it in WORK(j)
                 work[j - 1] = work[j - 1] * AB[ka + (j - 1 - 1) * ldab];
                 AB[ka + (j - 1 - 1) * ldab] = work[n + j - 1] * AB[ka + (j - 1 - 1) * ldab];
             }
 
-            // generate rotations in 1st set to annihilate elements outside the band
+            // generate rotations in 1st set to annihilate elements which
+            // have been created outside the band
             if (nrt > 0)
                 slargv(nrt, &AB[ka + (j1 - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &work[n + j1 - 1], ka1);
@@ -924,7 +979,8 @@ L490:
 
         if (update) {
             if (i2 > 0 && kbt > 0) {
-                // create nonzero element a(i+kbt,i+kbt-ka-1) outside the band
+                // create nonzero element a(i+kbt,i+kbt-ka-1) outside the
+                // band and store it in WORK(m-kb+i+kbt)
                 work[m - kb + i + kbt - 1] = -BB[kbt + (i - 1) * ldbb] * ra1;
             }
         }
@@ -953,6 +1009,7 @@ L490:
             }
             for (j = j1; j <= j2; j += ka1) {
                 // create nonzero element a(j+ka,j-1) outside the band
+                // and store it in WORK(m-kb+j)
                 work[m - kb + j - 1] = work[m - kb + j - 1] * AB[ka + (j - 1 - 1) * ldab];
                 AB[ka + (j - 1 - 1) * ldab] = work[n + m - kb + j - 1] * AB[ka + (j - 1 - 1) * ldab];
             }
@@ -967,7 +1024,8 @@ L490:
             nr = (j2 + ka - 1) / ka1;
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
-                // generate rotations in 2nd set to annihilate elements outside the band
+                // generate rotations in 2nd set to annihilate elements
+                // which have been created outside the band
                 slargv(nr, &AB[ka + (j1 - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &work[n + m - kb + j1 - 1], ka1);
 

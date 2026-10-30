@@ -57,7 +57,6 @@
  */
 void slasq2(const INT n, f32* restrict Z, INT* info)
 {
-    /* Constants from the Fortran source */
     const f32 CBIAS  = 1.50f;
     const f32 ZERO   = 0.0f;
     const f32 HALF   = 0.5f;
@@ -66,7 +65,6 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
     const f32 FOUR   = 4.0f;
     const f32 HUNDRD = 100.0f;
 
-    /* Local scalars */
     INT ieee;
     INT i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
         k, kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype;
@@ -421,7 +419,6 @@ L100:
                 }
             }
         }
-        /* IWHILB loop exhausted */
 
         *info = 2;
 
@@ -462,10 +459,9 @@ L145:
         return;
 
 L150:
-        ; /* end IWHILB: successfully converged this block */
+        ; /* end IWHILB */
     }
 
-    /* IWHILA loop exhausted without convergence. */
     *info = 3;
     return;
 

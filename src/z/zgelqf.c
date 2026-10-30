@@ -41,7 +41,7 @@ void zgelqf(const INT m, const INT n,
     INT i, ib, iinfo;
     INT lquery;
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     k = m < n ? m : n;
     lquery = (lwork == -1);
@@ -87,7 +87,7 @@ void zgelqf(const INT m, const INT n,
     ldwork = m;
 
     if (nb > 1 && nb < k) {
-        /* Determine crossover point */
+        /* Determine when to cross over from blocked to unblocked code. */
         nx = lapack_get_nx("GELQF");
         if (nx < 0) nx = 0;
         if (nx < k) {
@@ -101,11 +101,12 @@ void zgelqf(const INT m, const INT n,
     }
 
     if (nb >= nbmin && nb < k && nx < k) {
-        /* Use blocked code */
+        /* Use blocked code initially */
         for (i = 0; i < k - nx; i += nb) {
             ib = (k - i) < nb ? (k - i) : nb;
 
-            /* Factor block A(i:i+ib-1, i:n-1) */
+            /* Compute the LQ factorization of the current block
+             * A(i:i+ib-1, i:n-1) */
             zgelq2(ib, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
 
             if (i + ib < m) {
@@ -127,7 +128,7 @@ void zgelqf(const INT m, const INT n,
         i = 0;
     }
 
-    /* Use unblocked code for the remaining rows */
+    /* Use unblocked code to factor the last or only block. */
     if (i < k) {
         zgelq2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }

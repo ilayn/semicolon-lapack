@@ -45,7 +45,7 @@ void cungr2(const INT m, const INT n, const INT k,
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    /* Parameter validation */
+    /* Test the input arguments */
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -81,7 +81,7 @@ void cungr2(const INT m, const INT n, const INT k,
     for (i = 0; i < k; i++) {
         ii = m - k + i;
 
-        /* Apply H(i)**H to A(0:ii-1, 0:n-m+ii) from the right */
+        /* Apply H(i)**H to A(0:m-k+i,0:n-k+i) from the right */
         clacgv(n - m + ii, &A[ii + 0 * lda], lda);
         c64 conjtau = conjf(tau[i]);
         clarf1l("R", ii, n - m + ii + 1, &A[ii + 0 * lda], lda,
@@ -91,7 +91,7 @@ void cungr2(const INT m, const INT n, const INT k,
         clacgv(n - m + ii, &A[ii + 0 * lda], lda);
         A[ii + (n - m + ii) * lda] = ONE - conjf(tau[i]);
 
-        /* Set A(ii, n-m+ii+1:n-1) to zero */
+        /* Set A(m-k+i,n-k+i+1:n-1) to zero */
         for (l = n - m + ii + 1; l < n; l++) {
             A[ii + l * lda] = ZERO;
         }

@@ -55,11 +55,10 @@ void zlarfy(const char* uplo, const INT n,
 
     cblas_uplo = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
 
-    /* Form w := C * v */
+    /* Form  w:= C * v */
     cblas_zhemv(CblasColMajor, cblas_uplo, n, &ONE, C, ldc, V, incv,
                 &ZERO, work, 1);
 
-    /* alpha := -0.5 * tau * dot(w, v) */
     cblas_zdotc_sub(n, work, 1, V, incv, &dotc);
     alpha = -HALF * tau * dotc;
     cblas_zaxpy(n, &alpha, V, incv, work, 1);

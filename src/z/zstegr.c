@@ -137,9 +137,9 @@ void zstegr(
     const INT liwork,
     INT* info)
 {
-    INT tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
+    INT tryrac = 0;
 
-    (void)abstol;  // Unused parameter
+    (void)abstol;
 
     *info = 0;
 

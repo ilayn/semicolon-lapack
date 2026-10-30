@@ -59,8 +59,6 @@ void slaqge(
     }
 
     // Initialize LARGE and SMALL
-    // SMALL = safe minimum / machine precision
-    // This is the smallest number such that 1/SMALL doesn't overflow
     small = FLT_MIN / FLT_EPSILON;
     large = ONE / small;
 
@@ -70,7 +68,7 @@ void slaqge(
             // No column scaling
             *equed = 'N';
         } else {
-            // Column scaling only
+            // Column scaling
             for (j = 0; j < n; j++) {
                 cj = C[j];
                 for (i = 0; i < m; i++) {

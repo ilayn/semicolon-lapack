@@ -71,7 +71,7 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
             f32* qstore, const INT ldqs,
             f32* work, INT* iwork, INT* info)
 {
-    /* SMLSIZ from ILAENV(9, 'SLAED0', ...) - hardcoded per project plan */
+    /* SMLSIZ = ILAENV(9, 'SLAED0', ...) = 25 */
     const INT SMLSIZ = LAPACK_SMLSIZ;
 
     INT curlvl, curprb, curr, i, igivcl = 0, igivnm = 0,
@@ -108,7 +108,6 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
      * Determine the size and placement of the submatrices, and save in
      * the leading elements of IWORK.
      */
-    /* Note: IWORK uses 0-based indexing in C */
     iwork[0] = n;
     subpbs = 1;
     tlvls = 0;
@@ -130,14 +129,13 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
      */
     spm1 = subpbs - 1;
     for (i = 0; i < spm1; i++) {
-        submat = iwork[i];  /* 0-based: Fortran IWORK(I+1), points to start of next subproblem */
+        submat = iwork[i];
         smm1 = submat - 1;
-        /* D and E are 0-based */
         D[smm1] = D[smm1] - fabsf(E[smm1]);
         D[submat] = D[submat] - fabsf(E[smm1]);
     }
 
-    indxq = 4 * n + 3;   /* 0-based offset into IWORK */
+    indxq = 4 * n + 3;
     if (icompq != 2) {
         /*
          * Set up workspaces for eigenvalues only/accumulate new vectors
@@ -157,11 +155,11 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
         igivpt = iqptr + n + 2;
         igivcl = igivpt + n * lgn;
 
-        igivnm = 0;                      /* 0-based offset into WORK */
+        igivnm = 0;
         iq = igivnm + 2 * n * lgn;
         iwrem = iq + n * n;
 
-        /* Initialize pointers (0-based) */
+        /* Initialize pointers */
         for (i = 0; i <= subpbs; i++) {
             iwork[iprmpt + i] = 0;
             iwork[igivpt + i] = 0;
@@ -176,10 +174,10 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
     curr = 0;
     for (i = 0; i <= spm1; i++) {
         if (i == 0) {
-            submat = 0;  /* 0-based start index */
+            submat = 0;
             matsiz = iwork[0];
         } else {
-            submat = iwork[i - 1];  /* 0-based start */
+            submat = iwork[i - 1];
             matsiz = iwork[i] - iwork[i - 1];
         }
         if (icompq == 2) {
@@ -204,7 +202,6 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
             iwork[iqptr + curr + 1] = iwork[iqptr + curr] + matsiz * matsiz;
             curr = curr + 1;
         }
-        /* Initialize indxq for this subproblem with 0-based indices */
         k = 0;
         for (j = submat; j < iwork[i]; j++) {
             iwork[indxq + j] = k;
@@ -275,14 +272,14 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
      */
     if (icompq == 1) {
         for (i = 0; i < n; i++) {
-            j = iwork[indxq + i];  /* Already 0-based */
+            j = iwork[indxq + i];
             work[i] = D[j];
             cblas_scopy(qsiz, &qstore[j * ldqs], 1, &Q[i * ldq], 1);
         }
         cblas_scopy(n, work, 1, D, 1);
     } else if (icompq == 2) {
         for (i = 0; i < n; i++) {
-            j = iwork[indxq + i];  /* Already 0-based */
+            j = iwork[indxq + i];
             work[i] = D[j];
             cblas_scopy(n, &Q[j * ldq], 1, &work[n + (int64_t)n * i], 1);
         }
@@ -290,7 +287,7 @@ void slaed0(const INT icompq, const INT qsiz, const INT n,
         slacpy("A", n, n, &work[n], n, Q, ldq);
     } else {
         for (i = 0; i < n; i++) {
-            j = iwork[indxq + i];  /* Already 0-based */
+            j = iwork[indxq + i];
             work[i] = D[j];
         }
         cblas_scopy(n, work, 1, D, 1);

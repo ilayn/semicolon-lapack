@@ -164,7 +164,6 @@ void zggrqf(const INT m, const INT p, const INT n,
     /* Update B := B * Q**H */
     {
         INT minmn = (m < n) ? m : n;
-        /* A(max(1, m-n+1), 1) in Fortran -> A[(m-n > 0 ? m-n : 0) * lda] in C */
         arow = (m - n > 0) ? (m - n) : 0;
         zunmrq("R", "C", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }

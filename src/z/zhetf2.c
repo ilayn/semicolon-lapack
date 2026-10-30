@@ -122,7 +122,6 @@ void zhetf2(
         return;
     }
 
-    /* Quick return if possible */
     if (n == 0) {
         return;
     }

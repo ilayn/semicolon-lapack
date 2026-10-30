@@ -157,21 +157,16 @@ void zsytrf(
     }
 
     if (upper) {
-        /* ============================================================
-         * Factorize A as U*D*U**T using the upper triangle of A
+        /* Factorize A as U*D*U**T using the upper triangle of A
          *
          * K is the main loop index, decreasing from n-1 to 0 in steps of
-         * kb, where kb is the number of columns factorized by zlasyf.
-         * ============================================================ */
+         * KB, where KB is the number of columns factorized by ZLASYF;
+         * KB is either NB or NB-1, or k+1 for the last block */
         INT k = n - 1;
         while (k >= 0) {
             if (k + 1 > nb) {
-                /* Factorize columns of the leading (k+1)-by-(k+1) submatrix
-                 * using blocked code.
-                 *
-                 * Fortran: ZLASYF(UPLO, K, NB, KB, A, LDA, IPIV, WORK, LDWORK, IINFO)
-                 * Fortran K (1-based) = k+1 (the submatrix size).
-                 * zlasyf operates on A(0:k, 0:k) and factors the trailing nb columns. */
+                /* Factorize columns k-kb+1:k of A and use blocked code to
+                 * update columns 0:k-kb */
                 INT kb, iinfo;
                 zlasyf(uplo, k + 1, nb, &kb, A, lda, ipiv, work, ldwork, &iinfo);
 
@@ -182,10 +177,7 @@ void zsytrf(
 
                 k -= kb;
             } else {
-                /* Use unblocked code to factorize the remaining (k+1) columns.
-                 *
-                 * Fortran: ZSYTF2(UPLO, K, A, LDA, IPIV, IINFO)
-                 * Operates on A(0:k, 0:k). */
+                /* Use unblocked code to factorize columns 0:k of A */
                 INT iinfo;
                 zsytf2(uplo, k + 1, A, lda, ipiv, &iinfo);
 
@@ -194,43 +186,30 @@ void zsytrf(
                     *info = iinfo;
                 }
 
-                k = -1;  /* exit loop */
+                k = -1;
             }
         }
     } else {
-        /* ============================================================
-         * Factorize A as L*D*L**T using the lower triangle of A
+        /* Factorize A as L*D*L**T using the lower triangle of A
          *
-         * K is the main loop index, increasing from 0 in steps of kb.
-         * ============================================================ */
+         * K is the main loop index, increasing from 0 to n-1 in steps of
+         * KB, where KB is the number of columns factorized by ZLASYF;
+         * KB is either NB or NB-1, or n-k for the last block */
         INT k = 0;
         while (k < n) {
             if (k <= n - 1 - nb) {
-                /* Factorize columns k:k+kb-1 of A using blocked code.
-                 *
-                 * Fortran: ZLASYF(UPLO, N-K+1, NB, KB, A(K,K), LDA, IPIV(K), WORK, LDWORK, IINFO)
-                 * Submatrix size = n-k. Operates on A(k:n-1, k:n-1). */
+                /* Factorize columns k:k+kb-1 of A and use blocked code to
+                 * update columns k+kb:n-1 */
                 INT kb, iinfo;
                 zlasyf(uplo, n - k, nb, &kb, &A[k + k * lda], lda,
                        &ipiv[k], work, ldwork, &iinfo);
 
-                /* Set info on the first occurrence of a zero pivot.
-                 * Fortran: INFO = IINFO + K - 1. In 0-based: info = iinfo + k
-                 * (since iinfo is already 1-based from zlasyf, and k is the
-                 * 0-based offset, the global 1-based index = iinfo + k). */
+                /* Set INFO on the first occurrence of a zero pivot */
                 if (*info == 0 && iinfo > 0) {
                     *info = iinfo + k;
                 }
 
-                /* Adjust IPIV: zlasyf returns local indices for the submatrix
-                 * starting at column k. We need global indices.
-                 *
-                 * Fortran: IPIV(J) = IPIV(J) + K - 1 (positive)
-                 *          IPIV(J) = IPIV(J) - K + 1 (negative)
-                 * 0-based: positive ipiv[j] += k
-                 *          negative: ipiv[j] is -(local+1), need -(global+1)
-                 *          where global = local + k, so -(global+1) = -(local+k+1)
-                 *          = ipiv[j] - k (since ipiv[j] = -(local+1)) */
+                /* Adjust IPIV */
                 for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
                         ipiv[j] += k;
@@ -241,10 +220,7 @@ void zsytrf(
 
                 k += kb;
             } else {
-                /* Use unblocked code to factorize the remaining columns k:n-1.
-                 *
-                 * Fortran: ZSYTF2(UPLO, N-K+1, A(K,K), LDA, IPIV(K), IINFO)
-                 * Submatrix size = n-k. */
+                /* Use unblocked code to factorize columns k:n-1 of A */
                 INT iinfo;
                 zsytf2(uplo, n - k, &A[k + k * lda], lda, &ipiv[k], &iinfo);
 
@@ -252,7 +228,7 @@ void zsytrf(
                     *info = iinfo + k;
                 }
 
-                /* Adjust IPIV for the unblocked portion */
+                /* Adjust IPIV */
                 INT kb = n - k;
                 for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
@@ -262,7 +238,7 @@ void zsytrf(
                     }
                 }
 
-                k = n;  /* exit loop */
+                k = n;
             }
         }
     }

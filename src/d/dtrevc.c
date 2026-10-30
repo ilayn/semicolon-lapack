@@ -65,14 +65,12 @@ void dtrevc(const char* side, const char* howmny, INT* select, const INT n,
             f64* VR, const INT ldvr, const INT mm, INT* m,
             f64* work, INT* info)
 {
-    /* Local scalars */
     INT allv, bothv, leftv, over, pair, rightv, somev;
     INT i, ierr, ii, ip, is, j, j1, j2, jnxt, k, ki, n2;
     f64 beta, bignum, emax, rec, remax, scale;
     f64 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
 
-    /* Local array */
-    f64 x[4];  /* 2x2 stored column-major: x[0]=X(1,1), x[1]=X(2,1), x[2]=X(1,2), x[3]=X(2,2) */
+    f64 x[4];
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -168,7 +166,7 @@ void dtrevc(const char* side, const char* howmny, INT* select, const INT n,
     if (rightv) {
         /* Compute right eigenvectors. */
         ip = 0;
-        is = *m - 1;  /* 0-based column index */
+        is = *m - 1;
 
         for (ki = n - 1; ki >= 0; ki--) {
             if (ip == 1)
@@ -459,7 +457,7 @@ L130:
     if (leftv) {
         /* Compute left eigenvectors. */
         ip = 0;
-        is = 0;  /* 0-based column index */
+        is = 0;
 
         for (ki = 0; ki < n; ki++) {
             if (ip == -1)

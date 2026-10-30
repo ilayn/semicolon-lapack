@@ -114,7 +114,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
     INT lwork_trevc, maxwrk, minwrk, nout;
     f64 anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
     f64 dum[1];
-    INT select[1];  /* Dummy for dtrevc3 workspace query */
+    INT select[1];
     const char* side;
     char job_hseqr;
     INT nb_gehrd, nb_orghr;
@@ -163,12 +163,10 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             maxwrk = n + n * nb_gehrd;
 
             if (wantvl) {
-                /* Query dtrevc3 for workspace */
                 dtrevc3("L", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
                 lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
-                /* Query dhseqr for workspace (0-based: ilo=0, ihi=n-1) */
                 dhseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VL, ldvl,
                        work, -1, info);
             } else if (wantvr) {
@@ -257,7 +255,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
     }
 
     /* Reduce to upper Hessenberg form (Workspace: need 2*N, prefer N+N*NB) */
-    itau = 0;  /* 0-based */
+    itau = 0;
     iwrk = itau + n;
     dgehrd(n, *ilo, *ihi, A, lda, &work[itau], &work[iwrk], lwork - iwrk, &ierr);
 

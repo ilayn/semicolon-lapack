@@ -57,11 +57,9 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
                           const INT nv, f64* WV, const INT ldwv,
                           f64* work, const INT lwork)
 {
-    /* Parameters */
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    /* Local scalars */
     f64 aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
     f64 safmin, smlnum, sn, tau, ulp;
     INT i, ifst, ilst, info, infqr, j, jw, k, kcol, kend, kln;
@@ -87,7 +85,7 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
                V, ldv, work, -1, &infqr);
         lwk3 = (INT)work[0];
 
-        /* Optimal workspace = MAX(JW + MAX(LWK1, LWK2), LWK3) */
+        /* Optimal workspace */
         lwkopt = lwk1 > lwk2 ? lwk1 : lwk2;
         lwkopt = jw + lwkopt;
         if (lwk3 > lwkopt) lwkopt = lwk3;
@@ -149,11 +147,8 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
 
     dlaset("A", jw, jw, zero, one, V, ldv);
 
-    /* Get crossover point: use DLAQR4 for jw > nmin, else DLAHQR */
     nmin = lapack_get_iparmq(12, "DLAQR3", "SV", jw, 1, jw, lwork);
     if (jw > nmin) {
-        /* 0-based: Fortran calls DLAQR4(.true., .true., JW, 1, JW, ...)
-         * which becomes (JW, 0, JW-1) in 0-based indexing */
         dlaqr4(1, 1, jw, 0, jw - 1, T, ldt, &sr[kwtop], &si[kwtop],
                0, jw - 1, V, ldv, work, lwork, &infqr);
     } else {
@@ -171,7 +166,7 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
 
     /* Deflation detection loop */
     *ns = jw;
-    ilst = infqr;  /* 0-based now */
+    ilst = infqr;
 
     while (ilst < *ns) {
         if (*ns == 1) {
@@ -191,8 +186,9 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
                 /* Deflatable */
                 (*ns)--;
             } else {
-                /* Undeflatable. Move it up out of the way. */
-                ifst = *ns - 1;  /* 0-based */
+                /* Undeflatable.   Move it up out of the way.
+                 * (DTREXC can not fail in this case.) */
+                ifst = *ns - 1;
                 dtrexc("V", jw, T, ldt, V, ldv, &ifst, &ilst, work, &info);
                 ilst++;
             }
@@ -209,7 +205,9 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
                 /* Deflatable */
                 *ns -= 2;
             } else {
-                /* Undeflatable */
+                /* Undeflatable. Move them up out of the way.
+                 * Fortunately, DTREXC does the right thing with
+                 * ILST in case of a rare exchange failure. */
                 ifst = *ns - 1;
                 dtrexc("V", jw, T, ldt, V, ldv, &ifst, &ilst, work, &info);
                 ilst += 2;
@@ -327,7 +325,8 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
         dlacpy("U", jw, jw, T, ldt, &H[kwtop + kwtop * ldh], ldh);
         cblas_dcopy(jw - 1, &T[1], ldt + 1, &H[(kwtop + 1) + kwtop * ldh], ldh + 1);
 
-        /* Accumulate orthogonal matrix in order to update H and Z */
+        /* Accumulate orthogonal matrix in order update
+         * H and Z, if requested. */
         if (*ns > 1 && s != zero)
             dormhr("R", "N", jw, *ns, 0, *ns - 1, T, ldt, work, V, ldv,
                    &work[jw], lwork - jw, &info);
@@ -372,8 +371,11 @@ SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
     /* Return the number of deflations */
     *nd = jw - *ns;
 
-    /* Return the number of shifts (subtracting infqr takes care of
-     * rare QR failure while calculating eigenvalues of the deflation window) */
+    /* ... and the number of shifts. (Subtracting
+     * INFQR from the spike length takes care
+     * of the case of a rare QR failure while
+     * calculating eigenvalues of the deflation
+     * window.) */
     *ns = *ns - infqr;
 
     /* Return optimal workspace */

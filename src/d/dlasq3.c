@@ -59,14 +59,13 @@ void dlasq3(const INT i0, INT* n0, f64* restrict Z,
     tol = eps * HUNDRD;
     tol2 = tol * tol;
 
-    /* Main deflation loop (Fortran label 10). */
+    /* Check for deflation. */
     for (;;) {
 
         if (*n0 < i0) {
             return;
         }
         if (*n0 == i0) {
-            /* Single eigenvalue deflation (Fortran label 20). */
             Z[4 * (*n0)] = Z[4 * (*n0) + *pp] + *sigma;
             *n0 = *n0 - 1;
             continue;
@@ -75,30 +74,25 @@ void dlasq3(const INT i0, INT* n0, f64* restrict Z,
         nn = 4 * (*n0) + *pp + 3;
 
         if (*n0 == (i0 + 1)) {
-            /* Two eigenvalues (Fortran label 40). */
             goto two_eigenvalues;
         }
 
         /* Check whether E(N0-1) is negligible, 1 eigenvalue. */
         if (Z[nn - 5] > tol2 * (*sigma + Z[nn - 3]) &&
             Z[nn - 2 * (*pp) - 4] > tol2 * Z[nn - 7]) {
-            /* Not negligible, check E(N0-2) (Fortran label 30). */
+            /* Check  whether E(N0-2) is negligible, 2 eigenvalues. */
             if (Z[nn - 9] > tol2 * (*sigma) &&
                 Z[nn - 2 * (*pp) - 8] > tol2 * Z[nn - 11]) {
-                /* Both non-negligible, proceed to shift (Fortran label 50). */
                 goto compute_shift;
             }
-            /* E(N0-2) is negligible, 2 eigenvalues (Fortran label 40). */
             goto two_eigenvalues;
         }
 
-        /* E(N0-1) is negligible: single eigenvalue deflation (Fortran label 20). */
         Z[4 * (*n0)] = Z[4 * (*n0) + *pp] + *sigma;
         *n0 = *n0 - 1;
         continue;
 
 two_eigenvalues:
-        /* Fortran label 40: compute 2 eigenvalues. */
         if (Z[nn - 3] > Z[nn - 7]) {
             s = Z[nn - 3];
             Z[nn - 3] = Z[nn - 7];
@@ -124,7 +118,6 @@ two_eigenvalues:
         continue;
 
 compute_shift:
-        /* Fortran label 50. */
         if (*pp == 2) {
             *pp = 0;
         }
@@ -171,7 +164,7 @@ compute_shift:
         dlasq4(i0, *n0, Z, *pp, n0in, *dmin, *dmin1, *dmin2, *dn, *dn1,
                 *dn2, tau, ttype, g);
 
-        /* Call dqds until DMIN > 0 (Fortran label 70). */
+        /* Call dqds until DMIN > 0. */
         for (;;) {
 
             dlasq5(i0, *n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2,
@@ -182,7 +175,7 @@ compute_shift:
 
             /* Check status. */
             if (*dmin >= ZERO && *dmin1 >= ZERO) {
-                /* Success (Fortran label 90). */
+                /* Success. */
                 break;
 
             } else if (*dmin < ZERO && *dmin1 > ZERO &&
@@ -208,35 +201,32 @@ compute_shift:
                     *tau = QURTR * (*tau);
                     *ttype = *ttype - 12;
                 }
-                continue;  /* Go back to label 70. */
+                continue;
 
             } else if (disnan(*dmin)) {
                 /* NaN. */
                 if (*tau == ZERO) {
-                    /* Risk of underflow (Fortran label 80). */
                     goto underflow;
                 } else {
                     *tau = ZERO;
-                    continue;  /* Go back to label 70. */
+                    continue;
                 }
             } else {
-                /* Possible underflow. Play it safe (Fortran label 80). */
+                /* Possible underflow. Play it safe. */
                 goto underflow;
             }
         }
 
-        /* Success path (Fortran label 90). */
         goto update_sigma;
 
 underflow:
-        /* Fortran label 80: Risk of underflow. */
+        /* Risk of underflow. */
         dlasq6(i0, *n0, Z, *pp, dmin, dmin1, dmin2, dn, dn1, dn2);
         *ndiv = *ndiv + (*n0 - i0 + 2);
         *iter = *iter + 1;
         *tau = ZERO;
 
 update_sigma:
-        /* Fortran label 90: update sigma. */
         if (*tau < *sigma) {
             *desig = *desig + *tau;
             t = *sigma + *desig;

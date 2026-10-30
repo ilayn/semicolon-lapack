@@ -87,7 +87,7 @@ void spstrf(
         return;
     }
 
-    // Get block size (uses POTRF's block size as in the original)
+    // Get block size (NB = ILAENV(1, 'SPOTRF', ...))
     INT nb = lapack_get_nb("POTRF");
 
     if (nb <= 1 || nb >= n) {
@@ -96,7 +96,7 @@ void spstrf(
         return;
     }
 
-    // Initialize PIV (0-based)
+    // Initialize PIV
     for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
@@ -124,7 +124,7 @@ void spstrf(
         dstop = tol;
     }
 
-    INT jstop = -1;  // Track where we stop due to rank deficiency
+    INT jstop = -1;
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**T * U
@@ -150,7 +150,6 @@ void spstrf(
                 }
 
                 if (j > 0) {
-                    // Find max in work[n+j : n+n-1]
                     INT itemp = 0;
                     while (itemp < n - j && sisnan(work[n + j + itemp])) itemp++;
                     if (itemp == n - j) itemp = 0;
@@ -199,7 +198,6 @@ void spstrf(
 
                 // Compute elements j+1:n-1 of row j
                 if (j < n - 1) {
-                    // DGEMV('Trans', j-k, n-j-1, -ONE, A(k,j+1), lda, A(k,j), 1, ONE, A(j,j+1), lda)
                     if (j > k) {
                         cblas_sgemv(CblasColMajor, CblasTrans, j - k, n - j - 1,
                                     NEG_ONE, &A[k + (j + 1) * lda], lda,
@@ -211,9 +209,7 @@ void spstrf(
             }
 
             // Update trailing matrix, j already incremented
-            // After the inner loop, if we didn't stop early, we're at j = k + jb
             if (jstop < 0 && k + jb < n) {
-                // DSYRK('Upper', 'Trans', n-(k+jb), jb, -ONE, A(k,k+jb), lda, ONE, A(k+jb,k+jb), lda)
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                             n - k - jb, jb, NEG_ONE,
                             &A[k + (k + jb) * lda], lda,
@@ -244,7 +240,6 @@ void spstrf(
                 }
 
                 if (j > 0) {
-                    // Find max in work[n+j : n+n-1]
                     INT itemp = 0;
                     while (itemp < n - j && sisnan(work[n + j + itemp])) itemp++;
                     if (itemp == n - j) itemp = 0;
@@ -293,7 +288,6 @@ void spstrf(
 
                 // Compute elements j+1:n-1 of column j
                 if (j < n - 1) {
-                    // DGEMV('No Trans', n-j-1, j-k, -ONE, A(j+1,k), lda, A(j,k), lda, ONE, A(j+1,j), 1)
                     if (j > k) {
                         cblas_sgemv(CblasColMajor, CblasNoTrans, n - j - 1, j - k,
                                     NEG_ONE, &A[(j + 1) + k * lda], lda,
@@ -306,7 +300,6 @@ void spstrf(
 
             // Update trailing matrix, j already incremented
             if (jstop < 0 && k + jb < n) {
-                // DSYRK('Lower', 'No Trans', n-(k+jb), jb, -ONE, A(k+jb,k), lda, ONE, A(k+jb,k+jb), lda)
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                             n - k - jb, jb, NEG_ONE,
                             &A[(k + jb) + k * lda], lda,
@@ -316,7 +309,7 @@ void spstrf(
     }
 
     if (jstop >= 0) {
-        // Rank is number of steps completed. Set info = 1 to signal
+        // Rank is the number of steps completed. Set info = 1 to signal
         // that the factorization cannot be used to solve a system.
         *rank = jstop;
         *info = 1;

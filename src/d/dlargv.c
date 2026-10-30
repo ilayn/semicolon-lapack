@@ -44,22 +44,18 @@ void dlargv(const INT n, f64* restrict X, const INT incx,
         f64 g = Y[iy];
 
         if (g == zero) {
-            /* g is zero, no rotation needed */
             C[ic] = one;
         } else if (f == zero) {
-            /* f is zero, swap and set rotation */
             C[ic] = zero;
             Y[iy] = one;
             X[ix] = g;
         } else if (fabs(f) > fabs(g)) {
-            /* |f| > |g|: standard case */
             f64 t = g / f;
             f64 tt = sqrt(one + t * t);
             C[ic] = one / tt;
             Y[iy] = t * C[ic];
             X[ix] = f * tt;
         } else {
-            /* |f| <= |g|: reversed case */
             f64 t = f / g;
             f64 tt = sqrt(one + t * t);
             Y[iy] = one / tt;

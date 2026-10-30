@@ -67,9 +67,7 @@ void claqgb(
         return;
     }
 
-    /* Initialize LARGE and SMALL
-       SMALL = safe minimum / machine precision
-       This is the smallest number such that 1/SMALL doesn't overflow */
+    /* Initialize LARGE and SMALL. */
     small = FLT_MIN / FLT_EPSILON;
     large = ONE / small;
 
@@ -79,14 +77,9 @@ void claqgb(
             /* No column scaling */
             *equed = 'N';
         } else {
-            /* Column scaling only */
+            /* Column scaling */
             for (j = 0; j < n; j++) {
                 cj = C[j];
-                /*
-                 * Row range for column j in 0-based indexing:
-                 * i from max(0, j-ku) to min(m-1, j+kl)
-                 * Band storage: AB[ku + i - j + j*ldab] = A(i,j)
-                 */
                 i_start = (j - ku > 0) ? j - ku : 0;
                 i_end = (j + kl < m - 1) ? j + kl : m - 1;
                 for (i = i_start; i <= i_end; i++) {

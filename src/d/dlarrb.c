@@ -89,7 +89,6 @@ void dlarrb(const INT n, const f64* D, const f64* lld,
     maxitr = (INT)((log(spdiam + pivmin) - log(pivmin)) / log(TWO)) + 2;
     mnwdth = TWO * pivmin;
 
-    /* twist is 0-based; valid range is [0, n-1] */
     r = twist;
     if ((r < 0) || (r > n - 1)) r = n - 1;
 
