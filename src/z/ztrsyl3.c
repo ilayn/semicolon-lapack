@@ -60,6 +60,9 @@ static inline f64 pow2_exponent(const f64 x)
  * @param[in] ldswork The leading dimension of the array swork.
  *                    ldswork >= MAX(2, ROWS) + MAX(m, n),
  *                    where ROWS = ((m + nb - 1) / nb + 1).
+ *                    This is MAX(m, n) more than the reference requires: the
+ *                    C port keeps the workspace of the infinity norms (the
+ *                    reference's local array WNRM) in swork.
  *                    If ldswork = -1, then a workspace query is assumed.
  * @param[out] info
  *                   = 0: successful exit
@@ -856,7 +859,7 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
     }
     if (*scale == ZERO) {
 
-        swork[0] = (f64)((nba > nbb) ? nba : nbb);
+        swork[0] = (f64)(((nba > nbb) ? nba : nbb) + max_mn);
         swork[1] = (f64)(2 * nbb + nba);
         return;
     }
@@ -904,6 +907,6 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
 
     /* Restore workspace dimensions */
 
-    swork[0] = (f64)((nba > nbb) ? nba : nbb);
+    swork[0] = (f64)(((nba > nbb) ? nba : nbb) + max_mn);
     swork[1] = (f64)(2 * nbb + nba);
 }

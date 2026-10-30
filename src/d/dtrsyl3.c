@@ -70,7 +70,11 @@ static inline f64 pow2_exponent(const f64 x)
  *                   On exit, if info = 0, swork[0] returns the optimal rows
  *                   and swork[1] returns the optimal cols.
  * @param[in] ldswork The leading dimension of the array swork.
- *                    ldswork >= MAX(2, rows), where rows = ((m + nb - 1) / nb + 1).
+ *                    ldswork >= MAX(2, rows) + MAX(m, n),
+ *                    where rows = ((m + nb - 1) / nb + 1).
+ *                    This is MAX(m, n) more than the reference requires: the
+ *                    C port keeps the workspace of the infinity norms (the
+ *                    reference's local array WNRM) in swork.
  *                    If ldswork = -1, then a workspace query is assumed.
  * @param[out] info
  *                         - = 0: successful exit

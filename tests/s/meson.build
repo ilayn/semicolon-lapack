@@ -97,6 +97,7 @@ lapack_tests_s = {
   'sgges3_scaling': ['test_sgges3_scaling.c', 'eigen'],
   'slaqz3_window': ['test_slaqz3_window.c', 'eigen'],
   'slaexc_bounds': ['test_slaexc_bounds.c', 'eigen'],
+  'strsyl3_swork': ['test_strsyl3_swork.c', 'eigen'],
   'ssytrf_bounds': ['test_ssytrf_bounds.c', 'symmetric'],
   'sgesvj_emptsw': ['test_sgesvj_emptsw.c', 'eigen'],
   'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
