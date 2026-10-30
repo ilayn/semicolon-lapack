@@ -81,9 +81,6 @@ void dsterf(const INT n, f64* restrict D,
                 break;
             }
         }
-        if (m == n - 1 && (fabs(E[m - 1]) > (sqrt(fabs(D[m - 1])) * sqrt(fabs(D[m]))) * eps)) {
-            m = n - 1;
-        }
 
         INT l = l1;
         INT lsv = l;
