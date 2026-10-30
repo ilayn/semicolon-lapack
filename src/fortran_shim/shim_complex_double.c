@@ -1193,7 +1193,10 @@ void zgtts2_(INT* itrans, INT* n, INT* nrhs, c128* DL, c128* D, c128* DU, c128* 
 }
 
 void zhb2st_kernels_(char* uplo, INT* wantz, INT* ttype, INT* st, INT* ed, INT* sweep, INT* n, INT* nb, INT* ib, c128* A, INT* lda, c128* V, c128* TAU, INT* ldvt, c128* WORK) {
-    zhb2st_kernels(uplo, *wantz, *ttype, *st, *ed, *sweep, *n, *nb, *ib, A, *lda, V, TAU, *ldvt, WORK);
+    INT _st = *st - 1;
+    INT _ed = *ed - 1;
+    INT _sweep = *sweep - 1;
+    zhb2st_kernels(uplo, *wantz, *ttype, _st, _ed, _sweep, *n, *nb, *ib, A, *lda, V, TAU, *ldvt, WORK);
 }
 
 void zhbev_(char* jobz, char* uplo, INT* n, INT* kd, c128* AB, INT* ldab, f64* W, c128* Z, INT* ldz, c128* work, f64* rwork, INT* info) {
@@ -2312,7 +2315,8 @@ void zlahef_rook_(char* uplo, INT* n, INT* nb, INT* kb, c128* A, INT* lda, INT* 
 }
 
 void zlahef_aa_(char* uplo, INT* j1, INT* m, INT* nb, c128* A, INT* lda, INT* ipiv, c128* H, INT* ldh, c128* work) {
-    zlahef_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    zlahef_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void zlasyf_(char* uplo, INT* n, INT* nb, INT* kb, c128* A, INT* lda, INT* ipiv, c128* W, INT* ldw, INT* info) {
@@ -2320,7 +2324,8 @@ void zlasyf_(char* uplo, INT* n, INT* nb, INT* kb, c128* A, INT* lda, INT* ipiv,
 }
 
 void zlasyf_aa_(char* uplo, INT* j1, INT* m, INT* nb, c128* A, INT* lda, INT* ipiv, c128* H, INT* ldh, c128* work) {
-    zlasyf_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    zlasyf_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void zlasyf_rk_(char* uplo, INT* n, INT* nb, INT* kb, c128* A, INT* lda, c128* E, INT* ipiv, c128* W, INT* ldw, INT* info) {

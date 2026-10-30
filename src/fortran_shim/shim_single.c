@@ -1673,7 +1673,8 @@ void slarrj_(INT* n, f32* D, f32* E2, INT* ifirst, INT* ilast, f32* rtol, INT* o
 }
 
 void slarrk_(INT* n, INT* iw, f32* gl, f32* gu, f32* D, f32* E2, f32* pivmin, f32* reltol, f32* w, f32* werr, INT* info) {
-    slarrk(*n, *iw, *gl, *gu, D, E2, *pivmin, *reltol, w, werr, info);
+    INT _iw = *iw - 1;
+    slarrk(*n, _iw, *gl, *gu, D, E2, *pivmin, *reltol, w, werr, info);
 }
 
 void slarrr_(INT* n, f32* D, f32* E, INT* info) {
@@ -1878,7 +1879,8 @@ void slasy2_(INT* ltranl, INT* ltranr, INT* isgn, INT* n1, INT* n2, f32* TL, INT
 }
 
 void slasyf_aa_(char* uplo, INT* j1, INT* m, INT* nb, f32* A, INT* lda, INT* ipiv, f32* H, INT* ldh, f32* work) {
-    slasyf_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    slasyf_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void slasyf_rk_(char* uplo, INT* n, INT* nb, INT* kb, f32* A, INT* lda, f32* E, INT* ipiv, f32* W, INT* ldw, INT* info) {
@@ -2271,7 +2273,10 @@ void srscl_(INT* n, f32* sa, f32* sx, INT* incx) {
 }
 
 void ssb2st_kernels_(char* uplo, INT* wantz, INT* ttype, INT* st, INT* ed, INT* sweep, INT* n, INT* nb, INT* ib, f32* A, INT* lda, f32* V, f32* tau, INT* ldvt, f32* work) {
-    ssb2st_kernels(uplo, *wantz, *ttype, *st, *ed, *sweep, *n, *nb, *ib, A, *lda, V, tau, *ldvt, work);
+    INT _st = *st - 1;
+    INT _ed = *ed - 1;
+    INT _sweep = *sweep - 1;
+    ssb2st_kernels(uplo, *wantz, *ttype, _st, _ed, _sweep, *n, *nb, *ib, A, *lda, V, tau, *ldvt, work);
 }
 
 void ssbev_2stage_(char* jobz, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* W, f32* Z, INT* ldz, f32* work, INT* lwork, INT* info) {

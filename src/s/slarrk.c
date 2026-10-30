@@ -106,7 +106,7 @@ void slarrk(const INT n, const INT iw, const f32 gl, const f32 gu,
             }
         }
 
-        if (negcnt >= iw) {
+        if (negcnt >= iw + 1) {
             right = mid;
         } else {
             left = mid;

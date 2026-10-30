@@ -30,7 +30,7 @@
  *          The location of the first row, or column, of the panel
  *          within the submatrix of A, passed to this routine, e.g.,
  *          when called by `zhetrf_aa`, for the first panel, `j1` is 1,
- *          while for the remaining panels, `j1` is 2.
+ *          while for the remaining panels, `j1` is 1.
  *
  * @param[in]     m
  *          The dimension of the submatrix. `m>=0`.
@@ -85,14 +85,14 @@ void zlahef_aa(
 
     j = 0;
 
-    k1 = (2 - j1) + 1 - 1;
+    k1 = 1 - j1;
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
 
         minval = (m < nb) ? m : nb;
         while (j < minval) {
 
-            k = j1 + j - 1;
+            k = j1 + j;
             if (j == m - 1) {
                 mj = 1;
             } else {
@@ -136,19 +136,19 @@ void zlahef_aa(
 
                     i1 = i1 + j;
                     i2 = i2 + j;
-                    cblas_zswap(i2 - i1 - 1, &A[(j1 + i1 - 1) + (i1 + 1) * lda], lda,
-                                &A[(j1 + i1) + i2 * lda], 1);
-                    zlacgv(i2 - i1, &A[(j1 + i1 - 1) + (i1 + 1) * lda], lda);
-                    zlacgv(i2 - i1 - 1, &A[(j1 + i1) + i2 * lda], 1);
+                    cblas_zswap(i2 - i1 - 1, &A[(j1 + i1) + (i1 + 1) * lda], lda,
+                                &A[(j1 + i1 + 1) + i2 * lda], 1);
+                    zlacgv(i2 - i1, &A[(j1 + i1) + (i1 + 1) * lda], lda);
+                    zlacgv(i2 - i1 - 1, &A[(j1 + i1 + 1) + i2 * lda], 1);
 
                     if (i2 < m - 1) {
-                        cblas_zswap(m - i2 - 1, &A[(j1 + i1 - 1) + (i2 + 1) * lda], lda,
-                                    &A[(j1 + i2 - 1) + (i2 + 1) * lda], lda);
+                        cblas_zswap(m - i2 - 1, &A[(j1 + i1) + (i2 + 1) * lda], lda,
+                                    &A[(j1 + i2) + (i2 + 1) * lda], lda);
                     }
 
-                    piv = A[(i1 + j1 - 1) + i1 * lda];
-                    A[(j1 + i1 - 1) + i1 * lda] = A[(j1 + i2 - 1) + i2 * lda];
-                    A[(j1 + i2 - 1) + i2 * lda] = piv;
+                    piv = A[(i1 + j1) + i1 * lda];
+                    A[(j1 + i1) + i1 * lda] = A[(j1 + i2) + i2 * lda];
+                    A[(j1 + i2) + i2 * lda] = piv;
 
                     cblas_zswap(i1, &H[i1 + 0 * ldh], ldh, &H[i2 + 0 * ldh], ldh);
                     ipiv[i1] = i2;
@@ -187,7 +187,7 @@ void zlahef_aa(
         minval = (m < nb) ? m : nb;
         while (j < minval) {
 
-            k = j1 + j - 1;
+            k = j1 + j;
             if (j == m - 1) {
                 mj = 1;
             } else {
@@ -231,19 +231,19 @@ void zlahef_aa(
 
                     i1 = i1 + j;
                     i2 = i2 + j;
-                    cblas_zswap(i2 - i1 - 1, &A[(i1 + 1) + (j1 + i1 - 1) * lda], 1,
-                                &A[i2 + (j1 + i1) * lda], lda);
-                    zlacgv(i2 - i1, &A[(i1 + 1) + (j1 + i1 - 1) * lda], 1);
-                    zlacgv(i2 - i1 - 1, &A[i2 + (j1 + i1) * lda], lda);
+                    cblas_zswap(i2 - i1 - 1, &A[(i1 + 1) + (j1 + i1) * lda], 1,
+                                &A[i2 + (j1 + i1 + 1) * lda], lda);
+                    zlacgv(i2 - i1, &A[(i1 + 1) + (j1 + i1) * lda], 1);
+                    zlacgv(i2 - i1 - 1, &A[i2 + (j1 + i1 + 1) * lda], lda);
 
                     if (i2 < m - 1) {
-                        cblas_zswap(m - i2 - 1, &A[(i2 + 1) + (j1 + i1 - 1) * lda], 1,
-                                    &A[(i2 + 1) + (j1 + i2 - 1) * lda], 1);
+                        cblas_zswap(m - i2 - 1, &A[(i2 + 1) + (j1 + i1) * lda], 1,
+                                    &A[(i2 + 1) + (j1 + i2) * lda], 1);
                     }
 
-                    piv = A[i1 + (j1 + i1 - 1) * lda];
-                    A[i1 + (j1 + i1 - 1) * lda] = A[i2 + (j1 + i2 - 1) * lda];
-                    A[i2 + (j1 + i2 - 1) * lda] = piv;
+                    piv = A[i1 + (j1 + i1) * lda];
+                    A[i1 + (j1 + i1) * lda] = A[i2 + (j1 + i2) * lda];
+                    A[i2 + (j1 + i2) * lda] = piv;
 
                     cblas_zswap(i1, &H[i1 + 0 * ldh], ldh, &H[i2 + 0 * ldh], ldh);
                     ipiv[i1] = i2;

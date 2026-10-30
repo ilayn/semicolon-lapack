@@ -391,6 +391,15 @@ INDEX_RULES = {
                ('in_scalar_idx', 'twist')],
     'larrj':  [('in_scalar_idx', 'ifirst'), ('in_scalar_idx', 'ilast')],
     'larrf':  [('in_scalar_idx', 'clstrt'), ('in_scalar_idx', 'clend')],
+    'larrk':  [('in_scalar_idx', 'iw')],
+
+    # --- Aasen panel and 2-stage bulge-chasing kernels ---
+    'lasyf_aa': [('in_scalar_idx', 'j1')],
+    'lahef_aa': [('in_scalar_idx', 'j1')],
+    'sb2st_kernels': [('in_scalar_idx', 'st'), ('in_scalar_idx', 'ed'),
+                      ('in_scalar_idx', 'sweep')],
+    'hb2st_kernels': [('in_scalar_idx', 'st'), ('in_scalar_idx', 'ed'),
+                      ('in_scalar_idx', 'sweep')],
 
     # --- dqds ---
     'lasq3':  [('in_scalar_idx', 'i0'), ('io_scalar_idx', 'n0')],

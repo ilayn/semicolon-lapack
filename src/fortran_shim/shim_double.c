@@ -1676,7 +1676,8 @@ void dlarrj_(INT* n, f64* D, f64* E2, INT* ifirst, INT* ilast, f64* rtol, INT* o
 }
 
 void dlarrk_(INT* n, INT* iw, f64* gl, f64* gu, f64* D, f64* E2, f64* pivmin, f64* reltol, f64* w, f64* werr, INT* info) {
-    dlarrk(*n, *iw, *gl, *gu, D, E2, *pivmin, *reltol, w, werr, info);
+    INT _iw = *iw - 1;
+    dlarrk(*n, _iw, *gl, *gu, D, E2, *pivmin, *reltol, w, werr, info);
 }
 
 void dlarrr_(INT* n, f64* D, f64* E, INT* info) {
@@ -1881,7 +1882,8 @@ void dlasy2_(INT* ltranl, INT* ltranr, INT* isgn, INT* n1, INT* n2, f64* TL, INT
 }
 
 void dlasyf_aa_(char* uplo, INT* j1, INT* m, INT* nb, f64* A, INT* lda, INT* ipiv, f64* H, INT* ldh, f64* work) {
-    dlasyf_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    dlasyf_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void dlasyf_rk_(char* uplo, INT* n, INT* nb, INT* kb, f64* A, INT* lda, f64* E, INT* ipiv, f64* W, INT* ldw, INT* info) {
@@ -2278,7 +2280,10 @@ void drscl_(INT* n, f64* sa, f64* sx, INT* incx) {
 }
 
 void dsb2st_kernels_(char* uplo, INT* wantz, INT* ttype, INT* st, INT* ed, INT* sweep, INT* n, INT* nb, INT* ib, f64* A, INT* lda, f64* V, f64* tau, INT* ldvt, f64* work) {
-    dsb2st_kernels(uplo, *wantz, *ttype, *st, *ed, *sweep, *n, *nb, *ib, A, *lda, V, tau, *ldvt, work);
+    INT _st = *st - 1;
+    INT _ed = *ed - 1;
+    INT _sweep = *sweep - 1;
+    dsb2st_kernels(uplo, *wantz, *ttype, _st, _ed, _sweep, *n, *nb, *ib, A, *lda, V, tau, *ldvt, work);
 }
 
 void dsbev_2stage_(char* jobz, char* uplo, INT* n, INT* kd, f64* AB, INT* ldab, f64* W, f64* Z, INT* ldz, f64* work, INT* lwork, INT* info) {

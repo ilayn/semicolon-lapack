@@ -291,7 +291,7 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
                         }
 
                         zhb2st_kernels(uplo, wantq, ttype,
-                                       stind, edind, sweepid, n, kd, ib,
+                                       stind - 1, edind - 1, sweepid - 1, n, kd, ib,
                                        &work[inda], lda,
                                        &hous[indv], &hous[indtau], ldv,
                                        &work[indw]);

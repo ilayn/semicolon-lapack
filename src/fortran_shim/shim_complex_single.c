@@ -1177,7 +1177,10 @@ void cgtts2_(INT* itrans, INT* n, INT* nrhs, c64* DL, c64* D, c64* DU, c64* DU2,
 }
 
 void chb2st_kernels_(char* uplo, INT* wantz, INT* ttype, INT* st, INT* ed, INT* sweep, INT* n, INT* nb, INT* ib, c64* A, INT* lda, c64* V, c64* TAU, INT* ldvt, c64* WORK) {
-    chb2st_kernels(uplo, *wantz, *ttype, *st, *ed, *sweep, *n, *nb, *ib, A, *lda, V, TAU, *ldvt, WORK);
+    INT _st = *st - 1;
+    INT _ed = *ed - 1;
+    INT _sweep = *sweep - 1;
+    chb2st_kernels(uplo, *wantz, *ttype, _st, _ed, _sweep, *n, *nb, *ib, A, *lda, V, TAU, *ldvt, WORK);
 }
 
 void chbev_(char* jobz, char* uplo, INT* n, INT* kd, c64* AB, INT* ldab, f32* W, c64* Z, INT* ldz, c64* work, f32* rwork, INT* info) {
@@ -2296,7 +2299,8 @@ void clahef_rook_(char* uplo, INT* n, INT* nb, INT* kb, c64* A, INT* lda, INT* i
 }
 
 void clahef_aa_(char* uplo, INT* j1, INT* m, INT* nb, c64* A, INT* lda, INT* ipiv, c64* H, INT* ldh, c64* work) {
-    clahef_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    clahef_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void clasyf_(char* uplo, INT* n, INT* nb, INT* kb, c64* A, INT* lda, INT* ipiv, c64* W, INT* ldw, INT* info) {
@@ -2304,7 +2308,8 @@ void clasyf_(char* uplo, INT* n, INT* nb, INT* kb, c64* A, INT* lda, INT* ipiv, 
 }
 
 void clasyf_aa_(char* uplo, INT* j1, INT* m, INT* nb, c64* A, INT* lda, INT* ipiv, c64* H, INT* ldh, c64* work) {
-    clasyf_aa(uplo, *j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
+    INT _j1 = *j1 - 1;
+    clasyf_aa(uplo, _j1, *m, *nb, A, *lda, ipiv, H, *ldh, work);
 }
 
 void clasyf_rk_(char* uplo, INT* n, INT* nb, INT* kb, c64* A, INT* lda, c64* E, INT* ipiv, c64* W, INT* ldw, INT* info) {

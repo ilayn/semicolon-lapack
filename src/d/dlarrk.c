@@ -106,7 +106,7 @@ void dlarrk(const INT n, const INT iw, const f64 gl, const f64 gu,
             }
         }
 
-        if (negcnt >= iw) {
+        if (negcnt >= iw + 1) {
             right = mid;
         } else {
             left = mid;
