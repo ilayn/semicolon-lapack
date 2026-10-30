@@ -77,7 +77,7 @@ void zhbtrd(
     kd1 = kd + 1;
     kdm1 = kd - 1;
     incx = ldab - 1;
-    iqend = 1;
+    iqend = 0;
 
     *info = 0;
     if (!wantq && !(vect[0] == 'N' || vect[0] == 'n')) {
@@ -112,12 +112,12 @@ void zhbtrd(
         if (kd > 1) {
 
             nr = 0;
-            j1 = kdn + 2;
-            j2 = 1;
+            j1 = kdn + 1;
+            j2 = 0;
 
             AB[kd] = creal(AB[kd]);
 
-            for (i = 1; i <= n - 2; i++) {
+            for (i = 0; i < n - 2; i++) {
 
                 for (k = kdn + 1; k >= 2; k--) {
                     j1 = j1 + kdn;
@@ -125,79 +125,79 @@ void zhbtrd(
 
                     if (nr > 0) {
 
-                        zlargv(nr, &AB[0 + (j1 - 2) * ldab], inca,
-                               &work[j1 - 1], kd1, &D[j1 - 1], kd1);
+                        zlargv(nr, &AB[0 + (j1 - 1) * ldab], inca,
+                               &work[j1], kd1, &D[j1], kd1);
 
                         if (nr >= 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                zlartv(nr, &AB[l + (j1 - 2) * ldab], inca,
-                                       &AB[l - 1 + (j1 - 1) * ldab], inca,
-                                       &D[j1 - 1], &work[j1 - 1], kd1);
+                                zlartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                                       &AB[l - 1 + j1 * ldab], inca,
+                                       &D[j1], &work[j1], kd1);
                             }
 
                         } else {
                             jend = j1 + (nr - 1) * kd1;
                             for (jinc = j1; jinc <= jend; jinc += kd1) {
-                                zrot(kdm1, &AB[1 + (jinc - 2) * ldab], 1,
-                                     &AB[0 + (jinc - 1) * ldab], 1,
-                                     D[jinc - 1], work[jinc - 1]);
+                                zrot(kdm1, &AB[1 + (jinc - 1) * ldab], 1,
+                                     &AB[0 + jinc * ldab], 1,
+                                     D[jinc], work[jinc]);
                             }
                         }
                     }
 
                     if (k > 2) {
-                        if (k <= n - i + 1) {
+                        if (k <= n - i) {
 
-                            zlartg(AB[kd - k + 2 + (i + k - 3) * ldab],
-                                   AB[kd - k + 1 + (i + k - 2) * ldab],
-                                   &D[i + k - 2], &work[i + k - 2], &temp);
-                            AB[kd - k + 2 + (i + k - 3) * ldab] = temp;
+                            zlartg(AB[kd - k + 2 + (i + k - 2) * ldab],
+                                   AB[kd - k + 1 + (i + k - 1) * ldab],
+                                   &D[i + k - 1], &work[i + k - 1], &temp);
+                            AB[kd - k + 2 + (i + k - 2) * ldab] = temp;
 
-                            zrot(k - 3, &AB[kd - k + 3 + (i + k - 3) * ldab], 1,
-                                 &AB[kd - k + 2 + (i + k - 2) * ldab], 1,
-                                 D[i + k - 2], work[i + k - 2]);
+                            zrot(k - 3, &AB[kd - k + 3 + (i + k - 2) * ldab], 1,
+                                 &AB[kd - k + 2 + (i + k - 1) * ldab], 1,
+                                 D[i + k - 1], work[i + k - 1]);
                         }
                         nr = nr + 1;
                         j1 = j1 - kdn - 1;
                     }
 
                     if (nr > 0)
-                        zlar2v(nr, &AB[kd + (j1 - 2) * ldab],
-                               &AB[kd + (j1 - 1) * ldab],
-                               &AB[kd - 1 + (j1 - 1) * ldab], inca,
-                               &D[j1 - 1], &work[j1 - 1], kd1);
+                        zlar2v(nr, &AB[kd + (j1 - 1) * ldab],
+                               &AB[kd + j1 * ldab],
+                               &AB[kd - 1 + j1 * ldab], inca,
+                               &D[j1], &work[j1], kd1);
 
                     if (nr > 0) {
-                        zlacgv(nr, &work[j1 - 1], kd1);
+                        zlacgv(nr, &work[j1], kd1);
                         if (2 * kd - 1 < nr) {
 
                             for (l = 1; l <= kd - 1; l++) {
-                                if (j2 + l > n) {
+                                if (j2 + l > n - 1) {
                                     nrt = nr - 1;
                                 } else {
                                     nrt = nr;
                                 }
                                 if (nrt > 0)
-                                    zlartv(nrt, &AB[kd - l - 1 + (j1 + l - 1) * ldab],
+                                    zlartv(nrt, &AB[kd - l - 1 + (j1 + l) * ldab],
                                            inca,
-                                           &AB[kd - l + (j1 + l - 1) * ldab], inca,
-                                           &D[j1 - 1], &work[j1 - 1], kd1);
+                                           &AB[kd - l + (j1 + l) * ldab], inca,
+                                           &D[j1], &work[j1], kd1);
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (jin = j1; jin <= j1end; jin += kd1) {
-                                    zrot(kd - 1, &AB[kd - 2 + jin * ldab], incx,
-                                         &AB[kd - 1 + jin * ldab], incx,
-                                         D[jin - 1], work[jin - 1]);
+                                    zrot(kd - 1, &AB[kd - 2 + (jin + 1) * ldab], incx,
+                                         &AB[kd - 1 + (jin + 1) * ldab], incx,
+                                         D[jin], work[jin]);
                                 }
                             }
-                            lend = (kdm1 < n - j2) ? kdm1 : (n - j2);
+                            lend = (kdm1 < n - j2 - 1) ? kdm1 : (n - j2 - 1);
                             last = j1end + kd1;
                             if (lend > 0)
-                                zrot(lend, &AB[kd - 2 + last * ldab], incx,
-                                     &AB[kd - 1 + last * ldab], incx,
-                                     D[last - 1], work[last - 1]);
+                                zrot(lend, &AB[kd - 2 + (last + 1) * ldab], incx,
+                                     &AB[kd - 1 + (last + 1) * ldab], incx,
+                                     D[last], work[last]);
                         }
                     }
 
@@ -207,32 +207,32 @@ void zhbtrd(
 
                             iqend = (iqend > j2) ? iqend : j2;
                             i2 = (0 > k - 3) ? 0 : (k - 3);
-                            iqaend = 1 + i * kd;
+                            iqaend = (i + 1) * kd;
                             if (k == 2)
                                 iqaend = iqaend + kd;
                             iqaend = (iqaend < iqend) ? iqaend : iqend;
                             for (j = j1; j <= j2; j += kd1) {
                                 ibl = i - i2 / kdm1;
                                 i2 = i2 + 1;
-                                iqb = (1 > j - ibl) ? 1 : (j - ibl);
+                                iqb = (0 > j - ibl - 1) ? 0 : (j - ibl - 1);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = (iqaend + kd < iqend) ? (iqaend + kd) : iqend;
-                                zrot(nq, &Q[(iqb - 1) + (j - 2) * ldq], 1,
-                                     &Q[(iqb - 1) + (j - 1) * ldq], 1,
-                                     D[j - 1], conj(work[j - 1]));
+                                zrot(nq, &Q[iqb + (j - 1) * ldq], 1,
+                                     &Q[iqb + j * ldq], 1,
+                                     D[j], conj(work[j]));
                             }
                         } else {
 
                             for (j = j1; j <= j2; j += kd1) {
-                                zrot(n, &Q[0 + (j - 2) * ldq], 1,
-                                     &Q[0 + (j - 1) * ldq], 1,
-                                     D[j - 1], conj(work[j - 1]));
+                                zrot(n, &Q[0 + (j - 1) * ldq], 1,
+                                     &Q[0 + j * ldq], 1,
+                                     D[j], conj(work[j]));
                             }
                         }
 
                     }
 
-                    if (j2 + kdn > n) {
+                    if (j2 + kdn > n - 1) {
 
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -240,8 +240,8 @@ void zhbtrd(
 
                     for (j = j1; j <= j2; j += kd1) {
 
-                        work[j + kd - 1] = work[j - 1] * AB[0 + (j + kd - 1) * ldab];
-                        AB[0 + (j + kd - 1) * ldab] = D[j - 1] * AB[0 + (j + kd - 1) * ldab];
+                        work[j + kd] = work[j] * AB[0 + (j + kd) * ldab];
+                        AB[0 + (j + kd) * ldab] = D[j] * AB[0 + (j + kd) * ldab];
                     }
                 }
             }
@@ -249,32 +249,32 @@ void zhbtrd(
 
         if (kd > 0) {
 
-            for (i = 1; i <= n - 1; i++) {
-                t = AB[kd - 1 + i * ldab];
+            for (i = 0; i < n - 1; i++) {
+                t = AB[kd - 1 + (i + 1) * ldab];
                 abst = cabs(t);
-                AB[kd - 1 + i * ldab] = abst;
-                E[i - 1] = abst;
+                AB[kd - 1 + (i + 1) * ldab] = abst;
+                E[i] = abst;
                 if (abst != ZERO) {
                     t = t / abst;
                 } else {
                     t = CONE;
                 }
-                if (i < n - 1)
-                    AB[kd - 1 + (i + 1) * ldab] = AB[kd - 1 + (i + 1) * ldab] * t;
+                if (i < n - 2)
+                    AB[kd - 1 + (i + 2) * ldab] = AB[kd - 1 + (i + 2) * ldab] * t;
                 if (wantq) {
                     c128 ct = conj(t);
-                    cblas_zscal(n, &ct, &Q[0 + i * ldq], 1);
+                    cblas_zscal(n, &ct, &Q[0 + (i + 1) * ldq], 1);
                 }
             }
         } else {
 
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = ZERO;
+            for (i = 0; i < n - 1; i++) {
+                E[i] = ZERO;
             }
         }
 
-        for (i = 1; i <= n; i++) {
-            D[i - 1] = creal(AB[kd + (i - 1) * ldab]);
+        for (i = 0; i < n; i++) {
+            D[i] = creal(AB[kd + i * ldab]);
         }
 
     } else {
@@ -282,12 +282,12 @@ void zhbtrd(
         if (kd > 1) {
 
             nr = 0;
-            j1 = kdn + 2;
-            j2 = 1;
+            j1 = kdn + 1;
+            j2 = 0;
 
             AB[0] = creal(AB[0]);
 
-            for (i = 1; i <= n - 2; i++) {
+            for (i = 0; i < n - 2; i++) {
 
                 for (k = kdn + 1; k >= 2; k--) {
                     j1 = j1 + kdn;
@@ -295,77 +295,77 @@ void zhbtrd(
 
                     if (nr > 0) {
 
-                        zlargv(nr, &AB[kd + (j1 - kd1 - 1) * ldab], inca,
-                               &work[j1 - 1], kd1, &D[j1 - 1], kd1);
+                        zlargv(nr, &AB[kd + (j1 - kd1) * ldab], inca,
+                               &work[j1], kd1, &D[j1], kd1);
 
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                zlartv(nr, &AB[kd - l + (j1 - kd1 + l - 1) * ldab], inca,
-                                       &AB[kd - l + 1 + (j1 - kd1 + l - 1) * ldab], inca,
-                                       &D[j1 - 1], &work[j1 - 1], kd1);
+                                zlartv(nr, &AB[kd - l + (j1 - kd1 + l) * ldab], inca,
+                                       &AB[kd - l + 1 + (j1 - kd1 + l) * ldab], inca,
+                                       &D[j1], &work[j1], kd1);
                             }
                         } else {
                             jend = j1 + kd1 * (nr - 1);
                             for (jinc = j1; jinc <= jend; jinc += kd1) {
-                                zrot(kdm1, &AB[kd - 1 + (jinc - kd - 1) * ldab], incx,
-                                     &AB[kd + (jinc - kd - 1) * ldab], incx,
-                                     D[jinc - 1], work[jinc - 1]);
+                                zrot(kdm1, &AB[kd - 1 + (jinc - kd) * ldab], incx,
+                                     &AB[kd + (jinc - kd) * ldab], incx,
+                                     D[jinc], work[jinc]);
                             }
                         }
 
                     }
 
                     if (k > 2) {
-                        if (k <= n - i + 1) {
+                        if (k <= n - i) {
 
-                            zlartg(AB[k - 2 + (i - 1) * ldab],
-                                   AB[k - 1 + (i - 1) * ldab],
-                                   &D[i + k - 2], &work[i + k - 2], &temp);
-                            AB[k - 2 + (i - 1) * ldab] = temp;
+                            zlartg(AB[k - 2 + i * ldab],
+                                   AB[k - 1 + i * ldab],
+                                   &D[i + k - 1], &work[i + k - 1], &temp);
+                            AB[k - 2 + i * ldab] = temp;
 
-                            zrot(k - 3, &AB[k - 3 + i * ldab], ldab - 1,
-                                 &AB[k - 2 + i * ldab], ldab - 1,
-                                 D[i + k - 2], work[i + k - 2]);
+                            zrot(k - 3, &AB[k - 3 + (i + 1) * ldab], ldab - 1,
+                                 &AB[k - 2 + (i + 1) * ldab], ldab - 1,
+                                 D[i + k - 1], work[i + k - 1]);
                         }
                         nr = nr + 1;
                         j1 = j1 - kdn - 1;
                     }
 
                     if (nr > 0)
-                        zlar2v(nr, &AB[0 + (j1 - 2) * ldab],
-                               &AB[0 + (j1 - 1) * ldab],
-                               &AB[1 + (j1 - 2) * ldab], inca,
-                               &D[j1 - 1], &work[j1 - 1], kd1);
+                        zlar2v(nr, &AB[0 + (j1 - 1) * ldab],
+                               &AB[0 + j1 * ldab],
+                               &AB[1 + (j1 - 1) * ldab], inca,
+                               &D[j1], &work[j1], kd1);
 
                     if (nr > 0) {
-                        zlacgv(nr, &work[j1 - 1], kd1);
+                        zlacgv(nr, &work[j1], kd1);
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                if (j2 + l > n) {
+                                if (j2 + l > n - 1) {
                                     nrt = nr - 1;
                                 } else {
                                     nrt = nr;
                                 }
                                 if (nrt > 0)
-                                    zlartv(nrt, &AB[l + 1 + (j1 - 2) * ldab], inca,
-                                           &AB[l + (j1 - 1) * ldab], inca,
-                                           &D[j1 - 1], &work[j1 - 1], kd1);
+                                    zlartv(nrt, &AB[l + 1 + (j1 - 1) * ldab], inca,
+                                           &AB[l + j1 * ldab], inca,
+                                           &D[j1], &work[j1], kd1);
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (j1inc = j1; j1inc <= j1end; j1inc += kd1) {
-                                    zrot(kdm1, &AB[2 + (j1inc - 2) * ldab], 1,
-                                         &AB[1 + (j1inc - 1) * ldab], 1,
-                                         D[j1inc - 1], work[j1inc - 1]);
+                                    zrot(kdm1, &AB[2 + (j1inc - 1) * ldab], 1,
+                                         &AB[1 + j1inc * ldab], 1,
+                                         D[j1inc], work[j1inc]);
                                 }
                             }
-                            lend = (kdm1 < n - j2) ? kdm1 : (n - j2);
+                            lend = (kdm1 < n - j2 - 1) ? kdm1 : (n - j2 - 1);
                             last = j1end + kd1;
                             if (lend > 0)
-                                zrot(lend, &AB[2 + (last - 2) * ldab], 1,
-                                     &AB[1 + (last - 1) * ldab], 1,
-                                     D[last - 1], work[last - 1]);
+                                zrot(lend, &AB[2 + (last - 1) * ldab], 1,
+                                     &AB[1 + last * ldab], 1,
+                                     D[last], work[last]);
                         }
                     }
 
@@ -375,31 +375,31 @@ void zhbtrd(
 
                             iqend = (iqend > j2) ? iqend : j2;
                             i2 = (0 > k - 3) ? 0 : (k - 3);
-                            iqaend = 1 + i * kd;
+                            iqaend = (i + 1) * kd;
                             if (k == 2)
                                 iqaend = iqaend + kd;
                             iqaend = (iqaend < iqend) ? iqaend : iqend;
                             for (j = j1; j <= j2; j += kd1) {
                                 ibl = i - i2 / kdm1;
                                 i2 = i2 + 1;
-                                iqb = (1 > j - ibl) ? 1 : (j - ibl);
+                                iqb = (0 > j - ibl - 1) ? 0 : (j - ibl - 1);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = (iqaend + kd < iqend) ? (iqaend + kd) : iqend;
-                                zrot(nq, &Q[(iqb - 1) + (j - 2) * ldq], 1,
-                                     &Q[(iqb - 1) + (j - 1) * ldq], 1,
-                                     D[j - 1], work[j - 1]);
+                                zrot(nq, &Q[iqb + (j - 1) * ldq], 1,
+                                     &Q[iqb + j * ldq], 1,
+                                     D[j], work[j]);
                             }
                         } else {
 
                             for (j = j1; j <= j2; j += kd1) {
-                                zrot(n, &Q[0 + (j - 2) * ldq], 1,
-                                     &Q[0 + (j - 1) * ldq], 1,
-                                     D[j - 1], work[j - 1]);
+                                zrot(n, &Q[0 + (j - 1) * ldq], 1,
+                                     &Q[0 + j * ldq], 1,
+                                     D[j], work[j]);
                             }
                         }
                     }
 
-                    if (j2 + kdn > n) {
+                    if (j2 + kdn > n - 1) {
 
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -407,8 +407,8 @@ void zhbtrd(
 
                     for (j = j1; j <= j2; j += kd1) {
 
-                        work[j + kd - 1] = work[j - 1] * AB[kd + (j - 1) * ldab];
-                        AB[kd + (j - 1) * ldab] = D[j - 1] * AB[kd + (j - 1) * ldab];
+                        work[j + kd] = work[j] * AB[kd + j * ldab];
+                        AB[kd + j * ldab] = D[j] * AB[kd + j * ldab];
                     }
                 }
             }
@@ -416,31 +416,31 @@ void zhbtrd(
 
         if (kd > 0) {
 
-            for (i = 1; i <= n - 1; i++) {
-                t = AB[1 + (i - 1) * ldab];
+            for (i = 0; i < n - 1; i++) {
+                t = AB[1 + i * ldab];
                 abst = cabs(t);
-                AB[1 + (i - 1) * ldab] = abst;
-                E[i - 1] = abst;
+                AB[1 + i * ldab] = abst;
+                E[i] = abst;
                 if (abst != ZERO) {
                     t = t / abst;
                 } else {
                     t = CONE;
                 }
-                if (i < n - 1)
-                    AB[1 + i * ldab] = AB[1 + i * ldab] * t;
+                if (i < n - 2)
+                    AB[1 + (i + 1) * ldab] = AB[1 + (i + 1) * ldab] * t;
                 if (wantq) {
-                    cblas_zscal(n, &t, &Q[0 + i * ldq], 1);
+                    cblas_zscal(n, &t, &Q[0 + (i + 1) * ldq], 1);
                 }
             }
         } else {
 
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = ZERO;
+            for (i = 0; i < n - 1; i++) {
+                E[i] = ZERO;
             }
         }
 
-        for (i = 1; i <= n; i++) {
-            D[i - 1] = creal(AB[0 + (i - 1) * ldab]);
+        for (i = 0; i < n; i++) {
+            D[i] = creal(AB[0 + i * ldab]);
         }
     }
 }
