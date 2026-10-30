@@ -109,6 +109,7 @@ lapack_tests_z = {
   'zgesvj_emptsw': ['test_zgesvj_emptsw.c', 'eigen'],
   'zgsvj0_sweeps': ['test_zgsvj0_sweeps.c', 'svd'],
   'zgesvdq_zero': ['test_zgesvdq_zero.c', 'svd'],
+  'zgelsy_nan': ['test_zgelsy_nan.c', 'ls'],
   'zstein_unconverged': ['test_zstein_unconverged.c', 'eigen'],
   'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],

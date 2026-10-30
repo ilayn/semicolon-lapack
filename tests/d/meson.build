@@ -111,6 +111,7 @@ lapack_tests_d = {
   'dgsvj0_sweeps': ['test_dgsvj0_sweeps.c', 'svd'],
   'dgesvdq_query': ['test_dgesvdq_query.c', 'svd'],
   'dgesvd_lwork': ['test_dgesvd_lwork.c', 'svd'],
+  'dgelsy_nan': ['test_dgelsy_nan.c', 'ls'],
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
