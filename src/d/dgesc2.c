@@ -46,7 +46,7 @@ void dgesc2(
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    f64 eps, smlnum, bignum, temp;
+    f64 eps, smlnum, temp;
     INT i, j, imax;
 
     if (n == 0) {
@@ -57,8 +57,6 @@ void dgesc2(
     // Set constant to control overflow
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    bignum = ONE / smlnum;
-    (void)bignum;
 
     // Apply permutations IPIV to RHS
     for (i = 0; i < n - 1; i++) {

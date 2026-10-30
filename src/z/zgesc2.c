@@ -48,7 +48,7 @@ void zgesc2(
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    f64 eps, smlnum, bignum;
+    f64 eps, smlnum;
     c128 temp;
     INT i, j, imax;
 
@@ -61,8 +61,6 @@ void zgesc2(
 
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    bignum = ONE / smlnum;
-    (void)bignum;
 
     /* Apply permutations IPIV to RHS */
 

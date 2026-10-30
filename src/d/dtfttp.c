@@ -74,8 +74,6 @@ void dtfttp(
         return;
     }
 
-    (void)(n * (n + 1) / 2);
-
     if (lower) {
         n2 = n / 2;
         n1 = n - n2;

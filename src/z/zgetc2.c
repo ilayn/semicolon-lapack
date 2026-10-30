@@ -51,7 +51,7 @@ void zgetc2(
 {
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    f64 eps, smlnum, bignum, smin, xmax;
+    f64 eps, smlnum, smin, xmax;
     INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
@@ -64,8 +64,6 @@ void zgetc2(
     // Set constants to control overflow
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    bignum = 1.0 / smlnum;
-    (void)bignum;
 
     // Handle the case n=1 by itself
     if (n == 1) {

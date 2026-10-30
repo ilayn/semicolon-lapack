@@ -85,8 +85,6 @@ void zgemqr(const char* side, const char* trans,
         lwmin = lw > 1 ? lw : 1;
     }
 
-    (void)((mb > k) && (mn > k));
-
     *info = 0;
     if (!left && !right) {
         *info = -1;

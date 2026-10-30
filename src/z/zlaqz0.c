@@ -76,7 +76,6 @@ void zlaqz0(
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
-    const f64 ONE = 1.0;
 
     f64 smlnum, ulp, safmin, c1, tempr;
     f64 bnorm, btol;
@@ -232,7 +231,6 @@ void zlaqz0(
 
     /* Get machine constants */
     safmin = dlamch("S");
-    (void)(ONE / safmin);
     ulp = dlamch("P");
     smlnum = safmin * ((f64)n / ulp);
 
