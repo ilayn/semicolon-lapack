@@ -51,7 +51,7 @@ void zlatrd(const char* uplo, const INT n, const INT nb,
     const c128 HALF = CMPLX(0.5, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    INT ii, iw;
+    INT i, iw;
     c128 alpha;
 
     /* Quick return if possible */
@@ -61,155 +61,155 @@ void zlatrd(const char* uplo, const INT n, const INT nb,
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         /* Reduce last NB columns of upper triangle. */
-        for (ii = n; ii >= n - nb + 1; ii--) {
-            iw = ii - n + nb;
+        for (i = n - 1; i >= n - nb; i--) {
+            iw = i - n + nb;
 
-            if (ii < n) {
-                /* Update A(1:ii, ii). */
-                A[(ii - 1) + (ii - 1) * lda] = CMPLX(creal(A[(ii - 1) + (ii - 1) * lda]), 0.0);
-                zlacgv(n - ii, &W[(ii - 1) + iw * ldw], ldw);
+            if (i < n - 1) {
+                /* Update A(0:i, i). */
+                A[i + i * lda] = CMPLX(creal(A[i + i * lda]), 0.0);
+                zlacgv(n - i - 1, &W[i + (iw + 1) * ldw], ldw);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
-                            ii, n - ii, &NEG_ONE,
-                            &A[ii * lda], lda,
-                            &W[(ii - 1) + iw * ldw], ldw,
-                            &ONE, &A[(ii - 1) * lda], 1);
-                zlacgv(n - ii, &W[(ii - 1) + iw * ldw], ldw);
-                zlacgv(n - ii, &A[(ii - 1) + ii * lda], lda);
+                            i + 1, n - i - 1, &NEG_ONE,
+                            &A[(i + 1) * lda], lda,
+                            &W[i + (iw + 1) * ldw], ldw,
+                            &ONE, &A[i * lda], 1);
+                zlacgv(n - i - 1, &W[i + (iw + 1) * ldw], ldw);
+                zlacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
-                            ii, n - ii, &NEG_ONE,
-                            &W[iw * ldw], ldw,
-                            &A[(ii - 1) + ii * lda], lda,
-                            &ONE, &A[(ii - 1) * lda], 1);
-                zlacgv(n - ii, &A[(ii - 1) + ii * lda], lda);
-                A[(ii - 1) + (ii - 1) * lda] = CMPLX(creal(A[(ii - 1) + (ii - 1) * lda]), 0.0);
+                            i + 1, n - i - 1, &NEG_ONE,
+                            &W[(iw + 1) * ldw], ldw,
+                            &A[i + (i + 1) * lda], lda,
+                            &ONE, &A[i * lda], 1);
+                zlacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
+                A[i + i * lda] = CMPLX(creal(A[i + i * lda]), 0.0);
             }
 
-            if (ii > 1) {
-                /* Generate elementary reflector H(ii) to annihilate A(1:ii-2, ii). */
-                alpha = A[(ii - 2) + (ii - 1) * lda];
-                zlarfg(ii - 1,
+            if (i > 0) {
+                /* Generate elementary reflector H(i) to annihilate A(0:i-2, i). */
+                alpha = A[(i - 1) + i * lda];
+                zlarfg(i,
                        &alpha,
-                       &A[(ii - 1) * lda],
+                       &A[i * lda],
                        1,
-                       &tau[ii - 2]);
+                       &tau[i - 1]);
 
-                E[ii - 2] = creal(alpha);
-                A[(ii - 2) + (ii - 1) * lda] = ONE;
+                E[i - 1] = creal(alpha);
+                A[(i - 1) + i * lda] = ONE;
 
-                /* Compute W(1:ii-1, iw). */
+                /* Compute W(0:i-1, iw). */
                 cblas_zhemv(CblasColMajor, CblasUpper,
-                            ii - 1, &ONE,
+                            i, &ONE,
                             A, lda,
-                            &A[(ii - 1) * lda], 1,
-                            &ZERO, &W[(iw - 1) * ldw], 1);
+                            &A[i * lda], 1,
+                            &ZERO, &W[iw * ldw], 1);
 
-                if (ii < n) {
+                if (i < n - 1) {
                     cblas_zgemv(CblasColMajor, CblasConjTrans,
-                                ii - 1, n - ii, &ONE,
-                                &W[iw * ldw], ldw,
-                                &A[(ii - 1) * lda], 1,
-                                &ZERO, &W[ii + (iw - 1) * ldw], 1);
+                                i, n - i - 1, &ONE,
+                                &W[(iw + 1) * ldw], ldw,
+                                &A[i * lda], 1,
+                                &ZERO, &W[(i + 1) + iw * ldw], 1);
                     cblas_zgemv(CblasColMajor, CblasNoTrans,
-                                ii - 1, n - ii, &NEG_ONE,
-                                &A[ii * lda], lda,
-                                &W[ii + (iw - 1) * ldw], 1,
-                                &ONE, &W[(iw - 1) * ldw], 1);
+                                i, n - i - 1, &NEG_ONE,
+                                &A[(i + 1) * lda], lda,
+                                &W[(i + 1) + iw * ldw], 1,
+                                &ONE, &W[iw * ldw], 1);
                     cblas_zgemv(CblasColMajor, CblasConjTrans,
-                                ii - 1, n - ii, &ONE,
-                                &A[ii * lda], lda,
-                                &A[(ii - 1) * lda], 1,
-                                &ZERO, &W[ii + (iw - 1) * ldw], 1);
+                                i, n - i - 1, &ONE,
+                                &A[(i + 1) * lda], lda,
+                                &A[i * lda], 1,
+                                &ZERO, &W[(i + 1) + iw * ldw], 1);
                     cblas_zgemv(CblasColMajor, CblasNoTrans,
-                                ii - 1, n - ii, &NEG_ONE,
-                                &W[iw * ldw], ldw,
-                                &W[ii + (iw - 1) * ldw], 1,
-                                &ONE, &W[(iw - 1) * ldw], 1);
+                                i, n - i - 1, &NEG_ONE,
+                                &W[(iw + 1) * ldw], ldw,
+                                &W[(i + 1) + iw * ldw], 1,
+                                &ONE, &W[iw * ldw], 1);
                 }
 
-                cblas_zscal(ii - 1, &tau[ii - 2], &W[(iw - 1) * ldw], 1);
+                cblas_zscal(i, &tau[i - 1], &W[iw * ldw], 1);
                 c128 dotc;
-                cblas_zdotc_sub(ii - 1,
-                                &W[(iw - 1) * ldw], 1,
-                                &A[(ii - 1) * lda], 1,
+                cblas_zdotc_sub(i,
+                                &W[iw * ldw], 1,
+                                &A[i * lda], 1,
                                 &dotc);
-                alpha = -HALF * tau[ii - 2] * dotc;
-                cblas_zaxpy(ii - 1, &alpha,
-                            &A[(ii - 1) * lda], 1,
-                            &W[(iw - 1) * ldw], 1);
+                alpha = -HALF * tau[i - 1] * dotc;
+                cblas_zaxpy(i, &alpha,
+                            &A[i * lda], 1,
+                            &W[iw * ldw], 1);
             }
         }
 
     } else {
         /* Reduce first NB columns of lower triangle. */
-        for (ii = 1; ii <= nb; ii++) {
-            /* Update A(ii:n, ii). */
-            A[(ii - 1) + (ii - 1) * lda] = CMPLX(creal(A[(ii - 1) + (ii - 1) * lda]), 0.0);
-            zlacgv(ii - 1, &W[ii - 1], ldw);
+        for (i = 0; i < nb; i++) {
+            /* Update A(i:n-1, i). */
+            A[i + i * lda] = CMPLX(creal(A[i + i * lda]), 0.0);
+            zlacgv(i, &W[i], ldw);
             cblas_zgemv(CblasColMajor, CblasNoTrans,
-                        n - ii + 1, ii - 1, &NEG_ONE,
-                        &A[ii - 1], lda,
-                        &W[ii - 1], ldw,
-                        &ONE, &A[(ii - 1) + (ii - 1) * lda], 1);
-            zlacgv(ii - 1, &W[ii - 1], ldw);
-            zlacgv(ii - 1, &A[ii - 1], lda);
+                        n - i, i, &NEG_ONE,
+                        &A[i], lda,
+                        &W[i], ldw,
+                        &ONE, &A[i + i * lda], 1);
+            zlacgv(i, &W[i], ldw);
+            zlacgv(i, &A[i], lda);
             cblas_zgemv(CblasColMajor, CblasNoTrans,
-                        n - ii + 1, ii - 1, &NEG_ONE,
-                        &W[ii - 1], ldw,
-                        &A[ii - 1], lda,
-                        &ONE, &A[(ii - 1) + (ii - 1) * lda], 1);
-            zlacgv(ii - 1, &A[ii - 1], lda);
-            A[(ii - 1) + (ii - 1) * lda] = CMPLX(creal(A[(ii - 1) + (ii - 1) * lda]), 0.0);
+                        n - i, i, &NEG_ONE,
+                        &W[i], ldw,
+                        &A[i], lda,
+                        &ONE, &A[i + i * lda], 1);
+            zlacgv(i, &A[i], lda);
+            A[i + i * lda] = CMPLX(creal(A[i + i * lda]), 0.0);
 
-            if (ii < n) {
-                /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
-                alpha = A[ii + (ii - 1) * lda];
-                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
-                zlarfg(n - ii,
+            if (i < n - 1) {
+                /* Generate elementary reflector H(i) to annihilate A(i+2:n-1, i). */
+                alpha = A[(i + 1) + i * lda];
+                INT min_row = (i + 2 < n - 1) ? (i + 2) : (n - 1);
+                zlarfg(n - i - 1,
                        &alpha,
-                       &A[min_row + (ii - 1) * lda],
+                       &A[min_row + i * lda],
                        1,
-                       &tau[ii - 1]);
+                       &tau[i]);
 
-                E[ii - 1] = creal(alpha);
-                A[ii + (ii - 1) * lda] = ONE;
+                E[i] = creal(alpha);
+                A[(i + 1) + i * lda] = ONE;
 
-                /* Compute W(ii+1:n, ii). */
+                /* Compute W(i+1:n-1, i). */
                 cblas_zhemv(CblasColMajor, CblasLower,
-                            n - ii, &ONE,
-                            &A[ii + ii * lda], lda,
-                            &A[ii + (ii - 1) * lda], 1,
-                            &ZERO, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, &ONE,
+                            &A[(i + 1) + (i + 1) * lda], lda,
+                            &A[(i + 1) + i * lda], 1,
+                            &ZERO, &W[(i + 1) + i * ldw], 1);
                 cblas_zgemv(CblasColMajor, CblasConjTrans,
-                            n - ii, ii - 1, &ONE,
-                            &W[ii], ldw,
-                            &A[ii + (ii - 1) * lda], 1,
-                            &ZERO, &W[(ii - 1) * ldw], 1);
+                            n - i - 1, i, &ONE,
+                            &W[i + 1], ldw,
+                            &A[(i + 1) + i * lda], 1,
+                            &ZERO, &W[i * ldw], 1);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
-                            n - ii, ii - 1, &NEG_ONE,
-                            &A[ii], lda,
-                            &W[(ii - 1) * ldw], 1,
-                            &ONE, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, i, &NEG_ONE,
+                            &A[i + 1], lda,
+                            &W[i * ldw], 1,
+                            &ONE, &W[(i + 1) + i * ldw], 1);
                 cblas_zgemv(CblasColMajor, CblasConjTrans,
-                            n - ii, ii - 1, &ONE,
-                            &A[ii], lda,
-                            &A[ii + (ii - 1) * lda], 1,
-                            &ZERO, &W[(ii - 1) * ldw], 1);
+                            n - i - 1, i, &ONE,
+                            &A[i + 1], lda,
+                            &A[(i + 1) + i * lda], 1,
+                            &ZERO, &W[i * ldw], 1);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
-                            n - ii, ii - 1, &NEG_ONE,
-                            &W[ii], ldw,
-                            &W[(ii - 1) * ldw], 1,
-                            &ONE, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, i, &NEG_ONE,
+                            &W[i + 1], ldw,
+                            &W[i * ldw], 1,
+                            &ONE, &W[(i + 1) + i * ldw], 1);
 
-                cblas_zscal(n - ii, &tau[ii - 1], &W[ii + (ii - 1) * ldw], 1);
+                cblas_zscal(n - i - 1, &tau[i], &W[(i + 1) + i * ldw], 1);
                 c128 dotc;
-                cblas_zdotc_sub(n - ii,
-                                &W[ii + (ii - 1) * ldw], 1,
-                                &A[ii + (ii - 1) * lda], 1,
+                cblas_zdotc_sub(n - i - 1,
+                                &W[(i + 1) + i * ldw], 1,
+                                &A[(i + 1) + i * lda], 1,
                                 &dotc);
-                alpha = -HALF * tau[ii - 1] * dotc;
-                cblas_zaxpy(n - ii, &alpha,
-                            &A[ii + (ii - 1) * lda], 1,
-                            &W[ii + (ii - 1) * ldw], 1);
+                alpha = -HALF * tau[i] * dotc;
+                cblas_zaxpy(n - i - 1, &alpha,
+                            &A[(i + 1) + i * lda], 1,
+                            &W[(i + 1) + i * ldw], 1);
             }
         }
     }
