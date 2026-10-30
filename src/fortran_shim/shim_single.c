@@ -1303,11 +1303,13 @@ void slaed3_(INT* k, INT* n, INT* n1, f32* D, f32* Q, INT* ldq, f32* rho, f32* d
 }
 
 void slaed4_(INT* n, INT* i, f32* D, f32* Z, f32* delta, f32* rho, f32* dlam, INT* info) {
-    slaed4(*n, *i, D, Z, delta, *rho, dlam, info);
+    INT _i = *i - 1;
+    slaed4(*n, _i, D, Z, delta, *rho, dlam, info);
 }
 
 void slaed5_(INT* i, f32* D, f32* Z, f32* delta, f32* rho, f32* dlam) {
-    slaed5(*i, D, Z, delta, *rho, dlam);
+    INT _i = *i - 1;
+    slaed5(_i, D, Z, delta, *rho, dlam);
 }
 
 void slaed6_(INT* kniter, INT* orgati, f32* rho, f32* D, f32* Z, f32* finit, f32* tau, INT* info) {
@@ -1323,7 +1325,8 @@ void slaed8_(INT* icompq, INT* K, INT* n, INT* qsiz, f32* D, f32* Q, INT* ldq, I
 }
 
 void slaed9_(INT* k, INT* kstart, INT* kstop, INT* n, f32* D, f32* Q, INT* ldq, f32* rho, f32* dlambda, f32* W, f32* S, INT* lds, INT* info) {
-    slaed9(*k, *kstart, *kstop, *n, D, Q, *ldq, *rho, dlambda, W, S, *lds, info);
+    INT _kstart = *kstart - 1;
+    slaed9(*k, _kstart, *kstop, *n, D, Q, *ldq, *rho, dlambda, W, S, *lds, info);
 }
 
 void slaeda_(INT* n, INT* tlvls, INT* curlvl, INT* curpbm, INT* prmptr, INT* perm, INT* givptr, INT* givcol, f32* givnum, f32* Q, INT* qptr, f32* Z, f32* ztemp, INT* info) {
@@ -1339,7 +1342,8 @@ void slaev2_(f32* a, f32* b, f32* c, f32* rt1, f32* rt2, f32* cs1, f32* sn1) {
 }
 
 void slaexc_(INT* wantq, INT* n, f32* T, INT* ldt, f32* Q, INT* ldq, INT* j1, INT* n1, INT* n2, f32* work, INT* info) {
-    slaexc(*wantq, *n, T, *ldt, Q, *ldq, *j1, *n1, *n2, work, info);
+    INT _j1 = *j1 - 1;
+    slaexc(*wantq, *n, T, *ldt, Q, *ldq, _j1, *n1, *n2, work, info);
 }
 
 void slag2_(f32* A, INT* lda, f32* B, INT* ldb, f32* safmin, f32* scale1, f32* scale2, f32* wr1, f32* wr2, f32* wi) {
@@ -1375,7 +1379,8 @@ void slahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, f32* H, INT* ld
 }
 
 void slahr2_(INT* n, INT* k, INT* nb, f32* A, INT* lda, f32* tau, f32* T, INT* ldt, f32* Y, INT* ldy) {
-    slahr2(*n, *k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
+    INT _k = *k - 1;
+    slahr2(*n, _k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
 }
 
 void slaic1_(INT* job, INT* j, f32* x, f32* sest, f32* w, f32* gamma, f32* sestpr, f32* s, f32* c) {
@@ -1535,7 +1540,9 @@ void slaqz2_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, f3
     INT _istartm = *istartm - 1;
     INT _istopm = *istopm - 1;
     INT _ihi = *ihi - 1;
-    slaqz2(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _qstart = *qstart - 1;
+    INT _zstart = *zstart - 1;
+    slaqz2(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, _qstart, Q, *ldq, *nz, _zstart, Z, *ldz);
 }
 
 void slaqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, f32* A, INT* lda, f32* B, INT* ldb, f32* Q, INT* ldq, f32* Z, INT* ldz, INT* ns, INT* nd, f32* alphar, f32* alphai, f32* beta, f32* QC, INT* ldqc, f32* ZC, INT* ldzc, f32* work, INT* lwork, INT* rec, INT* info) {
@@ -1551,8 +1558,10 @@ void slaqz4_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void slar1v_(INT* n, INT* b1, INT* bn, f32* lambda, f32* D, f32* L, f32* LD, f32* LLD, f32* pivmin, f32* gaptol, f32* Z, INT* wantnc, INT* negcnt, f32* ztz, f32* mingma, INT* r, INT* isuppz, f32* nrminv, f32* resid, f32* rqcorr, f32* work) {
+    INT _b1 = *b1 - 1;
+    INT _bn = *bn - 1;
     INT _r = *r - 1;
-    slar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    slar1v(*n, _b1, _bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
     *r = _r + 1;
     if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
@@ -1623,7 +1632,10 @@ void slarra_(INT* n, f32* D, f32* E, f32* E2, f32* spltol, f32* tnrm, INT* nspli
 }
 
 void slarrb_(INT* n, f32* D, f32* lld, INT* ifirst, INT* ilast, f32* rtol1, f32* rtol2, INT* offset, f32* W, f32* wgap, f32* werr, f32* work, INT* iwork, f32* pivmin, f32* spdiam, INT* twist, INT* info) {
-    slarrb(*n, D, lld, *ifirst, *ilast, *rtol1, *rtol2, *offset, W, wgap, werr, work, iwork, *pivmin, *spdiam, *twist, info);
+    INT _ifirst = *ifirst - 1;
+    INT _ilast = *ilast - 1;
+    INT _twist = *twist - 1;
+    slarrb(*n, D, lld, _ifirst, _ilast, *rtol1, *rtol2, *offset, W, wgap, werr, work, iwork, *pivmin, *spdiam, _twist, info);
 }
 
 void slarrc_(char* jobt, INT* n, f32* vl, f32* vu, f32* D, f32* E, f32* pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info) {
@@ -1649,11 +1661,15 @@ void slarre_(char* range, INT* n, f32* vl, f32* vu, INT* il, INT* iu, f32* D, f3
 }
 
 void slarrf_(INT* n, f32* D, f32* L, f32* LD, INT* clstrt, INT* clend, f32* W, f32* wgap, f32* werr, f32* spdiam, f32* clgapl, f32* clgapr, f32* pivmin, f32* sigma, f32* dplus, f32* lplus, f32* work, INT* info) {
-    slarrf(*n, D, L, LD, *clstrt, *clend, W, wgap, werr, *spdiam, *clgapl, *clgapr, *pivmin, sigma, dplus, lplus, work, info);
+    INT _clstrt = *clstrt - 1;
+    INT _clend = *clend - 1;
+    slarrf(*n, D, L, LD, _clstrt, _clend, W, wgap, werr, *spdiam, *clgapl, *clgapr, *pivmin, sigma, dplus, lplus, work, info);
 }
 
 void slarrj_(INT* n, f32* D, f32* E2, INT* ifirst, INT* ilast, f32* rtol, INT* offset, f32* W, f32* werr, f32* work, INT* iwork, f32* pivmin, f32* spdiam, INT* info) {
-    slarrj(*n, D, E2, *ifirst, *ilast, *rtol, *offset, W, werr, work, iwork, *pivmin, *spdiam, info);
+    INT _ifirst = *ifirst - 1;
+    INT _ilast = *ilast - 1;
+    slarrj(*n, D, E2, _ifirst, _ilast, *rtol, *offset, W, werr, work, iwork, *pivmin, *spdiam, info);
 }
 
 void slarrk_(INT* n, INT* iw, f32* gl, f32* gu, f32* D, f32* E2, f32* pivmin, f32* reltol, f32* w, f32* werr, INT* info) {
@@ -1665,6 +1681,8 @@ void slarrr_(INT* n, f32* D, f32* E, INT* info) {
 }
 
 void slarrv_(INT* n, f32* vl, f32* vu, f32* D, f32* L, f32* pivmin, INT* isplit, INT* m, INT* dol, INT* dou, f32* minrgp, f32* rtol1, f32* rtol2, f32* W, f32* werr, f32* wgap, INT* iblock, INT* indexw, f32* gers, f32* Z, INT* ldz, INT* isuppz, f32* work, INT* iwork, INT* info) {
+    INT _dol = *dol - 1;
+    INT _dou = *dou - 1;
     INT* _isplit0 = NULL;
     INT* _iblock0 = NULL;
     INT* _indexw0 = NULL;
@@ -1683,7 +1701,7 @@ void slarrv_(INT* n, f32* vl, f32* vu, f32* D, f32* L, f32* pivmin, INT* isplit,
         _indexw0 = (INT*)malloc(_indexw_sz * sizeof(INT));
         for (INT _i = 0; _i < _indexw_sz; _i++) _indexw0[_i] = (indexw[_i] > 0) ? indexw[_i] - 1 : indexw[_i];
     }
-    slarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, *dol, *dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
+    slarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, _dol, _dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
     if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     free(_isplit0);
     free(_iblock0);
@@ -1797,19 +1815,29 @@ void slasq2_(INT* n, f32* Z, INT* info) {
 }
 
 void slasq3_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* sigma, f32* desig, f32* qmax, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau) {
-    slasq3(*i0, n0, Z, pp, dmin, sigma, desig, qmax, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
+    INT _i0 = *i0 - 1;
+    INT _n0 = *n0 - 1;
+    slasq3(_i0, &_n0, Z, pp, dmin, sigma, desig, qmax, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
+    *n0 = _n0 + 1;
 }
 
 void slasq4_(INT* i0, INT* n0, f32* Z, INT* pp, INT* n0in, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* tau, INT* ttype, f32* g) {
-    slasq4(*i0, *n0, Z, *pp, *n0in, *dmin, *dmin1, *dmin2, *dn, *dn1, *dn2, tau, ttype, g);
+    INT _i0 = *i0 - 1;
+    INT _n0 = *n0 - 1;
+    INT _n0in = *n0in - 1;
+    slasq4(_i0, _n0, Z, *pp, _n0in, *dmin, *dmin1, *dmin2, *dn, *dn1, *dn2, tau, ttype, g);
 }
 
 void slasq5_(INT* i0, INT* n0, f32* Z, INT* pp, f32* tau, f32* sigma, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2, INT* ieee, f32* eps) {
-    slasq5(*i0, *n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
+    INT _i0 = *i0 - 1;
+    INT _n0 = *n0 - 1;
+    slasq5(_i0, _n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
 }
 
 void slasq6_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2) {
-    slasq6(*i0, *n0, Z, *pp, dmin, dmin1, dmin2, dn, dnm1, dnm2);
+    INT _i0 = *i0 - 1;
+    INT _n0 = *n0 - 1;
+    slasq6(_i0, _n0, Z, *pp, dmin, dmin1, dmin2, dn, dnm1, dnm2);
 }
 
 void slasr_(char* side, char* pivot, char* direct, INT* m, INT* n, f32* C_rot, f32* S_rot, f32* A, INT* lda) {
@@ -2811,7 +2839,9 @@ void ssysvx_(char* fact, char* uplo, INT* n, INT* nrhs, f32* A, INT* lda, f32* A
 }
 
 void ssyswapr_(char* uplo, INT* n, f32* A, INT* lda, INT* i1, INT* i2) {
-    ssyswapr(uplo, *n, A, *lda, *i1, *i2);
+    INT _i1 = *i1 - 1;
+    INT _i2 = *i2 - 1;
+    ssyswapr(uplo, *n, A, *lda, _i1, _i2);
 }
 
 void ssytd2_(char* uplo, INT* n, f32* A, INT* lda, f32* D, f32* E, f32* tau, INT* info) {
@@ -3081,7 +3111,8 @@ void stgevc_(char* side, char* howmny, INT* select, INT* n, f32* S, INT* lds, f3
 }
 
 void stgex2_(INT* wantq, INT* wantz, INT* n, f32* A, INT* lda, f32* B, INT* ldb, f32* Q, INT* ldq, f32* Z, INT* ldz, INT* j1, INT* n1, INT* n2, f32* work, INT* lwork, INT* info) {
-    stgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, *j1, *n1, *n2, work, *lwork, info);
+    INT _j1 = *j1 - 1;
+    stgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, _j1, *n1, *n2, work, *lwork, info);
 }
 
 void stgexc_(INT* wantq, INT* wantz, INT* n, f32* A, INT* lda, f32* B, INT* ldb, f32* Q, INT* ldq, f32* Z, INT* ldz, INT* ifst, INT* ilst, f32* work, INT* lwork, INT* info) {

@@ -1495,7 +1495,9 @@ void chesvx_(char* fact, char* uplo, INT* n, INT* nrhs, c64* A, INT* lda, c64* A
 }
 
 void cheswapr_(char* uplo, INT* n, c64* A, INT* lda, INT* i1, INT* i2) {
-    cheswapr(uplo, *n, A, *lda, *i1, *i2);
+    INT _i1 = *i1 - 1;
+    INT _i2 = *i2 - 1;
+    cheswapr(uplo, *n, A, *lda, _i1, _i2);
 }
 
 void chetd2_(char* uplo, INT* n, c64* A, INT* lda, f32* D, f32* E, c64* tau, INT* info) {
@@ -1965,7 +1967,8 @@ void clalsd_(char* uplo, INT* smlsiz, INT* n, INT* nrhs, f32* D, f32* E, c64* B,
 }
 
 void clahr2_(INT* n, INT* k, INT* nb, c64* A, INT* lda, c64* tau, c64* T, INT* ldt, c64* Y, INT* ldy) {
-    clahr2(*n, *k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
+    INT _k = *k - 1;
+    clahr2(*n, _k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
 }
 
 void clahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c64* H, INT* ldh, c64* W, INT* iloz, INT* ihiz, c64* Z, INT* ldz, INT* info) {
@@ -2105,7 +2108,9 @@ void claqz1_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, c6
     INT _istartm = *istartm - 1;
     INT _istopm = *istopm - 1;
     INT _ihi = *ihi - 1;
-    claqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _qstart = *qstart - 1;
+    INT _zstart = *zstart - 1;
+    claqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, _qstart, Q, *ldq, *nz, _zstart, Z, *ldz);
 }
 
 void claqz2_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, c64* A, INT* lda, c64* B, INT* ldb, c64* Q, INT* ldq, c64* Z, INT* ldz, INT* ns, INT* nd, c64* alpha, c64* beta, c64* QC, INT* ldqc, c64* ZC, INT* ldzc, c64* work, INT* lwork, f32* rwork, INT* rec, INT* info) {
@@ -2121,8 +2126,10 @@ void claqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void clar1v_(INT* n, INT* b1, INT* bn, f32* lambda, f32* D, f32* L, f32* LD, f32* LLD, f32* pivmin, f32* gaptol, c64* Z, INT* wantnc, INT* negcnt, f32* ztz, f32* mingma, INT* r, INT* isuppz, f32* nrminv, f32* resid, f32* rqcorr, f32* work) {
+    INT _b1 = *b1 - 1;
+    INT _bn = *bn - 1;
     INT _r = *r - 1;
-    clar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    clar1v(*n, _b1, _bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
     *r = _r + 1;
     if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
@@ -2188,6 +2195,8 @@ void clarnv_(INT* idist, INT* iseed, INT* n, c64* X) {
 }
 
 void clarrv_(INT* n, f32* vl, f32* vu, f32* D, f32* L, f32* pivmin, INT* isplit, INT* m, INT* dol, INT* dou, f32* minrgp, f32* rtol1, f32* rtol2, f32* W, f32* werr, f32* wgap, INT* iblock, INT* indexw, f32* gers, c64* Z, INT* ldz, INT* isuppz, f32* work, INT* iwork, INT* info) {
+    INT _dol = *dol - 1;
+    INT _dou = *dou - 1;
     INT* _isplit0 = NULL;
     INT* _iblock0 = NULL;
     INT* _indexw0 = NULL;
@@ -2206,7 +2215,7 @@ void clarrv_(INT* n, f32* vl, f32* vu, f32* D, f32* L, f32* pivmin, INT* isplit,
         _indexw0 = (INT*)malloc(_indexw_sz * sizeof(INT));
         for (INT _i = 0; _i < _indexw_sz; _i++) _indexw0[_i] = (indexw[_i] > 0) ? indexw[_i] - 1 : indexw[_i];
     }
-    clarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, *dol, *dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
+    clarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, _dol, _dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
     if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     free(_isplit0);
     free(_iblock0);
@@ -2811,7 +2820,9 @@ void csysvx_(char* fact, char* uplo, INT* n, INT* nrhs, c64* A, INT* lda, c64* A
 }
 
 void csyswapr_(char* uplo, INT* n, c64* A, INT* lda, INT* i1, INT* i2) {
-    csyswapr(uplo, *n, A, *lda, *i1, *i2);
+    INT _i1 = *i1 - 1;
+    INT _i2 = *i2 - 1;
+    csyswapr(uplo, *n, A, *lda, _i1, _i2);
 }
 
 void csytf2_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, INT* info) {
@@ -3057,7 +3068,8 @@ void ctfttr_(char* transr, char* uplo, INT* n, c64* ARF, c64* A, INT* lda, INT* 
 }
 
 void ctgex2_(INT* wantq, INT* wantz, INT* n, c64* A, INT* lda, c64* B, INT* ldb, c64* Q, INT* ldq, c64* Z, INT* ldz, INT* j1, INT* info) {
-    ctgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, *j1, info);
+    INT _j1 = *j1 - 1;
+    ctgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, _j1, info);
 }
 
 void ctgexc_(INT* wantq, INT* wantz, INT* n, c64* A, INT* lda, c64* B, INT* ldb, c64* Q, INT* ldq, c64* Z, INT* ldz, INT* ifst, INT* ilst, INT* info) {

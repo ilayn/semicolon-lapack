@@ -1511,7 +1511,9 @@ void zhesvx_(char* fact, char* uplo, INT* n, INT* nrhs, c128* A, INT* lda, c128*
 }
 
 void zheswapr_(char* uplo, INT* n, c128* A, INT* lda, INT* i1, INT* i2) {
-    zheswapr(uplo, *n, A, *lda, *i1, *i2);
+    INT _i1 = *i1 - 1;
+    INT _i2 = *i2 - 1;
+    zheswapr(uplo, *n, A, *lda, _i1, _i2);
 }
 
 void zhetd2_(char* uplo, INT* n, c128* A, INT* lda, f64* D, f64* E, c128* tau, INT* info) {
@@ -1981,7 +1983,8 @@ void zlalsd_(char* uplo, INT* smlsiz, INT* n, INT* nrhs, f64* D, f64* E, c128* B
 }
 
 void zlahr2_(INT* n, INT* k, INT* nb, c128* A, INT* lda, c128* tau, c128* T, INT* ldt, c128* Y, INT* ldy) {
-    zlahr2(*n, *k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
+    INT _k = *k - 1;
+    zlahr2(*n, _k, *nb, A, *lda, tau, T, *ldt, Y, *ldy);
 }
 
 void zlahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c128* H, INT* ldh, c128* W, INT* iloz, INT* ihiz, c128* Z, INT* ldz, INT* info) {
@@ -2121,7 +2124,9 @@ void zlaqz1_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, c1
     INT _istartm = *istartm - 1;
     INT _istopm = *istopm - 1;
     INT _ihi = *ihi - 1;
-    zlaqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _qstart = *qstart - 1;
+    INT _zstart = *zstart - 1;
+    zlaqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, _qstart, Q, *ldq, *nz, _zstart, Z, *ldz);
 }
 
 void zlaqz2_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, c128* A, INT* lda, c128* B, INT* ldb, c128* Q, INT* ldq, c128* Z, INT* ldz, INT* ns, INT* nd, c128* alpha, c128* beta, c128* QC, INT* ldqc, c128* ZC, INT* ldzc, c128* work, INT* lwork, f64* rwork, INT* rec, INT* info) {
@@ -2137,8 +2142,10 @@ void zlaqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void zlar1v_(INT* n, INT* b1, INT* bn, f64* lambda, f64* D, f64* L, f64* LD, f64* LLD, f64* pivmin, f64* gaptol, c128* Z, INT* wantnc, INT* negcnt, f64* ztz, f64* mingma, INT* r, INT* isuppz, f64* nrminv, f64* resid, f64* rqcorr, f64* work) {
+    INT _b1 = *b1 - 1;
+    INT _bn = *bn - 1;
     INT _r = *r - 1;
-    zlar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    zlar1v(*n, _b1, _bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
     *r = _r + 1;
     if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
@@ -2204,6 +2211,8 @@ void zlarnv_(INT* idist, INT* iseed, INT* n, c128* X) {
 }
 
 void zlarrv_(INT* n, f64* vl, f64* vu, f64* D, f64* L, f64* pivmin, INT* isplit, INT* m, INT* dol, INT* dou, f64* minrgp, f64* rtol1, f64* rtol2, f64* W, f64* werr, f64* wgap, INT* iblock, INT* indexw, f64* gers, c128* Z, INT* ldz, INT* isuppz, f64* work, INT* iwork, INT* info) {
+    INT _dol = *dol - 1;
+    INT _dou = *dou - 1;
     INT* _isplit0 = NULL;
     INT* _iblock0 = NULL;
     INT* _indexw0 = NULL;
@@ -2222,7 +2231,7 @@ void zlarrv_(INT* n, f64* vl, f64* vu, f64* D, f64* L, f64* pivmin, INT* isplit,
         _indexw0 = (INT*)malloc(_indexw_sz * sizeof(INT));
         for (INT _i = 0; _i < _indexw_sz; _i++) _indexw0[_i] = (indexw[_i] > 0) ? indexw[_i] - 1 : indexw[_i];
     }
-    zlarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, *dol, *dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
+    zlarrv(*n, *vl, *vu, D, L, *pivmin, _isplit0, *m, _dol, _dou, *minrgp, *rtol1, *rtol2, W, werr, wgap, _iblock0, _indexw0, gers, Z, *ldz, isuppz, work, iwork, info);
     if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     free(_isplit0);
     free(_iblock0);
@@ -2827,7 +2836,9 @@ void zsysvx_(char* fact, char* uplo, INT* n, INT* nrhs, c128* A, INT* lda, c128*
 }
 
 void zsyswapr_(char* uplo, INT* n, c128* A, INT* lda, INT* i1, INT* i2) {
-    zsyswapr(uplo, *n, A, *lda, *i1, *i2);
+    INT _i1 = *i1 - 1;
+    INT _i2 = *i2 - 1;
+    zsyswapr(uplo, *n, A, *lda, _i1, _i2);
 }
 
 void zsytf2_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, INT* info) {
@@ -3073,7 +3084,8 @@ void ztfttr_(char* transr, char* uplo, INT* n, c128* ARF, c128* A, INT* lda, INT
 }
 
 void ztgex2_(INT* wantq, INT* wantz, INT* n, c128* A, INT* lda, c128* B, INT* ldb, c128* Q, INT* ldq, c128* Z, INT* ldz, INT* j1, INT* info) {
-    ztgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, *j1, info);
+    INT _j1 = *j1 - 1;
+    ztgex2(*wantq, *wantz, *n, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, _j1, info);
 }
 
 void ztgexc_(INT* wantq, INT* wantz, INT* n, c128* A, INT* lda, c128* B, INT* ldb, c128* Q, INT* ldq, c128* Z, INT* ldz, INT* ifst, INT* ilst, INT* info) {
