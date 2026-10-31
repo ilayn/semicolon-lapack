@@ -251,7 +251,7 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
                     work[k + (iv + 1) * n] = czero;
                 }
 
-                /* Columns IV:NB-1 of work are valid vectors.
+                /* Columns IV+1:NB of work are valid vectors.
                  * When the number of vectors stored reaches NB,
                  * or if this was last vector, do the GEMM */
                 if (iv == 0 || ki == 0) {
@@ -359,7 +359,7 @@ R80:        ;
                     work[k + (iv + 1) * n] = czero;
                 }
 
-                /* Columns 0:IV of work are valid vectors.
+                /* Columns 1:IV+1 of work are valid vectors.
                  * When the number of vectors stored reaches NB,
                  * or if this was last vector, do the GEMM */
                 if (iv == nb - 1 || ki == n - 1) {

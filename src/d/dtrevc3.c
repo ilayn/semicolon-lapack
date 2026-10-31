@@ -518,7 +518,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     ki2 = ki - 1;
                 }
 
-                /* Columns IV:NB-1 of work are valid vectors.
+                /* Columns IV+1:NB of work are valid vectors.
                  * When the number of vectors stored reaches NB-1 or NB,
                  * or if this was last vector, do the GEMM */
                 if ((iv <= 1) || (ki2 == 0)) {
@@ -947,7 +947,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     ki2 = ki + 1;
                 }
 
-                /* Columns 0:iv of work are valid vectors.
+                /* Columns 1:IV+1 of work are valid vectors.
                  * When the number of vectors stored reaches nb-1 or nb,
                  * or if this was last vector, do the GEMM */
                 if ((iv >= nb - 2) || (ki2 == n - 1)) {
