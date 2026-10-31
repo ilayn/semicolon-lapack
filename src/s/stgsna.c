@@ -164,7 +164,7 @@ void stgsna(
     /* Get machine constants */
     eps = slamch("P");
     smlnum = slamch("S") / eps;
-    ks = 0;
+    ks = -1;
     pair = 0;
 
     for (k = 0; k < n; k++) {
@@ -202,59 +202,59 @@ void stgsna(
             if (pair) {
 
                 /* Complex eigenvalue pair. */
-                rnrm = slapy2(cblas_snrm2(n, &VR[0 + (ks - 1) * ldvr], 1),
-                              cblas_snrm2(n, &VR[0 + ks * ldvr], 1));
-                lnrm = slapy2(cblas_snrm2(n, &VL[0 + (ks - 1) * ldvl], 1),
-                              cblas_snrm2(n, &VL[0 + ks * ldvl], 1));
-                cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, A, lda,
-                            &VR[0 + (ks - 1) * ldvr], 1, ZERO, work, 1);
-                tmprr = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
-                tmpri = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
+                rnrm = slapy2(cblas_snrm2(n, &VR[0 + ks * ldvr], 1),
+                              cblas_snrm2(n, &VR[0 + (ks + 1) * ldvr], 1));
+                lnrm = slapy2(cblas_snrm2(n, &VL[0 + ks * ldvl], 1),
+                              cblas_snrm2(n, &VL[0 + (ks + 1) * ldvl], 1));
                 cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, A, lda,
                             &VR[0 + ks * ldvr], 1, ZERO, work, 1);
-                tmpii = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
-                tmpir = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
+                tmprr = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
+                tmpri = cblas_sdot(n, work, 1, &VL[0 + (ks + 1) * ldvl], 1);
+                cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, A, lda,
+                            &VR[0 + (ks + 1) * ldvr], 1, ZERO, work, 1);
+                tmpii = cblas_sdot(n, work, 1, &VL[0 + (ks + 1) * ldvl], 1);
+                tmpir = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
                 uhav = tmprr + tmpii;
                 uhavi = tmpir - tmpri;
                 cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, B, ldb,
-                            &VR[0 + (ks - 1) * ldvr], 1, ZERO, work, 1);
-                tmprr = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
-                tmpri = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
-                cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, B, ldb,
                             &VR[0 + ks * ldvr], 1, ZERO, work, 1);
-                tmpii = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
-                tmpir = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
+                tmprr = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
+                tmpri = cblas_sdot(n, work, 1, &VL[0 + (ks + 1) * ldvl], 1);
+                cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, B, ldb,
+                            &VR[0 + (ks + 1) * ldvr], 1, ZERO, work, 1);
+                tmpii = cblas_sdot(n, work, 1, &VL[0 + (ks + 1) * ldvl], 1);
+                tmpir = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
                 uhbv = tmprr + tmpii;
                 uhbvi = tmpir - tmpri;
                 uhav = slapy2(uhav, uhavi);
                 uhbv = slapy2(uhbv, uhbvi);
                 cond = slapy2(uhav, uhbv);
-                S[ks - 1] = cond / (rnrm * lnrm);
-                S[ks] = S[ks - 1];
+                S[ks] = cond / (rnrm * lnrm);
+                S[ks + 1] = S[ks];
 
             } else {
 
                 /* Real eigenvalue. */
-                rnrm = cblas_snrm2(n, &VR[0 + (ks - 1) * ldvr], 1);
-                lnrm = cblas_snrm2(n, &VL[0 + (ks - 1) * ldvl], 1);
+                rnrm = cblas_snrm2(n, &VR[0 + ks * ldvr], 1);
+                lnrm = cblas_snrm2(n, &VL[0 + ks * ldvl], 1);
                 cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, A, lda,
-                            &VR[0 + (ks - 1) * ldvr], 1, ZERO, work, 1);
-                uhav = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
+                            &VR[0 + ks * ldvr], 1, ZERO, work, 1);
+                uhav = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
                 cblas_sgemv(CblasColMajor, CblasNoTrans, n, n, ONE, B, ldb,
-                            &VR[0 + (ks - 1) * ldvr], 1, ZERO, work, 1);
-                uhbv = cblas_sdot(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1);
+                            &VR[0 + ks * ldvr], 1, ZERO, work, 1);
+                uhbv = cblas_sdot(n, work, 1, &VL[0 + ks * ldvl], 1);
                 cond = slapy2(uhav, uhbv);
                 if (cond == ZERO) {
-                    S[ks - 1] = -ONE;
+                    S[ks] = -ONE;
                 } else {
-                    S[ks - 1] = cond / (rnrm * lnrm);
+                    S[ks] = cond / (rnrm * lnrm);
                 }
             }
         }
 
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = slapy2(A[0 + 0 * lda], B[0 + 0 * ldb]);
+                dif[ks] = slapy2(A[0 + 0 * lda], B[0 + 0 * ldb]);
                 continue;
             }
 
@@ -297,7 +297,7 @@ void stgsna(
             if (ierr > 0) {
 
                 /* Ill-conditioned problem - swap rejected. */
-                dif[ks - 1] = ZERO;
+                dif[ks] = ZERO;
             } else {
 
                 /* Reordering successful, solve generalized Sylvester
@@ -308,24 +308,24 @@ void stgsna(
                 }
                 n2 = n - n1;
                 if (n2 == 0) {
-                    dif[ks - 1] = cond;
+                    dif[ks] = cond;
                 } else {
                     i = n * n;
                     iz = 2 * n * n;
                     stgsyl("N", DIFDRI, n2, n1,
                            &work[n * n1 + n1], n, work, n, &work[n1], n,
                            &work[n * n1 + n1 + i], n, &work[i], n,
-                           &work[n1 + i], n, &scale, &dif[ks - 1],
+                           &work[n1 + i], n, &scale, &dif[ks],
                            &work[iz], lwork - 2 * n * n, iwork, &ierr);
 
                     if (pair) {
-                        f32 tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks - 1];
-                        dif[ks - 1] = tmp < cond ? tmp : cond;
+                        f32 tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks];
+                        dif[ks] = tmp < cond ? tmp : cond;
                     }
                 }
             }
             if (pair) {
-                dif[ks] = dif[ks - 1];
+                dif[ks + 1] = dif[ks];
             }
         }
         if (pair) {

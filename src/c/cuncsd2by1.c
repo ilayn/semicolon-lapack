@@ -178,7 +178,7 @@ void cuncsd2by1(
     if (m - q < r) r = m - q;
 
     if (*info == 0) {
-        iphi = 2;
+        iphi = 1;
         ib11d = iphi + (1 > (r - 1) ? 1 : (r - 1));
         ib11e = ib11d + (1 > r ? 1 : r);
         ib12d = ib11e + (1 > (r - 1) ? 1 : (r - 1));
@@ -188,7 +188,7 @@ void cuncsd2by1(
         ib22d = ib21e + (1 > (r - 1) ? 1 : (r - 1));
         ib22e = ib22d + (1 > r ? 1 : r);
         ibbcsd = ib22e + (1 > (r - 1) ? 1 : (r - 1));
-        itaup1 = 2;
+        itaup1 = 1;
         itaup2 = itaup1 + (1 > p ? 1 : p);
         itauq1 = itaup2 + (1 > (m - p) ? 1 : (m - p));
         iorbdb = itauq1 + (1 > q ? 1 : q);
@@ -298,17 +298,17 @@ void cuncsd2by1(
             lbbcsd = (INT)rwork[0];
         }
 
-        lrworkmin = ibbcsd + lbbcsd - 1;
+        lrworkmin = ibbcsd + lbbcsd;
         lrworkopt = lrworkmin;
         rwork[0] = (f32)lrworkopt;
 
-        lworkmin = iorbdb + lorbdb - 1;
-        if (iorgqr + lorgqrmin - 1 > lworkmin) lworkmin = iorgqr + lorgqrmin - 1;
-        if (iorglq + lorglqmin - 1 > lworkmin) lworkmin = iorglq + lorglqmin - 1;
+        lworkmin = iorbdb + lorbdb;
+        if (iorgqr + lorgqrmin > lworkmin) lworkmin = iorgqr + lorgqrmin;
+        if (iorglq + lorglqmin > lworkmin) lworkmin = iorglq + lorglqmin;
 
-        lworkopt = iorbdb + lorbdb - 1;
-        if (iorgqr + lorgqropt - 1 > lworkopt) lworkopt = iorgqr + lorgqropt - 1;
-        if (iorglq + lorglqopt - 1 > lworkopt) lworkopt = iorglq + lorglqopt - 1;
+        lworkopt = iorbdb + lorbdb;
+        if (iorgqr + lorgqropt > lworkopt) lworkopt = iorgqr + lorgqropt;
+        if (iorglq + lorglqopt > lworkopt) lworkopt = iorglq + lorglqopt;
 
         work[0] = CMPLXF(sroundup_lwork(lworkopt), 0.0f);
         if (lwork < lworkmin && !lquery) {
@@ -326,8 +326,8 @@ void cuncsd2by1(
         return;
     }
 
-    lorgqr = lwork - iorgqr + 1;
-    lorglq = lwork - iorglq + 1;
+    lorgqr = lwork - iorgqr;
+    lorglq = lwork - iorglq;
 
     if (r == 0) {
 
@@ -362,18 +362,18 @@ void cuncsd2by1(
     if (r == q) {
 
         cunbdb1(m, p, q, X11, ldx11, X21, ldx21, theta,
-                &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1],
-                &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, &childinfo);
+                &rwork[iphi], &work[itaup1], &work[itaup2],
+                &work[itauq1], &work[iorbdb], lorbdb, &childinfo);
 
         if (wantu1 && p > 0) {
             clacpy("L", p, q, X11, ldx11, U1, ldu1);
-            cungqr(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantu2 && m - p > 0) {
             clacpy("L", m - p, q, X21, ldx21, U2, ldu2);
-            cungqr(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantv1t && q > 0) {
             V1T[0] = one;
@@ -383,15 +383,15 @@ void cuncsd2by1(
             }
             clacpy("U", q - 1, q - 1, &X21[1 * ldx21], ldx21, &V1T[1 + 1 * ldv1t], ldv1t);
             cunglq(q - 1, q - 1, q - 1, &V1T[1 + 1 * ldv1t], ldv1t,
-                   &work[itauq1 - 1], &work[iorglq - 1], lorglq, &childinfo);
+                   &work[itauq1], &work[iorglq], lorglq, &childinfo);
         }
 
         cbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta,
-               &rwork[iphi - 1], U1, ldu1, U2, ldu2, V1T, ldv1t,
-               cdum, 1, &rwork[ib11d - 1], &rwork[ib11e - 1],
-               &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1],
-               &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1],
-               &rwork[ibbcsd - 1], lrwork - ibbcsd + 1, &childinfo);
+               &rwork[iphi], U1, ldu1, U2, ldu2, V1T, ldv1t,
+               cdum, 1, &rwork[ib11d], &rwork[ib11e],
+               &rwork[ib12d], &rwork[ib12e], &rwork[ib21d],
+               &rwork[ib21e], &rwork[ib22d], &rwork[ib22e],
+               &rwork[ibbcsd], lrwork - ibbcsd, &childinfo);
 
         if (q > 0 && wantu2) {
             for (i = 0; i < q; i++) {
@@ -406,8 +406,8 @@ void cuncsd2by1(
     } else if (r == p) {
 
         cunbdb2(m, p, q, X11, ldx11, X21, ldx21, theta,
-                &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1],
-                &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, &childinfo);
+                &rwork[iphi], &work[itaup1], &work[itaup2],
+                &work[itauq1], &work[iorbdb], lorbdb, &childinfo);
 
         if (wantu1 && p > 0) {
             U1[0] = one;
@@ -416,25 +416,25 @@ void cuncsd2by1(
                 U1[j] = zero_c;
             }
             clacpy("L", p - 1, p - 1, &X11[1], ldx11, &U1[1 + 1 * ldu1], ldu1);
-            cungqr(p - 1, p - 1, p - 1, &U1[1 + 1 * ldu1], ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(p - 1, p - 1, p - 1, &U1[1 + 1 * ldu1], ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantu2 && m - p > 0) {
             clacpy("L", m - p, q, X21, ldx21, U2, ldu2);
-            cungqr(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantv1t && q > 0) {
             clacpy("U", p, q, X11, ldx11, V1T, ldv1t);
-            cunglq(q, q, r, V1T, ldv1t, &work[itauq1 - 1],
-                   &work[iorglq - 1], lorglq, &childinfo);
+            cunglq(q, q, r, V1T, ldv1t, &work[itauq1],
+                   &work[iorglq], lorglq, &childinfo);
         }
 
         cbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta,
-               &rwork[iphi - 1], V1T, ldv1t, cdum, 1, U1, ldu1, U2, ldu2,
-               &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1],
-               &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1],
-               &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd,
+               &rwork[iphi], V1T, ldv1t, cdum, 1, U1, ldu1, U2, ldu2,
+               &rwork[ib11d], &rwork[ib11e], &rwork[ib12d],
+               &rwork[ib12e], &rwork[ib21d], &rwork[ib21e],
+               &rwork[ib22d], &rwork[ib22e], &rwork[ibbcsd], lbbcsd,
                &childinfo);
 
         if (q > 0 && wantu2) {
@@ -450,13 +450,13 @@ void cuncsd2by1(
     } else if (r == m - p) {
 
         cunbdb3(m, p, q, X11, ldx11, X21, ldx21, theta,
-                &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1],
-                &work[itauq1 - 1], &work[iorbdb - 1], lorbdb, &childinfo);
+                &rwork[iphi], &work[itaup1], &work[itaup2],
+                &work[itauq1], &work[iorbdb], lorbdb, &childinfo);
 
         if (wantu1 && p > 0) {
             clacpy("L", p, q, X11, ldx11, U1, ldu1);
-            cungqr(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantu2 && m - p > 0) {
             U2[0] = one;
@@ -466,19 +466,19 @@ void cuncsd2by1(
             }
             clacpy("L", m - p - 1, m - p - 1, &X21[1], ldx21, &U2[1 + 1 * ldu2], ldu2);
             cungqr(m - p - 1, m - p - 1, m - p - 1, &U2[1 + 1 * ldu2], ldu2,
-                   &work[itaup2 - 1], &work[iorgqr - 1], lorgqr, &childinfo);
+                   &work[itaup2], &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantv1t && q > 0) {
             clacpy("U", m - p, q, X21, ldx21, V1T, ldv1t);
-            cunglq(q, q, r, V1T, ldv1t, &work[itauq1 - 1],
-                   &work[iorglq - 1], lorglq, &childinfo);
+            cunglq(q, q, r, V1T, ldv1t, &work[itauq1],
+                   &work[iorglq], lorglq, &childinfo);
         }
 
         cbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta,
-               &rwork[iphi - 1], cdum, 1, V1T, ldv1t, U2, ldu2, U1, ldu1,
-               &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1],
-               &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1],
-               &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd,
+               &rwork[iphi], cdum, 1, V1T, ldv1t, U2, ldu2, U1, ldu1,
+               &rwork[ib11d], &rwork[ib11e], &rwork[ib12d],
+               &rwork[ib12e], &rwork[ib21d], &rwork[ib21e],
+               &rwork[ib22d], &rwork[ib22e], &rwork[ibbcsd], lbbcsd,
                &childinfo);
 
         if (q > r) {
@@ -499,29 +499,29 @@ void cuncsd2by1(
     } else {
 
         cunbdb4(m, p, q, X11, ldx11, X21, ldx21, theta,
-                &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1],
-                &work[itauq1 - 1], &work[iorbdb - 1], &work[iorbdb + m - 1],
+                &rwork[iphi], &work[itaup1], &work[itaup2],
+                &work[itauq1], &work[iorbdb], &work[iorbdb + m],
                 lorbdb - m, &childinfo);
 
         if (wantu2 && m - p > 0) {
-            cblas_ccopy(m - p, &work[iorbdb + p - 1], 1, U2, 1);
+            cblas_ccopy(m - p, &work[iorbdb + p], 1, U2, 1);
         }
         if (wantu1 && p > 0) {
-            cblas_ccopy(p, &work[iorbdb - 1], 1, U1, 1);
+            cblas_ccopy(p, &work[iorbdb], 1, U1, 1);
             for (j = 1; j < p; j++) {
                 U1[j * ldu1] = zero_c;
             }
             clacpy("L", p - 1, m - q - 1, &X11[1], ldx11, &U1[1 + 1 * ldu1], ldu1);
-            cungqr(p, p, m - q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(p, p, m - q, U1, ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantu2 && m - p > 0) {
             for (j = 1; j < m - p; j++) {
                 U2[j * ldu2] = zero_c;
             }
             clacpy("L", m - p - 1, m - q - 1, &X21[1], ldx21, &U2[1 + 1 * ldu2], ldu2);
-            cungqr(m - p, m - p, m - q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorgqr - 1], lorgqr, &childinfo);
+            cungqr(m - p, m - p, m - q, U2, ldu2, &work[itaup2],
+                   &work[iorgqr], lorgqr, &childinfo);
         }
         if (wantv1t && q > 0) {
             clacpy("U", m - q, q, X21, ldx21, V1T, ldv1t);
@@ -529,15 +529,15 @@ void cuncsd2by1(
                    &V1T[(m - q) + (m - q) * ldv1t], ldv1t);
             clacpy("U", -p + q, q - p, &X21[(m - q) + p * ldx21], ldx21,
                    &V1T[p + p * ldv1t], ldv1t);
-            cunglq(q, q, q, V1T, ldv1t, &work[itauq1 - 1],
-                   &work[iorglq - 1], lorglq, &childinfo);
+            cunglq(q, q, q, V1T, ldv1t, &work[itauq1],
+                   &work[iorglq], lorglq, &childinfo);
         }
 
         cbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta,
-               &rwork[iphi - 1], U2, ldu2, U1, ldu1, cdum, 1, V1T, ldv1t,
-               &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1],
-               &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1],
-               &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsd,
+               &rwork[iphi], U2, ldu2, U1, ldu1, cdum, 1, V1T, ldv1t,
+               &rwork[ib11d], &rwork[ib11e], &rwork[ib12d],
+               &rwork[ib12e], &rwork[ib21d], &rwork[ib21e],
+               &rwork[ib22d], &rwork[ib22e], &rwork[ibbcsd], lbbcsd,
                &childinfo);
 
         if (p > r) {

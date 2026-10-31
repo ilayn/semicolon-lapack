@@ -145,7 +145,7 @@ void ctgsna(
         return;
     }
 
-    ks = 0;
+    ks = -1;
 
     for (k = 0; k < n; k++) {
 
@@ -162,25 +162,25 @@ void ctgsna(
 
             /* Compute the reciprocal condition number of the k-th
                eigenvalue. */
-            rnrm = cblas_scnrm2(n, &VR[0 + (ks - 1) * ldvr], 1);
-            lnrm = cblas_scnrm2(n, &VL[0 + (ks - 1) * ldvl], 1);
+            rnrm = cblas_scnrm2(n, &VR[0 + ks * ldvr], 1);
+            lnrm = cblas_scnrm2(n, &VL[0 + ks * ldvl], 1);
             cblas_cgemv(CblasColMajor, CblasNoTrans, n, n, &CONE, A, lda,
-                        &VR[0 + (ks - 1) * ldvr], 1, &CZERO, work, 1);
-            cblas_cdotc_sub(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1, &yhax);
+                        &VR[0 + ks * ldvr], 1, &CZERO, work, 1);
+            cblas_cdotc_sub(n, work, 1, &VL[0 + ks * ldvl], 1, &yhax);
             cblas_cgemv(CblasColMajor, CblasNoTrans, n, n, &CONE, B, ldb,
-                        &VR[0 + (ks - 1) * ldvr], 1, &CZERO, work, 1);
-            cblas_cdotc_sub(n, work, 1, &VL[0 + (ks - 1) * ldvl], 1, &yhbx);
+                        &VR[0 + ks * ldvr], 1, &CZERO, work, 1);
+            cblas_cdotc_sub(n, work, 1, &VL[0 + ks * ldvl], 1, &yhbx);
             cond = slapy2(cabsf(yhax), cabsf(yhbx));
             if (cond == ZERO) {
-                S[ks - 1] = -ONE;
+                S[ks] = -ONE;
             } else {
-                S[ks - 1] = cond / (rnrm * lnrm);
+                S[ks] = cond / (rnrm * lnrm);
             }
         }
 
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = slapy2(cabsf(A[0 + 0 * lda]), cabsf(B[0 + 0 * ldb]));
+                dif[ks] = slapy2(cabsf(A[0 + 0 * lda]), cabsf(B[0 + 0 * ldb]));
                 continue;
             }
 
@@ -199,7 +199,7 @@ void ctgsna(
             if (ierr > 0) {
 
                 /* Ill-conditioned problem - swap rejected. */
-                dif[ks - 1] = ZERO;
+                dif[ks] = ZERO;
             } else {
 
                 /* Reordering successful, solve generalized Sylvester
@@ -210,7 +210,7 @@ void ctgsna(
                 ctgsyl("N", IDIFJB, n2, n1,
                        &work[n * n1 + n1], n, work, n, &work[n1], n,
                        &work[n * n1 + n1 + i], n, &work[i], n,
-                       &work[n1 + i], n, &scale, &dif[ks - 1],
+                       &work[n1 + i], n, &scale, &dif[ks],
                        dummy, 1, iwork, &ierr);
             }
         }

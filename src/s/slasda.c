@@ -173,9 +173,9 @@ void slasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
 
     slasdt(n, &nlvl, &nd, &IWORK[inode], &IWORK[ndiml], &IWORK[ndimr], smlsiz);
 
-    ndb1 = (nd + 1) / 2;
+    ndb1 = (nd - 1) / 2;
 
-    for (i = ndb1 - 1; i < nd; i++) {
+    for (i = ndb1; i < nd; i++) {
         ic = IWORK[inode + i];
         nl = IWORK[ndiml + i];
         nlp1 = nl + 1;

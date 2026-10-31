@@ -222,7 +222,7 @@ void ctgevc(
 
     /* Left eigenvectors */
     if (compl_) {
-        ieig = 0;
+        ieig = -1;
 
         /* Main loop over eigenvalues */
         for (je = 0; je < n; je++) {
@@ -239,8 +239,8 @@ void ctgevc(
 
                     /* Singular matrix pencil -- return unit eigenvector */
                     for (jr = 0; jr < n; jr++)
-                        VL[jr + (ieig - 1) * ldvl] = CZERO;
-                    VL[(ieig - 1) + (ieig - 1) * ldvl] = CONE;
+                        VL[jr + ieig * ldvl] = CZERO;
+                    VL[ieig + ieig * ldvl] = CONE;
                     continue;
                 }
 
@@ -350,29 +350,29 @@ void ctgevc(
                     cblas_cgemv(CblasColMajor, CblasNoTrans, n, n - je, &CONE,
                                 &VL[0 + je * ldvl], ldvl,
                                 &work[je], 1, &CZERO, &work[n], 1);
-                    isrc = 2;
+                    isrc = 1;
                     ibeg = 0;
                 } else {
-                    isrc = 1;
+                    isrc = 0;
                     ibeg = je;
                 }
 
                 /* Copy and scale eigenvector into column of VL */
                 xmax = ZERO;
                 for (jr = ibeg; jr < n; jr++)
-                    xmax = (xmax > cabs1f(work[(isrc - 1) * n + jr]))
-                        ? xmax : cabs1f(work[(isrc - 1) * n + jr]);
+                    xmax = (xmax > cabs1f(work[isrc * n + jr]))
+                        ? xmax : cabs1f(work[isrc * n + jr]);
 
                 if (xmax > safmin) {
                     temp = ONE / xmax;
                     for (jr = ibeg; jr < n; jr++)
-                        VL[jr + (ieig - 1) * ldvl] = temp * work[(isrc - 1) * n + jr];
+                        VL[jr + ieig * ldvl] = temp * work[isrc * n + jr];
                 } else {
                     ibeg = n;
                 }
 
                 for (jr = 0; jr < ibeg; jr++)
-                    VL[jr + (ieig - 1) * ldvl] = CZERO;
+                    VL[jr + ieig * ldvl] = CZERO;
 
             }
         }
@@ -505,23 +505,23 @@ void ctgevc(
                 if (ilback) {
                     cblas_cgemv(CblasColMajor, CblasNoTrans, n, je + 1, &CONE,
                                 VR, ldvr, work, 1, &CZERO, &work[n], 1);
-                    isrc = 2;
+                    isrc = 1;
                     iend = n;
                 } else {
-                    isrc = 1;
+                    isrc = 0;
                     iend = je + 1;
                 }
 
                 /* Copy and scale eigenvector into column of VR */
                 xmax = ZERO;
                 for (jr = 0; jr < iend; jr++)
-                    xmax = (xmax > cabs1f(work[(isrc - 1) * n + jr]))
-                        ? xmax : cabs1f(work[(isrc - 1) * n + jr]);
+                    xmax = (xmax > cabs1f(work[isrc * n + jr]))
+                        ? xmax : cabs1f(work[isrc * n + jr]);
 
                 if (xmax > safmin) {
                     temp = ONE / xmax;
                     for (jr = 0; jr < iend; jr++)
-                        VR[jr + ieig * ldvr] = temp * work[(isrc - 1) * n + jr];
+                        VR[jr + ieig * ldvr] = temp * work[isrc * n + jr];
                 } else {
                     iend = 0;
                 }

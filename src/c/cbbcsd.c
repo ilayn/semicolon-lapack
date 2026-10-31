@@ -234,29 +234,29 @@ void cbbcsd(
         }
     }
 
-    imax = q;
-    while (imax > 1) {
-        if (phi[imax - 2] != zero) {
+    imax = q - 1;
+    while (imax > 0) {
+        if (phi[imax - 1] != zero) {
             break;
         }
         imax = imax - 1;
     }
     imin = imax - 1;
-    if (imin > 1) {
-        while (phi[imin - 2] != zero) {
+    if (imin > 0) {
+        while (phi[imin - 1] != zero) {
             imin = imin - 1;
-            if (imin <= 1) break;
+            if (imin <= 0) break;
         }
     }
 
     maxit = maxitr * q * q;
     iter = 0;
 
-    while (imax > 1) {
+    while (imax > 0) {
 
-        B11D[imin - 1] = cosf(theta[imin - 1]);
-        B21D[imin - 1] = -sinf(theta[imin - 1]);
-        for (i = imin - 1; i < imax - 1; i++) {
+        B11D[imin] = cosf(theta[imin]);
+        B21D[imin] = -sinf(theta[imin]);
+        for (i = imin; i < imax; i++) {
             B11E[i] = -sinf(theta[i]) * sinf(phi[i]);
             B11D[i + 1] = cosf(theta[i + 1]) * cosf(phi[i]);
             B12D[i] = sinf(theta[i]) * cosf(phi[i]);
@@ -266,8 +266,8 @@ void cbbcsd(
             B22D[i] = cosf(theta[i]) * cosf(phi[i]);
             B22E[i] = -sinf(theta[i + 1]) * sinf(phi[i]);
         }
-        B12D[imax - 1] = sinf(theta[imax - 1]);
-        B22D[imax - 1] = cosf(theta[imax - 1]);
+        B12D[imax] = sinf(theta[imax]);
+        B22D[imax] = cosf(theta[imax]);
 
         if (iter > maxit) {
             *info = 0;
@@ -280,9 +280,9 @@ void cbbcsd(
 
         iter = iter + imax - imin;
 
-        thetamax = theta[imin - 1];
-        thetamin = theta[imin - 1];
-        for (i = imin; i < imax; i++) {
+        thetamax = theta[imin];
+        thetamin = theta[imin];
+        for (i = imin + 1; i <= imax; i++) {
             if (theta[i] > thetamax)
                 thetamax = theta[i];
             if (theta[i] < thetamin)
@@ -296,8 +296,8 @@ void cbbcsd(
             mu = one;
             nu = zero;
         } else {
-            slas2(B11D[imax - 2], B11E[imax - 2], B11D[imax - 1], &sigma11, &dummy);
-            slas2(B21D[imax - 2], B21E[imax - 2], B21D[imax - 1], &sigma21, &dummy);
+            slas2(B11D[imax - 1], B11E[imax - 1], B11D[imax], &sigma11, &dummy);
+            slas2(B21D[imax - 1], B21E[imax - 1], B21D[imax], &sigma21, &dummy);
 
             if (sigma11 <= sigma21) {
                 mu = sigma11;
@@ -317,92 +317,92 @@ void cbbcsd(
         }
 
         if (mu <= nu) {
-            slartgs(B11D[imin - 1], B11E[imin - 1], mu,
-                    &rwork[iv1tcs + imin - 1], &rwork[iv1tsn + imin - 1]);
+            slartgs(B11D[imin], B11E[imin], mu,
+                    &rwork[iv1tcs + imin], &rwork[iv1tsn + imin]);
         } else {
-            slartgs(B21D[imin - 1], B21E[imin - 1], nu,
-                    &rwork[iv1tcs + imin - 1], &rwork[iv1tsn + imin - 1]);
+            slartgs(B21D[imin], B21E[imin], nu,
+                    &rwork[iv1tcs + imin], &rwork[iv1tsn + imin]);
         }
 
-        temp = rwork[iv1tcs + imin - 1] * B11D[imin - 1] +
-               rwork[iv1tsn + imin - 1] * B11E[imin - 1];
-        B11E[imin - 1] = rwork[iv1tcs + imin - 1] * B11E[imin - 1] -
-                         rwork[iv1tsn + imin - 1] * B11D[imin - 1];
-        B11D[imin - 1] = temp;
-        b11bulge = rwork[iv1tsn + imin - 1] * B11D[imin];
-        B11D[imin] = rwork[iv1tcs + imin - 1] * B11D[imin];
-        temp = rwork[iv1tcs + imin - 1] * B21D[imin - 1] +
-               rwork[iv1tsn + imin - 1] * B21E[imin - 1];
-        B21E[imin - 1] = rwork[iv1tcs + imin - 1] * B21E[imin - 1] -
-                         rwork[iv1tsn + imin - 1] * B21D[imin - 1];
-        B21D[imin - 1] = temp;
-        b21bulge = rwork[iv1tsn + imin - 1] * B21D[imin];
-        B21D[imin] = rwork[iv1tcs + imin - 1] * B21D[imin];
+        temp = rwork[iv1tcs + imin] * B11D[imin] +
+               rwork[iv1tsn + imin] * B11E[imin];
+        B11E[imin] = rwork[iv1tcs + imin] * B11E[imin] -
+                     rwork[iv1tsn + imin] * B11D[imin];
+        B11D[imin] = temp;
+        b11bulge = rwork[iv1tsn + imin] * B11D[imin + 1];
+        B11D[imin + 1] = rwork[iv1tcs + imin] * B11D[imin + 1];
+        temp = rwork[iv1tcs + imin] * B21D[imin] +
+               rwork[iv1tsn + imin] * B21E[imin];
+        B21E[imin] = rwork[iv1tcs + imin] * B21E[imin] -
+                     rwork[iv1tsn + imin] * B21D[imin];
+        B21D[imin] = temp;
+        b21bulge = rwork[iv1tsn + imin] * B21D[imin + 1];
+        B21D[imin + 1] = rwork[iv1tcs + imin] * B21D[imin + 1];
 
-        theta[imin - 1] = atan2f(sqrtf(B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge),
-                                sqrtf(B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge));
+        theta[imin] = atan2f(sqrtf(B21D[imin] * B21D[imin] + b21bulge * b21bulge),
+                            sqrtf(B11D[imin] * B11D[imin] + b11bulge * b11bulge));
 
-        thr = (fabsf(B11D[imin - 1]) > fabsf(B11D[imin])) ? fabsf(B11D[imin - 1]) : fabsf(B11D[imin]);
+        thr = (fabsf(B11D[imin]) > fabsf(B11D[imin + 1])) ? fabsf(B11D[imin]) : fabsf(B11D[imin + 1]);
         thr = thresh * ((thr > unfl) ? thr : unfl);
-        if (B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge > thr * thr) {
-            slartgp(b11bulge, B11D[imin - 1], &rwork[iu1sn + imin - 1],
-                    &rwork[iu1cs + imin - 1], &r);
+        if (B11D[imin] * B11D[imin] + b11bulge * b11bulge > thr * thr) {
+            slartgp(b11bulge, B11D[imin], &rwork[iu1sn + imin],
+                    &rwork[iu1cs + imin], &r);
         } else if (mu <= nu) {
-            slartgs(B11E[imin - 1], B11D[imin], mu,
-                    &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1]);
+            slartgs(B11E[imin], B11D[imin + 1], mu,
+                    &rwork[iu1cs + imin], &rwork[iu1sn + imin]);
         } else {
-            slartgs(B12D[imin - 1], B12E[imin - 1], nu,
-                    &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1]);
+            slartgs(B12D[imin], B12E[imin], nu,
+                    &rwork[iu1cs + imin], &rwork[iu1sn + imin]);
         }
-        thr = (fabsf(B21D[imin - 1]) > fabsf(B21D[imin])) ? fabsf(B21D[imin - 1]) : fabsf(B21D[imin]);
+        thr = (fabsf(B21D[imin]) > fabsf(B21D[imin + 1])) ? fabsf(B21D[imin]) : fabsf(B21D[imin + 1]);
         thr = thresh * ((thr > unfl) ? thr : unfl);
-        if (B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge > thr * thr) {
-            slartgp(b21bulge, B21D[imin - 1], &rwork[iu2sn + imin - 1],
-                    &rwork[iu2cs + imin - 1], &r);
+        if (B21D[imin] * B21D[imin] + b21bulge * b21bulge > thr * thr) {
+            slartgp(b21bulge, B21D[imin], &rwork[iu2sn + imin],
+                    &rwork[iu2cs + imin], &r);
         } else if (nu < mu) {
-            slartgs(B21E[imin - 1], B21D[imin], nu,
-                    &rwork[iu2cs + imin - 1], &rwork[iu2sn + imin - 1]);
+            slartgs(B21E[imin], B21D[imin + 1], nu,
+                    &rwork[iu2cs + imin], &rwork[iu2sn + imin]);
         } else {
-            slartgs(B22D[imin - 1], B22E[imin - 1], mu,
-                    &rwork[iu2cs + imin - 1], &rwork[iu2sn + imin - 1]);
+            slartgs(B22D[imin], B22E[imin], mu,
+                    &rwork[iu2cs + imin], &rwork[iu2sn + imin]);
         }
-        rwork[iu2cs + imin - 1] = -rwork[iu2cs + imin - 1];
-        rwork[iu2sn + imin - 1] = -rwork[iu2sn + imin - 1];
+        rwork[iu2cs + imin] = -rwork[iu2cs + imin];
+        rwork[iu2sn + imin] = -rwork[iu2sn + imin];
 
-        temp = rwork[iu1cs + imin - 1] * B11E[imin - 1] +
-               rwork[iu1sn + imin - 1] * B11D[imin];
-        B11D[imin] = rwork[iu1cs + imin - 1] * B11D[imin] -
-                     rwork[iu1sn + imin - 1] * B11E[imin - 1];
-        B11E[imin - 1] = temp;
+        temp = rwork[iu1cs + imin] * B11E[imin] +
+               rwork[iu1sn + imin] * B11D[imin + 1];
+        B11D[imin + 1] = rwork[iu1cs + imin] * B11D[imin + 1] -
+                         rwork[iu1sn + imin] * B11E[imin];
+        B11E[imin] = temp;
         if (imax > imin + 1) {
-            b11bulge = rwork[iu1sn + imin - 1] * B11E[imin];
-            B11E[imin] = rwork[iu1cs + imin - 1] * B11E[imin];
+            b11bulge = rwork[iu1sn + imin] * B11E[imin + 1];
+            B11E[imin + 1] = rwork[iu1cs + imin] * B11E[imin + 1];
         }
-        temp = rwork[iu1cs + imin - 1] * B12D[imin - 1] +
-               rwork[iu1sn + imin - 1] * B12E[imin - 1];
-        B12E[imin - 1] = rwork[iu1cs + imin - 1] * B12E[imin - 1] -
-                         rwork[iu1sn + imin - 1] * B12D[imin - 1];
-        B12D[imin - 1] = temp;
-        b12bulge = rwork[iu1sn + imin - 1] * B12D[imin];
-        B12D[imin] = rwork[iu1cs + imin - 1] * B12D[imin];
-        temp = rwork[iu2cs + imin - 1] * B21E[imin - 1] +
-               rwork[iu2sn + imin - 1] * B21D[imin];
-        B21D[imin] = rwork[iu2cs + imin - 1] * B21D[imin] -
-                     rwork[iu2sn + imin - 1] * B21E[imin - 1];
-        B21E[imin - 1] = temp;
+        temp = rwork[iu1cs + imin] * B12D[imin] +
+               rwork[iu1sn + imin] * B12E[imin];
+        B12E[imin] = rwork[iu1cs + imin] * B12E[imin] -
+                     rwork[iu1sn + imin] * B12D[imin];
+        B12D[imin] = temp;
+        b12bulge = rwork[iu1sn + imin] * B12D[imin + 1];
+        B12D[imin + 1] = rwork[iu1cs + imin] * B12D[imin + 1];
+        temp = rwork[iu2cs + imin] * B21E[imin] +
+               rwork[iu2sn + imin] * B21D[imin + 1];
+        B21D[imin + 1] = rwork[iu2cs + imin] * B21D[imin + 1] -
+                         rwork[iu2sn + imin] * B21E[imin];
+        B21E[imin] = temp;
         if (imax > imin + 1) {
-            b21bulge = rwork[iu2sn + imin - 1] * B21E[imin];
-            B21E[imin] = rwork[iu2cs + imin - 1] * B21E[imin];
+            b21bulge = rwork[iu2sn + imin] * B21E[imin + 1];
+            B21E[imin + 1] = rwork[iu2cs + imin] * B21E[imin + 1];
         }
-        temp = rwork[iu2cs + imin - 1] * B22D[imin - 1] +
-               rwork[iu2sn + imin - 1] * B22E[imin - 1];
-        B22E[imin - 1] = rwork[iu2cs + imin - 1] * B22E[imin - 1] -
-                         rwork[iu2sn + imin - 1] * B22D[imin - 1];
-        B22D[imin - 1] = temp;
-        b22bulge = rwork[iu2sn + imin - 1] * B22D[imin];
-        B22D[imin] = rwork[iu2cs + imin - 1] * B22D[imin];
+        temp = rwork[iu2cs + imin] * B22D[imin] +
+               rwork[iu2sn + imin] * B22E[imin];
+        B22E[imin] = rwork[iu2cs + imin] * B22E[imin] -
+                     rwork[iu2sn + imin] * B22D[imin];
+        B22D[imin] = temp;
+        b22bulge = rwork[iu2sn + imin] * B22D[imin + 1];
+        B22D[imin + 1] = rwork[iu2cs + imin] * B22D[imin + 1];
 
-        for (i = imin; i < imax - 1; i++) {
+        for (i = imin + 1; i < imax; i++) {
 
             x1 = sinf(theta[i - 1]) * B11E[i - 1] + cosf(theta[i - 1]) * B21E[i - 1];
             x2 = sinf(theta[i - 1]) * b11bulge + cosf(theta[i - 1]) * b21bulge;
@@ -518,14 +518,14 @@ void cbbcsd(
             temp = rwork[iu1cs + i] * B11E[i] + rwork[iu1sn + i] * B11D[i + 1];
             B11D[i + 1] = rwork[iu1cs + i] * B11D[i + 1] - rwork[iu1sn + i] * B11E[i];
             B11E[i] = temp;
-            if (i < imax - 2) {
+            if (i < imax - 1) {
                 b11bulge = rwork[iu1sn + i] * B11E[i + 1];
                 B11E[i + 1] = rwork[iu1cs + i] * B11E[i + 1];
             }
             temp = rwork[iu2cs + i] * B21E[i] + rwork[iu2sn + i] * B21D[i + 1];
             B21D[i + 1] = rwork[iu2cs + i] * B21D[i + 1] - rwork[iu2sn + i] * B21E[i];
             B21E[i] = temp;
-            if (i < imax - 2) {
+            if (i < imax - 1) {
                 b21bulge = rwork[iu2sn + i] * B21E[i + 1];
                 B21E[i + 1] = rwork[iu2cs + i] * B21E[i + 1];
             }
@@ -542,149 +542,149 @@ void cbbcsd(
 
         }
 
-        x1 = sinf(theta[imax - 2]) * B11E[imax - 2] +
-             cosf(theta[imax - 2]) * B21E[imax - 2];
-        y1 = sinf(theta[imax - 2]) * B12D[imax - 2] +
-             cosf(theta[imax - 2]) * B22D[imax - 2];
-        y2 = sinf(theta[imax - 2]) * b12bulge + cosf(theta[imax - 2]) * b22bulge;
+        x1 = sinf(theta[imax - 1]) * B11E[imax - 1] +
+             cosf(theta[imax - 1]) * B21E[imax - 1];
+        y1 = sinf(theta[imax - 1]) * B12D[imax - 1] +
+             cosf(theta[imax - 1]) * B22D[imax - 1];
+        y2 = sinf(theta[imax - 1]) * b12bulge + cosf(theta[imax - 1]) * b22bulge;
 
-        phi[imax - 2] = atan2f(fabsf(x1), sqrtf(y1 * y1 + y2 * y2));
+        phi[imax - 1] = atan2f(fabsf(x1), sqrtf(y1 * y1 + y2 * y2));
 
-        thr = thresh * ((fabsf(B12E[imax - 2]) > unfl) ? fabsf(B12E[imax - 2]) : unfl);
-        restart12 = (B12D[imax - 2] * B12D[imax - 2] + b12bulge * b12bulge <= thr * thr);
-        thr = thresh * ((fabsf(B22E[imax - 2]) > unfl) ? fabsf(B22E[imax - 2]) : unfl);
-        restart22 = (B22D[imax - 2] * B22D[imax - 2] + b22bulge * b22bulge <= thr * thr);
+        thr = thresh * ((fabsf(B12E[imax - 1]) > unfl) ? fabsf(B12E[imax - 1]) : unfl);
+        restart12 = (B12D[imax - 1] * B12D[imax - 1] + b12bulge * b12bulge <= thr * thr);
+        thr = thresh * ((fabsf(B22E[imax - 1]) > unfl) ? fabsf(B22E[imax - 1]) : unfl);
+        restart22 = (B22D[imax - 1] * B22D[imax - 1] + b22bulge * b22bulge <= thr * thr);
 
         if (!restart12 && !restart22) {
-            slartgp(y2, y1, &rwork[iv2tsn + imax - 2], &rwork[iv2tcs + imax - 2], &r);
+            slartgp(y2, y1, &rwork[iv2tsn + imax - 1], &rwork[iv2tcs + imax - 1], &r);
         } else if (!restart12 && restart22) {
-            slartgp(b12bulge, B12D[imax - 2], &rwork[iv2tsn + imax - 2],
-                    &rwork[iv2tcs + imax - 2], &r);
+            slartgp(b12bulge, B12D[imax - 1], &rwork[iv2tsn + imax - 1],
+                    &rwork[iv2tcs + imax - 1], &r);
         } else if (restart12 && !restart22) {
-            slartgp(b22bulge, B22D[imax - 2], &rwork[iv2tsn + imax - 2],
-                    &rwork[iv2tcs + imax - 2], &r);
+            slartgp(b22bulge, B22D[imax - 1], &rwork[iv2tsn + imax - 1],
+                    &rwork[iv2tcs + imax - 1], &r);
         } else if (nu < mu) {
-            slartgs(B12E[imax - 2], B12D[imax - 1], nu,
-                    &rwork[iv2tcs + imax - 2], &rwork[iv2tsn + imax - 2]);
+            slartgs(B12E[imax - 1], B12D[imax], nu,
+                    &rwork[iv2tcs + imax - 1], &rwork[iv2tsn + imax - 1]);
         } else {
-            slartgs(B22E[imax - 2], B22D[imax - 1], mu,
-                    &rwork[iv2tcs + imax - 2], &rwork[iv2tsn + imax - 2]);
+            slartgs(B22E[imax - 1], B22D[imax], mu,
+                    &rwork[iv2tcs + imax - 1], &rwork[iv2tsn + imax - 1]);
         }
 
-        temp = rwork[iv2tcs + imax - 2] * B12E[imax - 2] +
-               rwork[iv2tsn + imax - 2] * B12D[imax - 1];
-        B12D[imax - 1] = rwork[iv2tcs + imax - 2] * B12D[imax - 1] -
-                         rwork[iv2tsn + imax - 2] * B12E[imax - 2];
-        B12E[imax - 2] = temp;
-        temp = rwork[iv2tcs + imax - 2] * B22E[imax - 2] +
-               rwork[iv2tsn + imax - 2] * B22D[imax - 1];
-        B22D[imax - 1] = rwork[iv2tcs + imax - 2] * B22D[imax - 1] -
-                         rwork[iv2tsn + imax - 2] * B22E[imax - 2];
-        B22E[imax - 2] = temp;
+        temp = rwork[iv2tcs + imax - 1] * B12E[imax - 1] +
+               rwork[iv2tsn + imax - 1] * B12D[imax];
+        B12D[imax] = rwork[iv2tcs + imax - 1] * B12D[imax] -
+                     rwork[iv2tsn + imax - 1] * B12E[imax - 1];
+        B12E[imax - 1] = temp;
+        temp = rwork[iv2tcs + imax - 1] * B22E[imax - 1] +
+               rwork[iv2tsn + imax - 1] * B22D[imax];
+        B22D[imax] = rwork[iv2tcs + imax - 1] * B22D[imax] -
+                     rwork[iv2tsn + imax - 1] * B22E[imax - 1];
+        B22E[imax - 1] = temp;
 
         if (wantu1) {
             if (colmajor) {
                 clasr("R", "V", "F", p, imax - imin + 1,
-                      &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1],
-                      &U1[0 + (imin - 1) * ldu1], ldu1);
+                      &rwork[iu1cs + imin], &rwork[iu1sn + imin],
+                      &U1[0 + imin * ldu1], ldu1);
             } else {
                 clasr("L", "V", "F", imax - imin + 1, p,
-                      &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1],
-                      &U1[(imin - 1) + 0 * ldu1], ldu1);
+                      &rwork[iu1cs + imin], &rwork[iu1sn + imin],
+                      &U1[imin + 0 * ldu1], ldu1);
             }
         }
         if (wantu2) {
             if (colmajor) {
                 clasr("R", "V", "F", m - p, imax - imin + 1,
-                      &rwork[iu2cs + imin - 1], &rwork[iu2sn + imin - 1],
-                      &U2[0 + (imin - 1) * ldu2], ldu2);
+                      &rwork[iu2cs + imin], &rwork[iu2sn + imin],
+                      &U2[0 + imin * ldu2], ldu2);
             } else {
                 clasr("L", "V", "F", imax - imin + 1, m - p,
-                      &rwork[iu2cs + imin - 1], &rwork[iu2sn + imin - 1],
-                      &U2[(imin - 1) + 0 * ldu2], ldu2);
+                      &rwork[iu2cs + imin], &rwork[iu2sn + imin],
+                      &U2[imin + 0 * ldu2], ldu2);
             }
         }
         if (wantv1t) {
             if (colmajor) {
                 clasr("L", "V", "F", imax - imin + 1, q,
-                      &rwork[iv1tcs + imin - 1], &rwork[iv1tsn + imin - 1],
-                      &V1T[(imin - 1) + 0 * ldv1t], ldv1t);
+                      &rwork[iv1tcs + imin], &rwork[iv1tsn + imin],
+                      &V1T[imin + 0 * ldv1t], ldv1t);
             } else {
                 clasr("R", "V", "F", q, imax - imin + 1,
-                      &rwork[iv1tcs + imin - 1], &rwork[iv1tsn + imin - 1],
-                      &V1T[0 + (imin - 1) * ldv1t], ldv1t);
+                      &rwork[iv1tcs + imin], &rwork[iv1tsn + imin],
+                      &V1T[0 + imin * ldv1t], ldv1t);
             }
         }
         if (wantv2t) {
             if (colmajor) {
                 clasr("L", "V", "F", imax - imin + 1, m - q,
-                      &rwork[iv2tcs + imin - 1], &rwork[iv2tsn + imin - 1],
-                      &V2T[(imin - 1) + 0 * ldv2t], ldv2t);
+                      &rwork[iv2tcs + imin], &rwork[iv2tsn + imin],
+                      &V2T[imin + 0 * ldv2t], ldv2t);
             } else {
                 clasr("R", "V", "F", m - q, imax - imin + 1,
-                      &rwork[iv2tcs + imin - 1], &rwork[iv2tsn + imin - 1],
-                      &V2T[0 + (imin - 1) * ldv2t], ldv2t);
+                      &rwork[iv2tcs + imin], &rwork[iv2tsn + imin],
+                      &V2T[0 + imin * ldv2t], ldv2t);
             }
         }
 
-        if (B11E[imax - 2] + B21E[imax - 2] > 0) {
-            B11D[imax - 1] = -B11D[imax - 1];
-            B21D[imax - 1] = -B21D[imax - 1];
+        if (B11E[imax - 1] + B21E[imax - 1] > 0) {
+            B11D[imax] = -B11D[imax];
+            B21D[imax] = -B21D[imax];
             if (wantv1t) {
                 if (colmajor) {
-                    cblas_cscal(q, &negonecomplex, &V1T[(imax - 1) + 0 * ldv1t], ldv1t);
+                    cblas_cscal(q, &negonecomplex, &V1T[imax + 0 * ldv1t], ldv1t);
                 } else {
-                    cblas_cscal(q, &negonecomplex, &V1T[0 + (imax - 1) * ldv1t], 1);
+                    cblas_cscal(q, &negonecomplex, &V1T[0 + imax * ldv1t], 1);
                 }
             }
         }
 
-        x1 = cosf(phi[imax - 2]) * B11D[imax - 1] +
-             sinf(phi[imax - 2]) * B12E[imax - 2];
-        y1 = cosf(phi[imax - 2]) * B21D[imax - 1] +
-             sinf(phi[imax - 2]) * B22E[imax - 2];
+        x1 = cosf(phi[imax - 1]) * B11D[imax] +
+             sinf(phi[imax - 1]) * B12E[imax - 1];
+        y1 = cosf(phi[imax - 1]) * B21D[imax] +
+             sinf(phi[imax - 1]) * B22E[imax - 1];
 
-        theta[imax - 1] = atan2f(fabsf(y1), fabsf(x1));
+        theta[imax] = atan2f(fabsf(y1), fabsf(x1));
 
-        if (B11D[imax - 1] + B12E[imax - 2] < 0) {
-            B12D[imax - 1] = -B12D[imax - 1];
+        if (B11D[imax] + B12E[imax - 1] < 0) {
+            B12D[imax] = -B12D[imax];
             if (wantu1) {
                 if (colmajor) {
-                    cblas_cscal(p, &negonecomplex, &U1[0 + (imax - 1) * ldu1], 1);
+                    cblas_cscal(p, &negonecomplex, &U1[0 + imax * ldu1], 1);
                 } else {
-                    cblas_cscal(p, &negonecomplex, &U1[(imax - 1) + 0 * ldu1], ldu1);
+                    cblas_cscal(p, &negonecomplex, &U1[imax + 0 * ldu1], ldu1);
                 }
             }
         }
-        if (B21D[imax - 1] + B22E[imax - 2] > 0) {
-            B22D[imax - 1] = -B22D[imax - 1];
+        if (B21D[imax] + B22E[imax - 1] > 0) {
+            B22D[imax] = -B22D[imax];
             if (wantu2) {
                 if (colmajor) {
-                    cblas_cscal(m - p, &negonecomplex, &U2[0 + (imax - 1) * ldu2], 1);
+                    cblas_cscal(m - p, &negonecomplex, &U2[0 + imax * ldu2], 1);
                 } else {
-                    cblas_cscal(m - p, &negonecomplex, &U2[(imax - 1) + 0 * ldu2], ldu2);
+                    cblas_cscal(m - p, &negonecomplex, &U2[imax + 0 * ldu2], ldu2);
                 }
             }
         }
 
-        if (B12D[imax - 1] + B22D[imax - 1] < 0) {
+        if (B12D[imax] + B22D[imax] < 0) {
             if (wantv2t) {
                 if (colmajor) {
-                    cblas_cscal(m - q, &negonecomplex, &V2T[(imax - 1) + 0 * ldv2t], ldv2t);
+                    cblas_cscal(m - q, &negonecomplex, &V2T[imax + 0 * ldv2t], ldv2t);
                 } else {
-                    cblas_cscal(m - q, &negonecomplex, &V2T[0 + (imax - 1) * ldv2t], 1);
+                    cblas_cscal(m - q, &negonecomplex, &V2T[0 + imax * ldv2t], 1);
                 }
             }
         }
 
-        for (i = imin - 1; i < imax; i++) {
+        for (i = imin; i <= imax; i++) {
             if (theta[i] < thresh) {
                 theta[i] = zero;
             } else if (theta[i] > piover2 - thresh) {
                 theta[i] = piover2;
             }
         }
-        for (i = imin - 1; i < imax - 1; i++) {
+        for (i = imin; i < imax; i++) {
             if (phi[i] < thresh) {
                 phi[i] = zero;
             } else if (phi[i] > piover2 - thresh) {
@@ -692,18 +692,18 @@ void cbbcsd(
             }
         }
 
-        if (imax > 1) {
-            while (phi[imax - 2] == zero) {
+        if (imax > 0) {
+            while (phi[imax - 1] == zero) {
                 imax = imax - 1;
-                if (imax <= 1) break;
+                if (imax <= 0) break;
             }
         }
         if (imin > imax - 1)
             imin = imax - 1;
-        if (imin > 1) {
-            while (phi[imin - 2] != zero) {
+        if (imin > 0) {
+            while (phi[imin - 1] != zero) {
                 imin = imin - 1;
-                if (imin <= 1) break;
+                if (imin <= 0) break;
             }
         }
 

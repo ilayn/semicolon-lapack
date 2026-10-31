@@ -48,39 +48,39 @@ f32 slantp(
         if (diag[0] == 'U' || diag[0] == 'u') {
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
-                for (j = 1; j <= n; j++) {
-                    for (i = k; i < k + j - 1; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = k; i < k + j; i++) {
                         sum = fabsf(AP[i]);
                         if (value < sum || sisnan(sum)) value = sum;
                     }
-                    k = k + j;
+                    k = k + j + 1;
                 }
             } else {
-                for (j = 1; j <= n; j++) {
-                    for (i = k + 1; i < k + n - j + 1; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = k + 1; i < k + n - j; i++) {
                         sum = fabsf(AP[i]);
                         if (value < sum || sisnan(sum)) value = sum;
                     }
-                    k = k + n - j + 1;
+                    k = k + n - j;
                 }
             }
         } else {
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
-                for (j = 1; j <= n; j++) {
-                    for (i = k; i < k + j; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = k; i < k + j + 1; i++) {
                         sum = fabsf(AP[i]);
                         if (value < sum || sisnan(sum)) value = sum;
                     }
-                    k = k + j;
+                    k = k + j + 1;
                 }
             } else {
-                for (j = 1; j <= n; j++) {
-                    for (i = k; i < k + n - j + 1; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = k; i < k + n - j; i++) {
                         sum = fabsf(AP[i]);
                         if (value < sum || sisnan(sum)) value = sum;
                     }
-                    k = k + n - j + 1;
+                    k = k + n - j;
                 }
             }
         }
@@ -90,35 +90,35 @@ f32 slantp(
         k = 0;
         udiag = (diag[0] == 'U' || diag[0] == 'u');
         if (uplo[0] == 'U' || uplo[0] == 'u') {
-            for (j = 1; j <= n; j++) {
+            for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    for (i = k; i < k + j - 1; i++) {
-                        sum = sum + fabsf(AP[i]);
-                    }
-                } else {
-                    sum = ZERO;
                     for (i = k; i < k + j; i++) {
                         sum = sum + fabsf(AP[i]);
                     }
+                } else {
+                    sum = ZERO;
+                    for (i = k; i < k + j + 1; i++) {
+                        sum = sum + fabsf(AP[i]);
+                    }
                 }
-                k = k + j;
+                k = k + j + 1;
                 if (value < sum || sisnan(sum)) value = sum;
             }
         } else {
-            for (j = 1; j <= n; j++) {
+            for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    for (i = k + 1; i < k + n - j + 1; i++) {
+                    for (i = k + 1; i < k + n - j; i++) {
                         sum = sum + fabsf(AP[i]);
                     }
                 } else {
                     sum = ZERO;
-                    for (i = k; i < k + n - j + 1; i++) {
+                    for (i = k; i < k + n - j; i++) {
                         sum = sum + fabsf(AP[i]);
                     }
                 }
-                k = k + n - j + 1;
+                k = k + n - j;
                 if (value < sum || sisnan(sum)) value = sum;
             }
         }
@@ -130,8 +130,8 @@ f32 slantp(
                 for (i = 0; i < n; i++) {
                     work[i] = ONE;
                 }
-                for (j = 1; j <= n; j++) {
-                    for (i = 0; i < j - 1; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = 0; i < j; i++) {
                         work[i] = work[i] + fabsf(AP[k]);
                         k = k + 1;
                     }
@@ -141,8 +141,8 @@ f32 slantp(
                 for (i = 0; i < n; i++) {
                     work[i] = ZERO;
                 }
-                for (j = 1; j <= n; j++) {
-                    for (i = 0; i < j; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = 0; i < j + 1; i++) {
                         work[i] = work[i] + fabsf(AP[k]);
                         k = k + 1;
                     }
@@ -153,9 +153,9 @@ f32 slantp(
                 for (i = 0; i < n; i++) {
                     work[i] = ONE;
                 }
-                for (j = 1; j <= n; j++) {
+                for (j = 0; j < n; j++) {
                     k = k + 1;
-                    for (i = j; i < n; i++) {
+                    for (i = j + 1; i < n; i++) {
                         work[i] = work[i] + fabsf(AP[k]);
                         k = k + 1;
                     }
@@ -164,8 +164,8 @@ f32 slantp(
                 for (i = 0; i < n; i++) {
                     work[i] = ZERO;
                 }
-                for (j = 1; j <= n; j++) {
-                    for (i = j - 1; i < n; i++) {
+                for (j = 0; j < n; j++) {
+                    for (i = j; i < n; i++) {
                         work[i] = work[i] + fabsf(AP[k]);
                         k = k + 1;
                     }
@@ -184,17 +184,17 @@ f32 slantp(
                 scale = ONE;
                 sum = n;
                 k = 1;
-                for (j = 2; j <= n; j++) {
-                    slassq(j - 1, &AP[k], 1, &scale, &sum);
-                    k = k + j;
+                for (j = 1; j < n; j++) {
+                    slassq(j, &AP[k], 1, &scale, &sum);
+                    k = k + j + 1;
                 }
             } else {
                 scale = ZERO;
                 sum = ONE;
                 k = 0;
-                for (j = 1; j <= n; j++) {
-                    slassq(j, &AP[k], 1, &scale, &sum);
-                    k = k + j;
+                for (j = 0; j < n; j++) {
+                    slassq(j + 1, &AP[k], 1, &scale, &sum);
+                    k = k + j + 1;
                 }
             }
         } else {
@@ -202,17 +202,17 @@ f32 slantp(
                 scale = ONE;
                 sum = n;
                 k = 1;
-                for (j = 1; j <= n - 1; j++) {
-                    slassq(n - j, &AP[k], 1, &scale, &sum);
-                    k = k + n - j + 1;
+                for (j = 0; j < n - 1; j++) {
+                    slassq(n - j - 1, &AP[k], 1, &scale, &sum);
+                    k = k + n - j;
                 }
             } else {
                 scale = ZERO;
                 sum = ONE;
                 k = 0;
-                for (j = 1; j <= n; j++) {
-                    slassq(n - j + 1, &AP[k], 1, &scale, &sum);
-                    k = k + n - j + 1;
+                for (j = 0; j < n; j++) {
+                    slassq(n - j, &AP[k], 1, &scale, &sum);
+                    k = k + n - j;
                 }
             }
         }

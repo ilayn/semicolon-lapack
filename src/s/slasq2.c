@@ -140,22 +140,22 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
     d = ZERO;
     e = ZERO;
 
-    for (k = 1; k <= 2 * (n - 1); k += 2) {
-        if (Z[k - 1] < ZERO) {
-            *info = -(200 + k);
-            xerbla("SLASQ2", 2);
-            return;
-        } else if (Z[k] < ZERO) {
+    for (k = 0; k < 2 * (n - 1); k += 2) {
+        if (Z[k] < ZERO) {
             *info = -(200 + k + 1);
             xerbla("SLASQ2", 2);
             return;
+        } else if (Z[k + 1] < ZERO) {
+            *info = -(200 + k + 2);
+            xerbla("SLASQ2", 2);
+            return;
         }
-        d = d + Z[k - 1];
-        e = e + Z[k];
-        qmax = (qmax > Z[k - 1]) ? qmax : Z[k - 1];
-        emin = (emin < Z[k]) ? emin : Z[k];
+        d = d + Z[k];
+        e = e + Z[k + 1];
+        qmax = (qmax > Z[k]) ? qmax : Z[k];
+        emin = (emin < Z[k + 1]) ? emin : Z[k + 1];
         zmax = (qmax > zmax) ? qmax : zmax;
-        zmax = (zmax > Z[k]) ? zmax : Z[k];
+        zmax = (zmax > Z[k + 1]) ? zmax : Z[k + 1];
     }
     if (Z[2 * n - 2] < ZERO) {
         *info = -(200 + 2 * n - 1);
@@ -168,8 +168,8 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
 
     /* Check for diagonality. */
     if (e == ZERO) {
-        for (k = 2; k <= n; k++) {
-            Z[k - 1] = Z[2 * k - 2];
+        for (k = 1; k < n; k++) {
+            Z[k] = Z[2 * k];
         }
         slasrt("D", n, Z, &iinfo);
         Z[2 * n - 2] = d;
@@ -195,11 +195,11 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
     /*
      * Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).
      */
-    for (k = 2 * n; k >= 2; k -= 2) {
+    for (k = 2 * n - 1; k >= 1; k -= 2) {
+        Z[2 * k + 1] = ZERO;
+        Z[2 * k] = Z[k];
         Z[2 * k - 1] = ZERO;
         Z[2 * k - 2] = Z[k - 1];
-        Z[2 * k - 3] = ZERO;
-        Z[2 * k - 4] = Z[k - 2];
     }
 
     i0 = 0;
@@ -223,45 +223,45 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
      */
     pp = 0;
 
-    for (k = 1; k <= 2; k++) {
+    for (k = 0; k < 2; k++) {
 
         d = Z[4 * n0 + pp];
-        for (i4 = 4 * n0 + pp; i4 >= 4 * (i0 + 1) + pp; i4 -= 4) {
-            if (Z[i4 - 2] <= tol2 * d) {
-                Z[i4 - 2] = -ZERO;
-                d = Z[i4 - 4];
+        for (i4 = 4 * n0 + pp - 1; i4 >= 4 * i0 + pp + 3; i4 -= 4) {
+            if (Z[i4 - 1] <= tol2 * d) {
+                Z[i4 - 1] = -ZERO;
+                d = Z[i4 - 3];
             } else {
-                d = Z[i4 - 4] * (d / (d + Z[i4 - 2]));
+                d = Z[i4 - 3] * (d / (d + Z[i4 - 1]));
             }
         }
 
         /* dqd maps Z to ZZ plus Li's test. */
         emin = Z[4 * i0 + pp + 4];
         d = Z[4 * i0 + pp];
-        for (i4 = 4 * (i0 + 1) + pp; i4 <= 4 * n0 + pp; i4 += 4) {
-            Z[i4 - 2 * pp - 3] = d + Z[i4 - 2];
-            if (Z[i4 - 2] <= tol2 * d) {
-                Z[i4 - 2] = -ZERO;
-                Z[i4 - 2 * pp - 3] = d;
-                Z[i4 - 2 * pp - 1] = ZERO;
-                d = Z[i4];
-            } else if (safmin * Z[i4] < Z[i4 - 2 * pp - 3] &&
-                       safmin * Z[i4 - 2 * pp - 3] < Z[i4]) {
-                temp = Z[i4] / Z[i4 - 2 * pp - 3];
-                Z[i4 - 2 * pp - 1] = Z[i4 - 2] * temp;
+        for (i4 = 4 * i0 + pp + 3; i4 <= 4 * n0 + pp - 1; i4 += 4) {
+            Z[i4 - 2 * pp - 2] = d + Z[i4 - 1];
+            if (Z[i4 - 1] <= tol2 * d) {
+                Z[i4 - 1] = -ZERO;
+                Z[i4 - 2 * pp - 2] = d;
+                Z[i4 - 2 * pp] = ZERO;
+                d = Z[i4 + 1];
+            } else if (safmin * Z[i4 + 1] < Z[i4 - 2 * pp - 2] &&
+                       safmin * Z[i4 - 2 * pp - 2] < Z[i4 + 1]) {
+                temp = Z[i4 + 1] / Z[i4 - 2 * pp - 2];
+                Z[i4 - 2 * pp] = Z[i4 - 1] * temp;
                 d = d * temp;
             } else {
-                Z[i4 - 2 * pp - 1] = Z[i4] * (Z[i4 - 2] / Z[i4 - 2 * pp - 3]);
-                d = Z[i4] * (d / Z[i4 - 2 * pp - 3]);
+                Z[i4 - 2 * pp] = Z[i4 + 1] * (Z[i4 - 1] / Z[i4 - 2 * pp - 2]);
+                d = Z[i4 + 1] * (d / Z[i4 - 2 * pp - 2]);
             }
-            emin = (emin < Z[i4 - 2 * pp - 1]) ? emin : Z[i4 - 2 * pp - 1];
+            emin = (emin < Z[i4 - 2 * pp]) ? emin : Z[i4 - 2 * pp];
         }
         Z[4 * n0 - pp + 1] = d;
 
         /* Now find qmax. */
         qmax = Z[4 * i0 - pp + 1];
-        for (i4 = 4 * i0 - pp + 6; i4 <= 4 * n0 - pp + 2; i4 += 4) {
-            qmax = (qmax > Z[i4 - 1]) ? qmax : Z[i4 - 1];
+        for (i4 = 4 * i0 - pp + 5; i4 <= 4 * n0 - pp + 1; i4 += 4) {
+            qmax = (qmax > Z[i4]) ? qmax : Z[i4];
         }
 
         /* Prepare for the next iteration on K. */
@@ -284,7 +284,7 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
     nfail = 0;
     ndiv  = 2 * (n0 - i0);
 
-    for (iwhila = 1; iwhila <= n + 1; iwhila++) {
+    for (iwhila = 0; iwhila < n + 1; iwhila++) {
         if (n0 < 0) {
             goto L170;
         }
@@ -318,32 +318,32 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
         }
         qmin = Z[4 * n0];
         qmax = qmin;
-        for (i4 = 4 * (n0 + 1); i4 >= 8; i4 -= 4) {
-            if (Z[i4 - 6] <= ZERO) {
+        for (i4 = 4 * n0 + 3; i4 >= 7; i4 -= 4) {
+            if (Z[i4 - 5] <= ZERO) {
                 goto L100;
             }
             if (qmin >= FOUR * emax) {
-                qmin = (qmin < Z[i4 - 4]) ? qmin : Z[i4 - 4];
-                emax = (emax > Z[i4 - 6]) ? emax : Z[i4 - 6];
+                qmin = (qmin < Z[i4 - 3]) ? qmin : Z[i4 - 3];
+                emax = (emax > Z[i4 - 5]) ? emax : Z[i4 - 5];
             }
-            qmax = (qmax > Z[i4 - 8] + Z[i4 - 6]) ? qmax : Z[i4 - 8] + Z[i4 - 6];
-            emin = (emin < Z[i4 - 6]) ? emin : Z[i4 - 6];
+            qmax = (qmax > Z[i4 - 7] + Z[i4 - 5]) ? qmax : Z[i4 - 7] + Z[i4 - 5];
+            emin = (emin < Z[i4 - 5]) ? emin : Z[i4 - 5];
         }
-        i4 = 4;
+        i4 = 3;
 
 L100:
-        i0 = i4 / 4 - 1;
+        i0 = i4 / 4;
         pp = 0;
 
         if (n0 - i0 > 1) {
             dee = Z[4 * i0];
             deemin = dee;
             kmin = i0;
-            for (i4 = 4 * i0 + 5; i4 <= 4 * n0 + 1; i4 += 4) {
-                dee = Z[i4 - 1] * (dee / (dee + Z[i4 - 3]));
+            for (i4 = 4 * i0 + 4; i4 <= 4 * n0; i4 += 4) {
+                dee = Z[i4] * (dee / (dee + Z[i4 - 2]));
                 if (dee <= deemin) {
                     deemin = dee;
-                    kmin = (i4 + 3) / 4 - 1;
+                    kmin = i4 / 4;
                 }
             }
             if ((kmin - i0) * 2 < n0 - kmin &&
@@ -379,7 +379,7 @@ L100:
          *        should not be performed.
          */
         nbig = 100 * (n0 - i0 + 1);
-        for (iwhilb = 1; iwhilb <= nbig; iwhilb++) {
+        for (iwhilb = 0; iwhilb < nbig; iwhilb++) {
             if (i0 > n0) {
                 goto L150;
             }
@@ -399,18 +399,18 @@ L100:
                     qmax = Z[4 * i0];
                     emin = Z[4 * i0 + 2];
                     oldemn = Z[4 * i0 + 3];
-                    for (i4 = 4 * (i0 + 1); i4 <= 4 * (n0 - 2); i4 += 4) {
-                        if (Z[i4 - 1] <= tol2 * Z[i4 - 4] ||
-                            Z[i4 - 2] <= tol2 * sigma) {
-                            Z[i4 - 2] = -sigma;
-                            splt = i4 / 4 - 1;
+                    for (i4 = 4 * i0 + 3; i4 <= 4 * n0 - 9; i4 += 4) {
+                        if (Z[i4] <= tol2 * Z[i4 - 3] ||
+                            Z[i4 - 1] <= tol2 * sigma) {
+                            Z[i4 - 1] = -sigma;
+                            splt = i4 / 4;
                             qmax = ZERO;
-                            emin = Z[i4 + 2];
-                            oldemn = Z[i4 + 3];
+                            emin = Z[i4 + 3];
+                            oldemn = Z[i4 + 4];
                         } else {
-                            qmax = (qmax > Z[i4]) ? qmax : Z[i4];
-                            emin = (emin < Z[i4 - 2]) ? emin : Z[i4 - 2];
-                            oldemn = (oldemn < Z[i4 - 1]) ? oldemn : Z[i4 - 1];
+                            qmax = (qmax > Z[i4 + 1]) ? qmax : Z[i4 + 1];
+                            emin = (emin < Z[i4 - 1]) ? emin : Z[i4 - 1];
+                            oldemn = (oldemn < Z[i4]) ? oldemn : Z[i4];
                         }
                     }
                     Z[4 * n0 + 2] = emin;

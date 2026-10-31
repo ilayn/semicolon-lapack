@@ -107,7 +107,7 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
             const f32* restrict C, const f32* restrict S,
             f32* restrict rwork, INT* restrict iwork, INT* info)
 {
-    INT i, i1, ic, im1, inode, j, jcol, jimag, jreal;
+    INT i, ic, inode, j, jcol, jimag, jreal;
     INT jrow, lf, ll, lvl, lvl2, nd, ndb1, ndiml;
     INT ndimr, nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqre;
 
@@ -152,12 +152,11 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
      * matrices are in explicit form. First apply back the left
      * singular vector matrices. */
 
-    ndb1 = (nd + 1) / 2;
-    for (i = ndb1; i <= nd; i++) {
-        i1 = i - 1;
-        ic = iwork[inode + i1];
-        nl = iwork[ndiml + i1];
-        nr = iwork[ndimr + i1];
+    ndb1 = (nd - 1) / 2;
+    for (i = ndb1; i < nd; i++) {
+        ic = iwork[inode + i];
+        nl = iwork[ndiml + i];
+        nr = iwork[ndimr + i];
         nlf = ic - nl;
         nrf = ic + 1;
 
@@ -165,9 +164,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
          * is performed in two steps (real and imaginary parts). */
 
         j = nl * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nl - 1; jrow++) {
-                rwork[j] = crealf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nl; jrow++) {
+                rwork[j] = crealf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -175,9 +174,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
                     nl, nrhs, nl, 1.0f, &U[nlf], ldu,
                     &rwork[nl * nrhs * 2], nl, 0.0f, rwork, nl);
         j = nl * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nl - 1; jrow++) {
-                rwork[j] = cimagf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nl; jrow++) {
+                rwork[j] = cimagf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -186,9 +185,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
                     &rwork[nl * nrhs * 2], nl, 0.0f, &rwork[nl * nrhs], nl);
         jreal = 0;
         jimag = nl * nrhs;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nl - 1; jrow++) {
-                BX[jrow + (jcol - 1) * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nl; jrow++) {
+                BX[jrow + jcol * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
                 jreal++;
                 jimag++;
             }
@@ -198,9 +197,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
          * is performed in two steps (real and imaginary parts). */
 
         j = nr * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nr - 1; jrow++) {
-                rwork[j] = crealf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nr; jrow++) {
+                rwork[j] = crealf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -208,9 +207,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
                     nr, nrhs, nr, 1.0f, &U[nrf], ldu,
                     &rwork[nr * nrhs * 2], nr, 0.0f, rwork, nr);
         j = nr * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nr - 1; jrow++) {
-                rwork[j] = cimagf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nr; jrow++) {
+                rwork[j] = cimagf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -219,9 +218,9 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
                     &rwork[nr * nrhs * 2], nr, 0.0f, &rwork[nr * nrhs], nr);
         jreal = 0;
         jimag = nr * nrhs;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nr - 1; jrow++) {
-                BX[jrow + (jcol - 1) * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nr; jrow++) {
+                BX[jrow + jcol * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
                 jreal++;
                 jimag++;
             }
@@ -231,45 +230,44 @@ void clalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
     /* Next copy the rows of B that correspond to unchanged rows
      * in the bidiagonal matrix to BX. */
 
-    for (i = 1; i <= nd; i++) {
-        ic = iwork[inode + i - 1];
+    for (i = 0; i < nd; i++) {
+        ic = iwork[inode + i];
         cblas_ccopy(nrhs, &B[ic], ldb, &BX[ic], ldbx);
     }
 
     /* Finally go through the left singular vector matrices of all
      * the other subproblems bottom-up on the tree. */
 
-    j = 1 << nlvl;
+    j = (1 << nlvl) - 1;
     sqre = 0;
 
-    for (lvl = nlvl; lvl >= 1; lvl--) {
-        lvl2 = 2 * lvl - 1;
+    for (lvl = nlvl - 1; lvl >= 0; lvl--) {
+        lvl2 = 2 * lvl;
 
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
         for (i = lf; i <= ll; i++) {
-            im1 = i - 1;
-            ic = iwork[inode + im1];
-            nl = iwork[ndiml + im1];
-            nr = iwork[ndimr + im1];
+            ic = iwork[inode + i];
+            nl = iwork[ndiml + i];
+            nr = iwork[ndimr + i];
             nlf = ic - nl;
             j = j - 1;
             clals0(icompq, nl, nr, sqre, nrhs,
                    &BX[nlf], ldbx, &B[nlf], ldb,
-                   &perm[nlf + (lvl - 1) * ldgcol],
-                   givptr[j - 1],
-                   &givcol[nlf + (lvl2 - 1) * ldgcol], ldgcol,
-                   &givnum[nlf + (lvl2 - 1) * ldu], ldu,
-                   &poles[nlf + (lvl2 - 1) * ldu],
-                   &difl[nlf + (lvl - 1) * ldu],
-                   &difr[nlf + (lvl2 - 1) * ldu],
-                   &Z[nlf + (lvl - 1) * ldu],
-                   K[j - 1], C[j - 1], S[j - 1], rwork, info);
+                   &perm[nlf + lvl * ldgcol],
+                   givptr[j],
+                   &givcol[nlf + lvl2 * ldgcol], ldgcol,
+                   &givnum[nlf + lvl2 * ldu], ldu,
+                   &poles[nlf + lvl2 * ldu],
+                   &difl[nlf + lvl * ldu],
+                   &difr[nlf + lvl2 * ldu],
+                   &Z[nlf + lvl * ldu],
+                   K[j], C[j], S[j], rwork, info);
         }
     }
     goto L330;
@@ -281,22 +279,21 @@ L170:
     /* First now go through the right singular vector matrices of all
      * the tree nodes top-down. */
 
-    j = 0;
-    for (lvl = 1; lvl <= nlvl; lvl++) {
-        lvl2 = 2 * lvl - 1;
+    j = -1;
+    for (lvl = 0; lvl < nlvl; lvl++) {
+        lvl2 = 2 * lvl;
 
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
         for (i = ll; i >= lf; i--) {
-            im1 = i - 1;
-            ic = iwork[inode + im1];
-            nl = iwork[ndiml + im1];
-            nr = iwork[ndimr + im1];
+            ic = iwork[inode + i];
+            nl = iwork[ndiml + i];
+            nr = iwork[ndimr + i];
             nlf = ic - nl;
             if (i == ll) {
                 sqre = 0;
@@ -306,15 +303,15 @@ L170:
             j = j + 1;
             clals0(icompq, nl, nr, sqre, nrhs,
                    &B[nlf], ldb, &BX[nlf], ldbx,
-                   &perm[nlf + (lvl - 1) * ldgcol],
-                   givptr[j - 1],
-                   &givcol[nlf + (lvl2 - 1) * ldgcol], ldgcol,
-                   &givnum[nlf + (lvl2 - 1) * ldu], ldu,
-                   &poles[nlf + (lvl2 - 1) * ldu],
-                   &difl[nlf + (lvl - 1) * ldu],
-                   &difr[nlf + (lvl2 - 1) * ldu],
-                   &Z[nlf + (lvl - 1) * ldu],
-                   K[j - 1], C[j - 1], S[j - 1], rwork, info);
+                   &perm[nlf + lvl * ldgcol],
+                   givptr[j],
+                   &givcol[nlf + lvl2 * ldgcol], ldgcol,
+                   &givnum[nlf + lvl2 * ldu], ldu,
+                   &poles[nlf + lvl2 * ldu],
+                   &difl[nlf + lvl * ldu],
+                   &difr[nlf + lvl2 * ldu],
+                   &Z[nlf + lvl * ldu],
+                   K[j], C[j], S[j], rwork, info);
         }
     }
 
@@ -322,14 +319,13 @@ L170:
      * by SLASDQ. The corresponding right singular vector
      * matrices are in explicit form. Apply them back. */
 
-    ndb1 = (nd + 1) / 2;
-    for (i = ndb1; i <= nd; i++) {
-        i1 = i - 1;
-        ic = iwork[inode + i1];
-        nl = iwork[ndiml + i1];
-        nr = iwork[ndimr + i1];
+    ndb1 = (nd - 1) / 2;
+    for (i = ndb1; i < nd; i++) {
+        ic = iwork[inode + i];
+        nl = iwork[ndiml + i];
+        nr = iwork[ndimr + i];
         nlp1 = nl + 1;
-        if (i == nd) {
+        if (i == nd - 1) {
             nrp1 = nr;
         } else {
             nrp1 = nr + 1;
@@ -341,9 +337,9 @@ L170:
          * performed in two steps (real and imaginary parts). */
 
         j = nlp1 * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nlp1 - 1; jrow++) {
-                rwork[j] = crealf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nlp1; jrow++) {
+                rwork[j] = crealf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -351,9 +347,9 @@ L170:
                     nlp1, nrhs, nlp1, 1.0f, &VT[nlf], ldu,
                     &rwork[nlp1 * nrhs * 2], nlp1, 0.0f, rwork, nlp1);
         j = nlp1 * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nlp1 - 1; jrow++) {
-                rwork[j] = cimagf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nlp1; jrow++) {
+                rwork[j] = cimagf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -362,9 +358,9 @@ L170:
                     &rwork[nlp1 * nrhs * 2], nlp1, 0.0f, &rwork[nlp1 * nrhs], nlp1);
         jreal = 0;
         jimag = nlp1 * nrhs;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nlf; jrow <= nlf + nlp1 - 1; jrow++) {
-                BX[jrow + (jcol - 1) * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nlf; jrow < nlf + nlp1; jrow++) {
+                BX[jrow + jcol * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
                 jreal++;
                 jimag++;
             }
@@ -374,9 +370,9 @@ L170:
          * performed in two steps (real and imaginary parts). */
 
         j = nrp1 * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nrp1 - 1; jrow++) {
-                rwork[j] = crealf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nrp1; jrow++) {
+                rwork[j] = crealf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -384,9 +380,9 @@ L170:
                     nrp1, nrhs, nrp1, 1.0f, &VT[nrf], ldu,
                     &rwork[nrp1 * nrhs * 2], nrp1, 0.0f, rwork, nrp1);
         j = nrp1 * nrhs * 2;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nrp1 - 1; jrow++) {
-                rwork[j] = cimagf(B[jrow + (jcol - 1) * ldb]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nrp1; jrow++) {
+                rwork[j] = cimagf(B[jrow + jcol * ldb]);
                 j++;
             }
         }
@@ -395,9 +391,9 @@ L170:
                     &rwork[nrp1 * nrhs * 2], nrp1, 0.0f, &rwork[nrp1 * nrhs], nrp1);
         jreal = 0;
         jimag = nrp1 * nrhs;
-        for (jcol = 1; jcol <= nrhs; jcol++) {
-            for (jrow = nrf; jrow <= nrf + nrp1 - 1; jrow++) {
-                BX[jrow + (jcol - 1) * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
+        for (jcol = 0; jcol < nrhs; jcol++) {
+            for (jrow = nrf; jrow < nrf + nrp1; jrow++) {
+                BX[jrow + jcol * ldbx] = CMPLXF(rwork[jreal], rwork[jimag]);
                 jreal++;
                 jimag++;
             }

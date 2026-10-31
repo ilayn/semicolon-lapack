@@ -283,23 +283,21 @@ void sorcsd(
         if (iorglq + lorglqworkopt > lworkopt) lworkopt = iorglq + lorglqworkopt;
         if (iorbdb + lorbdbworkopt > lworkopt) lworkopt = iorbdb + lorbdbworkopt;
         if (ibbcsd + lbbcsdworkopt > lworkopt) lworkopt = ibbcsd + lbbcsdworkopt;
-        lworkopt = lworkopt - 1;
 
         lworkmin = iorgqr + lorgqrworkmin;
         if (iorglq + lorglqworkmin > lworkmin) lworkmin = iorglq + lorglqworkmin;
         if (iorbdb + lorbdbworkopt > lworkmin) lworkmin = iorbdb + lorbdbworkopt;
         if (ibbcsd + lbbcsdworkmin > lworkmin) lworkmin = ibbcsd + lbbcsdworkmin;
-        lworkmin = lworkmin - 1;
 
         work[0] = (f32)(lworkopt > lworkmin ? lworkopt : lworkmin);
 
         if (lwork < lworkmin && !lquery) {
             *info = -28;
         } else {
-            lorgqrwork = lwork - iorgqr + 1;
-            lorglqwork = lwork - iorglq + 1;
-            lorbdbwork = lwork - iorbdb + 1;
-            lbbcsdwork = lwork - ibbcsd + 1;
+            lorgqrwork = lwork - iorgqr;
+            lorglqwork = lwork - iorglq;
+            lorbdbwork = lwork - iorbdb;
+            lbbcsdwork = lwork - ibbcsd;
         }
     }
 
@@ -311,20 +309,20 @@ void sorcsd(
     }
 
     sorbdb(trans, signs, m, p, q, X11, ldx11, X12, ldx12, X21, ldx21,
-           X22, ldx22, theta, &work[iphi - 1], &work[itaup1 - 1],
-           &work[itaup2 - 1], &work[itauq1 - 1], &work[itauq2 - 1],
-           &work[iorbdb - 1], lorbdbwork, &childinfo);
+           X22, ldx22, theta, &work[iphi], &work[itaup1],
+           &work[itaup2], &work[itauq1], &work[itauq2],
+           &work[iorbdb], lorbdbwork, &childinfo);
 
     if (colmajor) {
         if (wantu1 && p > 0) {
             slacpy("L", p, q, X11, ldx11, U1, ldu1);
-            sorgqr(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            sorgqr(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqrwork, info);
         }
         if (wantu2 && m - p > 0) {
             slacpy("L", m - p, q, X21, ldx21, U2, ldu2);
-            sorgqr(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            sorgqr(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorgqr], lorgqrwork, info);
         }
         if (wantv1t && q > 0) {
             slacpy("U", q - 1, q - 1, &X11[1 * ldx11], ldx11, &V1T[1 + 1 * ldv1t], ldv1t);
@@ -334,7 +332,7 @@ void sorcsd(
                 V1T[j] = zero;
             }
             sorglq(q - 1, q - 1, q - 1, &V1T[1 + 1 * ldv1t], ldv1t,
-                   &work[itauq1 - 1], &work[iorglq - 1], lorglqwork, info);
+                   &work[itauq1], &work[iorglq], lorglqwork, info);
         }
         if (wantv2t && m - q > 0) {
             slacpy("U", p, m - q, X12, ldx12, V2T, ldv2t);
@@ -343,20 +341,20 @@ void sorcsd(
                        &V2T[p + p * ldv2t], ldv2t);
             }
             if (m > q) {
-                sorglq(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2 - 1],
-                       &work[iorglq - 1], lorglqwork, info);
+                sorglq(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2],
+                       &work[iorglq], lorglqwork, info);
             }
         }
     } else {
         if (wantu1 && p > 0) {
             slacpy("U", q, p, X11, ldx11, U1, ldu1);
-            sorglq(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorglq - 1], lorglqwork, info);
+            sorglq(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorglq], lorglqwork, info);
         }
         if (wantu2 && m - p > 0) {
             slacpy("U", q, m - p, X21, ldx21, U2, ldu2);
-            sorglq(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorglq - 1], lorglqwork, info);
+            sorglq(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorglq], lorglqwork, info);
         }
         if (wantv1t && q > 0) {
             slacpy("L", q - 1, q - 1, &X11[1], ldx11, &V1T[1 + 1 * ldv1t], ldv1t);
@@ -366,22 +364,22 @@ void sorcsd(
                 V1T[j] = zero;
             }
             sorgqr(q - 1, q - 1, q - 1, &V1T[1 + 1 * ldv1t], ldv1t,
-                   &work[itauq1 - 1], &work[iorgqr - 1], lorgqrwork, info);
+                   &work[itauq1], &work[iorgqr], lorgqrwork, info);
         }
         if (wantv2t && m - q > 0) {
             slacpy("L", m - q, p, X12, ldx12, V2T, ldv2t);
             slacpy("L", m - p - q, m - p - q, &X22[p + q * ldx22], ldx22,
                    &V2T[p + p * ldv2t], ldv2t);
-            sorgqr(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            sorgqr(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2],
+                   &work[iorgqr], lorgqrwork, info);
         }
     }
 
     sbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta,
-           &work[iphi - 1], U1, ldu1, U2, ldu2, V1T, ldv1t, V2T, ldv2t,
-           &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1],
-           &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1],
-           &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsdwork, info);
+           &work[iphi], U1, ldu1, U2, ldu2, V1T, ldv1t, V2T, ldv2t,
+           &work[ib11d], &work[ib11e], &work[ib12d],
+           &work[ib12e], &work[ib21d], &work[ib21e],
+           &work[ib22d], &work[ib22e], &work[ibbcsd], lbbcsdwork, info);
 
     if (q > 0 && wantu2) {
         for (i = 0; i < q; i++) {
