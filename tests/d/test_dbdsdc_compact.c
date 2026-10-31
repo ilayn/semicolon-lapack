@@ -13,6 +13,10 @@
  * X = V * inv(S) * U**T * B, which must be the identity. For UPLO = 'L' the
  * rotations stored in Q are applied to B first. The last IQ entry must be
  * the UPLO indicator and the sorting permutation must be in range.
+ * The random matrices never deflate by Givens rotations. The constant
+ * matrices (D = 2.5, E = 0.5) do, because their subproblems of equal size
+ * have equal singular values, so they also check GIVPTR, GIVCOL and GIVNUM;
+ * at least one node must have GIVPTR > 0.
  */
 
 #include "test_harness.h"
@@ -24,7 +28,8 @@
 
 #define THRESH 30.0
 
-static void run_case(const INT n, const char* uplo, const uint64_t seed)
+static void run_case(const INT n, const char* uplo, const INT constant,
+                     const uint64_t seed)
 {
     const INT smlsiz = LAPACK_SMLSIZ;
     const INT mlvl = (INT)(log((f64)n / (f64)(smlsiz + 1)) / log(2.0)) + 1;
@@ -66,8 +71,13 @@ static void run_case(const INT n, const char* uplo, const uint64_t seed)
 
     rng_seed(rng_state, seed);
     for (INT i = 0; i < n; i++) {
-        D0[i] = 2.5 + 0.5 * rng_uniform_symmetric(rng_state);
-        E0[i] = 0.5 + 0.4 * rng_uniform_symmetric(rng_state);
+        if (constant) {
+            D0[i] = 2.5;
+            E0[i] = 0.5;
+        } else {
+            D0[i] = 2.5 + 0.5 * rng_uniform_symmetric(rng_state);
+            E0[i] = 0.5 + 0.4 * rng_uniform_symmetric(rng_state);
+        }
     }
     E0[n - 1] = 0.0;
     memcpy(D, D0, (size_t)n * sizeof(f64));
@@ -79,6 +89,14 @@ static void run_case(const INT n, const char* uplo, const uint64_t seed)
     assert_int_equal(IQ[n - 1], (uplo[0] == 'U') ? 1 : 0);
     for (INT i = 0; i < n - 1; i++) {
         assert_true(IQ[i] >= i && IQ[i] < n);
+    }
+    if (constant) {
+        const INT nd = (1 << mlvl) - 1;
+        INT ngiv = 0;
+        for (INT i = 0; i < nd; i++) {
+            ngiv += IQ[i + givptr * n];
+        }
+        assert_true(ngiv > 0);
     }
 
     memcpy(S, D, (size_t)n * sizeof(f64));
@@ -137,9 +155,14 @@ static void run_case(const INT n, const char* uplo, const uint64_t seed)
 static void run_uplo(const char* uplo)
 {
     static const INT sizes[] = {26, 40, 52, 53, 100, 211};
+    static const INT csizes[] = {207, 211};
     const INT nsizes = (INT)(sizeof(sizes) / sizeof(sizes[0]));
+    const INT ncsizes = (INT)(sizeof(csizes) / sizeof(csizes[0]));
     for (INT i = 0; i < nsizes; i++) {
-        run_case(sizes[i], uplo, 0xBD5DC0ULL + (uint64_t)i);
+        run_case(sizes[i], uplo, 0, 0xBD5DC0ULL + (uint64_t)i);
+    }
+    for (INT i = 0; i < ncsizes; i++) {
+        run_case(csizes[i], uplo, 1, 0);
     }
 }
 
