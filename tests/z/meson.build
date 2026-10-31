@@ -114,6 +114,7 @@ lapack_tests_z = {
   'zstedc_deflate': ['test_zstedc_deflate.c', 'eigen'],
   'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],
+  'ztgsen_difl': ['test_ztgsen_difl.c', 'eigen'],
   'ztprfb_rowfwd': ['test_ztprfb_rowfwd.c', 'qr'],
   'zlarf_incv': ['test_zlarf_incv.c', 'qr'],
   'zlarft': ['test_zlarft.c', 'qr'],

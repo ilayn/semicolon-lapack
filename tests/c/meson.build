@@ -114,6 +114,7 @@ lapack_tests_c = {
   'cstedc_deflate': ['test_cstedc_deflate.c', 'eigen'],
   'cgeqp3_fixed': ['test_cgeqp3_fixed.c', 'qr'],
   'ctgsen_lwork': ['test_ctgsen_lwork.c', 'eigen'],
+  'ctgsen_difl': ['test_ctgsen_difl.c', 'eigen'],
   'ctprfb_rowfwd': ['test_ctprfb_rowfwd.c', 'qr'],
   'clarf_incv': ['test_clarf_incv.c', 'qr'],
   'clarft': ['test_clarft.c', 'qr'],
