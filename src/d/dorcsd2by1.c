@@ -169,7 +169,7 @@ void dorcsd2by1(
     if (m - q < r) r = m - q;
 
     if (*info == 0) {
-        iphi = 0;
+        iphi = 1;
         ib11d = iphi + (1 > (r - 1) ? 1 : (r - 1));
         ib11e = ib11d + (1 > r ? 1 : r);
         ib12d = ib11e + (1 > (r - 1) ? 1 : (r - 1));

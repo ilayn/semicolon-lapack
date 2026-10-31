@@ -239,7 +239,7 @@ void dorcsd(
     }
 
     if (*info == 0) {
-        iphi = 0;
+        iphi = 1;
         itaup1 = iphi + (1 > (q - 1) ? 1 : (q - 1));
         itaup2 = itaup1 + (1 > p ? 1 : p);
         itauq1 = itaup2 + (1 > (m - p) ? 1 : (m - p));
