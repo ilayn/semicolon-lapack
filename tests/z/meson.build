@@ -121,6 +121,7 @@ lapack_tests_z = {
   'zlauum_cdiag': ['test_zlauum_cdiag.c', 'cholesky'],
   'zgeev_nan': ['test_zgeev_nan.c', 'eigen'],
   'zbbcsd_restart': ['test_zbbcsd_restart.c', 'eigen'],
+  'zbbcsd_noconv': ['test_zbbcsd_noconv.c', 'eigen'],
   'zcgesv_nrhs0': ['test_zcgesv_nrhs0.c', 'solve'],
   'zgeqrf_work': ['test_zgeqrf_work.c', 'qr'],
   'zgeqp3rk_lwork': ['test_zgeqp3rk_lwork.c', 'qr'],

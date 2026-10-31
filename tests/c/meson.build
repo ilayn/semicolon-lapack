@@ -121,6 +121,7 @@ lapack_tests_c = {
   'clauum_cdiag': ['test_clauum_cdiag.c', 'cholesky'],
   'cgeev_nan': ['test_cgeev_nan.c', 'eigen'],
   'cbbcsd_restart': ['test_cbbcsd_restart.c', 'eigen'],
+  'cbbcsd_noconv': ['test_cbbcsd_noconv.c', 'eigen'],
   'cdrgev': ['test_cdrgev.c', 'eigen'],
   'cdrgev3': ['test_cdrgev3.c', 'eigen'],
   'cdrgsx': ['test_cdrgsx.c', 'eigen'],

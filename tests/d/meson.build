@@ -128,6 +128,7 @@ lapack_tests_d = {
   'dlaed4_overshoot': ['test_dlaed4_overshoot.c', 'eigen'],
   'dgeev_nan': ['test_dgeev_nan.c', 'eigen'],
   'dbbcsd_restart': ['test_dbbcsd_restart.c', 'eigen'],
+  'dbbcsd_noconv': ['test_dbbcsd_noconv.c', 'eigen'],
   'dsgesv_nrhs0': ['test_dsgesv_nrhs0.c', 'solve'],
   'dgeqrf_work': ['test_dgeqrf_work.c', 'qr'],
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)

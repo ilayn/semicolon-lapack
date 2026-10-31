@@ -271,7 +271,7 @@ void cbbcsd(
 
         if (iter > maxit) {
             *info = 0;
-            for (i = 0; i < q; i++) {
+            for (i = 0; i < q - 1; i++) {
                 if (phi[i] != zero)
                     (*info)++;
             }

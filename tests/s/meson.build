@@ -121,6 +121,7 @@ lapack_tests_s = {
   'slarft': ['test_slarft.c', 'qr'],
   'sgeev_nan': ['test_sgeev_nan.c', 'eigen'],
   'sbbcsd_restart': ['test_sbbcsd_restart.c', 'eigen'],
+  'sbbcsd_noconv': ['test_sbbcsd_noconv.c', 'eigen'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],
   'sdrvsg2stg': ['test_sdrvsg2stg.c', 'eigen'],
