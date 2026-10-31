@@ -30,28 +30,71 @@ static const INT SMLSIZ = LAPACK_SMLSIZ;
  * using the divide and conquer method.
  *
  * @param[in]     uplo    = 'U': B is upper bidiagonal.
- *                         = 'L': B is lower bidiagonal.
- * @param[in]     compq   = 'N': Compute singular values only.
- *                         = 'P': Compute singular values and vectors in compact form.
- *                         = 'I': Compute singular values and singular vectors.
+ *                        = 'L': B is lower bidiagonal.
+ * @param[in]     compq   Specifies whether singular vectors are to be computed
+ *                        as follows:
+ *                        = 'N': Compute singular values only;
+ *                        = 'P': Compute singular values and compute singular
+ *                               vectors in compact form;
+ *                        = 'I': Compute singular values and singular vectors.
  * @param[in]     n       The order of the matrix B. n >= 0.
- * @param[in,out] D       Array of dimension n. On entry, diagonal elements.
- *                        On exit, singular values of B.
- * @param[in,out] E       Array of dimension n-1. Off-diagonal elements.
+ * @param[in,out] D       Double precision array, dimension (n).
+ *                        On entry, the n diagonal elements of the bidiagonal
+ *                        matrix B.
+ *                        On exit, if info=0, the singular values of B.
+ * @param[in,out] E       Double precision array, dimension (n-1).
+ *                        On entry, the elements of E contain the offdiagonal
+ *                        elements of the bidiagonal matrix whose SVD is desired.
  *                        On exit, E has been destroyed.
- * @param[out]    U       Array (ldu, n). If compq='I', left singular vectors.
- * @param[in]     ldu     Leading dimension of U.
- * @param[out]    VT      Array (ldvt, n). If compq='I', right singular vectors.
- * @param[in]     ldvt    Leading dimension of VT.
- * @param[out]    Q       Array. If compq='P', compact form of singular vectors.
- * @param[out]    IQ      Integer array. If compq='P', compact form data.
- * @param[out]    work    Array of dimension:
- *                        if compq='N': 4*n
- *                        if compq='P': 6*n
- *                        if compq='I': 3*n^2 + 4*n
- * @param[out]    IWORK   Integer array of dimension 8*n.
+ * @param[out]    U       Double precision array, dimension (ldu, n).
+ *                        If compq = 'I', then:
+ *                           On exit, if info = 0, U contains the left singular
+ *                           vectors of the bidiagonal matrix.
+ *                        For other values of compq, U is not referenced.
+ * @param[in]     ldu     The leading dimension of the array U. ldu >= 1.
+ *                        If singular vectors are desired, then ldu >= max(1, n).
+ * @param[out]    VT      Double precision array, dimension (ldvt, n).
+ *                        If compq = 'I', then:
+ *                           On exit, if info = 0, VT**T contains the right
+ *                           singular vectors of the bidiagonal matrix.
+ *                        For other values of compq, VT is not referenced.
+ * @param[in]     ldvt    The leading dimension of the array VT. ldvt >= 1.
+ *                        If singular vectors are desired, then ldvt >= max(1, n).
+ * @param[out]    Q       Double precision array, dimension (LDQ).
+ *                        If compq = 'P', then:
+ *                           On exit, if info = 0, Q and IQ contain the left
+ *                           and right singular vectors in a compact form,
+ *                           requiring O(N log N) space instead of 2*N**2.
+ *                           In particular, Q contains all the double precision
+ *                           data in
+ *                           LDQ >= N*(11 + 2*SMLSIZ + 8*INT(LOG_2(N/(SMLSIZ+1))))
+ *                           words of memory, where SMLSIZ is returned by ILAENV
+ *                           and is equal to the maximum size of the subproblems
+ *                           at the bottom of the computation tree (usually
+ *                           about 25).
+ *                        For other values of compq, Q is not referenced.
+ * @param[out]    IQ      Integer array, dimension (LDIQ).
+ *                        If compq = 'P', then:
+ *                           On exit, if info = 0, Q and IQ contain the left
+ *                           and right singular vectors in a compact form,
+ *                           requiring O(N log N) space instead of 2*N**2.
+ *                           In particular, IQ contains all integer data in
+ *                           LDIQ >= N*(3 + 3*INT(LOG_2(N/(SMLSIZ+1))))
+ *                           words of memory, where SMLSIZ is returned by ILAENV
+ *                           and is equal to the maximum size of the subproblems
+ *                           at the bottom of the computation tree (usually
+ *                           about 25).
+ *                        For other values of compq, IQ is not referenced.
+ * @param[out]    work    Double precision array, dimension (max(1, lwork)).
+ *                        If compq = 'N' then lwork >= (4 * n).
+ *                        If compq = 'P' then lwork >= (6 * n).
+ *                        If compq = 'I' then lwork >= (3 * n**2 + 4 * n).
+ * @param[out]    IWORK   Integer array, dimension (8*n).
  * @param[out]    info
- *                         - = 0: success. < 0: illegal argument. > 0: not converged.
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: The algorithm failed to compute a singular value.
+ *                                The update process of divide and conquer failed.
  */
 void sbdsdc(const char* uplo, const char* compq, const INT n,
             f32* restrict D, f32* restrict E,
