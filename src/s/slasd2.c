@@ -101,10 +101,10 @@ void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
     }
 
     for (i = 1; i <= nl; i++) {
-        COLTYP[i] = 1;
+        COLTYP[i] = 0;
     }
     for (i = nl + 1; i < n; i++) {
-        COLTYP[i] = 2;
+        COLTYP[i] = 1;
     }
 
     for (i = nl + 1; i < n; i++) {
@@ -138,7 +138,7 @@ void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
         if (fabsf(Z[j]) <= tol) {
             k2--;
             IDXP[k2] = j;
-            COLTYP[j] = 4;
+            COLTYP[j] = 3;
             if (j == n - 1) {
                 goto L120;
             }
@@ -157,7 +157,7 @@ void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
         if (fabsf(Z[j]) <= tol) {
             k2--;
             IDXP[k2] = j;
-            COLTYP[j] = 4;
+            COLTYP[j] = 3;
         } else {
             if ((D[j] - D[jprev]) <= tol) {
                 s = Z[jprev];
@@ -180,9 +180,9 @@ void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
                 cblas_srot(m, &VT[idxjp], ldvt, &VT[idxj], ldvt, c, s);
 
                 if (COLTYP[j] != COLTYP[jprev]) {
-                    COLTYP[j] = 3;
+                    COLTYP[j] = 2;
                 }
-                COLTYP[jprev] = 4;
+                COLTYP[jprev] = 3;
                 k2--;
 
                 /* Insert the deflated index in the correct position in IDXP.
@@ -213,7 +213,7 @@ L120:
     }
     for (j = 1; j < n; j++) {
         ct = COLTYP[j];
-        ctot[ct - 1]++;
+        ctot[ct]++;
     }
 
     psm[0] = 1;
@@ -224,8 +224,8 @@ L120:
     for (j = 1; j < n; j++) {
         jp = IDXP[j];
         ct = COLTYP[jp];
-        IDXC[psm[ct - 1]] = j;
-        psm[ct - 1]++;
+        IDXC[psm[ct]] = j;
+        psm[ct]++;
     }
 
     for (j = 1; j < n; j++) {
