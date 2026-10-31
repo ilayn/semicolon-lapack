@@ -5,7 +5,8 @@
 # lives at this level. Each precision gets its own subdirectory with
 # test drivers, verification utilities, and smoke tests.
 
-test_env = environment({'OPENBLAS_NUM_THREADS': '1', 'CMOCKA_MESSAGE_OUTPUT': 'TAP'})
+test_env = environment({'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1',
+                        'CMOCKA_MESSAGE_OUTPUT': 'TAP'})
 
 # Double precision tests
 subdir('d')
