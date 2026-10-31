@@ -9,6 +9,9 @@
  * zero off-diagonal entries, and calls DBDSVDX for both UPLO, RANGE = 'A',
  * 'V' and 'I', and JOBZ = 'N' and 'V'. The singular values are compared
  * with DBDSQR, and the singular vectors are checked with DBDT04 and DORT01.
+ * S has N+1 entries, because DBDSVDX can use S(N+1) as workspace when the
+ * extra TGK eigenvalue of a zero or tiny singular value is computed; the
+ * entry after S(N+1) must stay untouched.
  */
 
 #include "test_harness.h"
@@ -20,6 +23,7 @@
 
 #define THRESH 30.0
 #define N 8
+#define GUARD -777.0
 
 typedef struct {
     INT dzero[N];
@@ -41,7 +45,7 @@ static void run_case(const pattern_t* pat, const uint64_t seed,
     const INT n = N;
     const INT ldz = 2 * n;
     const f64 eps = dlamch("P");
-    f64 D0[N], E0[N], D[N], E[N], Dr[N], Er[N], S[N], S2[N];
+    f64 D0[N], E0[N], D[N], E[N], Dr[N], Er[N], S[N + 2], S2[N + 2];
     f64 vl = 0.0, vu = 0.0;
     INT il = 0, iu = 0, ns, ns2, info, nexp, first;
     uint64_t rng_state[4];
@@ -94,10 +98,14 @@ static void run_case(const pattern_t* pat, const uint64_t seed,
         memcpy(D, D0, sizeof(D));
         memcpy(E, E0, sizeof(E));
         memset(Z, 0, (size_t)ldz * (n + 1) * sizeof(f64));
+        Sout[n + 1] = GUARD;
         dbdsvdx(uplo, jobz, range, n, D, E, vl, vu, il, iu, nsout, Sout,
                 Z, ldz, work, iwork, &info);
         assert_info_success(info);
         assert_int_equal(*nsout, nexp);
+        if (Sout[n + 1] != GUARD) {
+            fail_msg("S(N+2) written: uplo %s range %s jobz %s", uplo, range, jobz);
+        }
 
         f64 err = 0.0;
         for (INT i = 0; i < nexp; i++) {

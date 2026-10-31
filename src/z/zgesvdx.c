@@ -51,7 +51,9 @@ static const c128 CZERO = CMPLX(0.0, 0.0);
  * @param[in]     il      If range='I', index of smallest singular value (0-based).
  * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found.
- * @param[out]    S       Double precision array (min(m,n)). Singular values in descending order.
+ * @param[out]    S       Double precision array (min(m,n)+1). Singular values in
+ *                        descending order. S[min(m,n)] may be used as workspace
+ *                        by DBDSVDX.
  * @param[out]    U       Complex*16 array (ldu, *). Left singular vectors if jobu='V'.
  * @param[in]     ldu     Leading dimension of U. ldu >= 1; ldu >= m if jobu='V'.
  * @param[out]    VT      Complex*16 array (ldvt, n). Right singular vectors if jobvt='V'.

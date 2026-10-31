@@ -50,7 +50,8 @@ static const f64 FUDGE = 2.0;
  * @param[in]     il      If range='I', index of smallest singular value (0-based).
  * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found. 0 <= ns <= n.
- * @param[out]    S       Array (n). First ns elements contain selected singular values.
+ * @param[out]    S       Array (n+1). First ns elements contain selected singular values.
+ *                        S[n] may be used as workspace.
  * @param[out]    Z       Array (ldz, K). If jobz='V', singular vectors stored as
  *                        Z = [U; V] with U in rows 1..n and V in rows n+1..2*n.
  * @param[in]     ldz     Leading dimension of Z. ldz >= 1, ldz >= 2*n if jobz='V'.
