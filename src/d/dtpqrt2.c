@@ -100,19 +100,19 @@ void dtpqrt2(const INT m, const INT n, const INT l,
             T[j + i * ldt] = ZERO;
         }
         p = (i < l) ? i : l;
-        mp = m - l;
-        np = (p + 1) < n ? (p + 1) : n;
+        mp = (m - l) < (m - 1) ? (m - l) : (m - 1);
+        np = p < (n - 1) ? p : (n - 1);
 
         for (j = 0; j < p; j++) {
-            T[j + i * ldt] = alpha * B[(mp + j) + i * ldb];
+            T[j + i * ldt] = alpha * B[(m - l + j) + i * ldb];
         }
         cblas_dtrmv(CblasColMajor, CblasUpper, CblasTrans, CblasNonUnit,
                     p, &B[mp], ldb, &T[i * ldt], 1);
 
         if (i - p > 0) {
             cblas_dgemv(CblasColMajor, CblasTrans, l, i - p, alpha,
-                        &B[mp + (np - 1) * ldb], ldb, &B[mp + i * ldb], 1, ZERO,
-                        &T[(np - 1) + i * ldt], 1);
+                        &B[mp + np * ldb], ldb, &B[mp + i * ldb], 1, ZERO,
+                        &T[np + i * ldt], 1);
         }
 
         if (m - l > 0) {
