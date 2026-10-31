@@ -170,7 +170,7 @@ void clals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
     }
 
     m = n + sqre;
-    nlp1 = nl + 1;
+    nlp1 = nl;
 
     if (icompq == 0) {
 
@@ -184,7 +184,7 @@ void clals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
 
         /* Step (2L): permute rows of B. */
 
-        cblas_ccopy(nrhs, &B[nlp1 - 1], ldb, &BX[0], ldbx);
+        cblas_ccopy(nrhs, &B[nlp1], ldb, &BX[0], ldbx);
         for (i = 1; i < n; i++) {
             cblas_ccopy(nrhs, &B[perm[i]], ldb, &BX[i], ldbx);
         }
@@ -342,7 +342,7 @@ void clals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
 
         /* Step (3R): permute rows of B. */
 
-        cblas_ccopy(nrhs, &BX[0], ldbx, &B[nlp1 - 1], ldb);
+        cblas_ccopy(nrhs, &BX[0], ldbx, &B[nlp1], ldb);
         if (sqre == 1) {
             cblas_ccopy(nrhs, &BX[m - 1], ldbx, &B[m - 1], ldb);
         }
