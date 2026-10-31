@@ -6,12 +6,10 @@
  * transposed counterparts with JOBVT = 'O'), DGESVD chooses WORK(IU) and
  * WORK(IR) as LDA by N and LDA by N, LDA by N and N by N, or LDWRKU by N
  * and N by N, with LDWRKU = (LWORK-N*N-N)/N, depending on LWORK. Each case
- * calls DGESVD for every JOBU and JOBVT, with 13 LWORK values from the
- * minimum to the optimum when JOBU or JOBVT is 'O' and with the minimum and
- * the optimum otherwise, checks that nothing after LWORK is written,
- * compares the singular values with those computed with the optimal LWORK,
- * and checks the residual and the orthogonality of the computed singular
- * vectors.
+ * calls DGESVD for every JOBU and JOBVT with LWORK from the minimum to the
+ * optimum, checks that nothing after LWORK is written, compares the
+ * singular values with those computed with the optimal LWORK, and checks
+ * the residual and the orthogonality of the computed singular vectors.
  */
 
 #include "test_harness.h"
@@ -23,7 +21,7 @@
 
 #define THRESH 30.0
 #define NGUARD 64
-#define NSTEP 12
+#define NSTEP 24
 
 static const f64 CANARY = -98765.0;
 
@@ -85,9 +83,8 @@ static void run_shape(const INT m, const INT n)
             f64* work = malloc((size_t)(lwopt + NGUARD) * sizeof(f64));
             assert_non_null(work);
 
-            const INT nstep = (jobu[0] == 'O' || jobvt[0] == 'O') ? NSTEP : 1;
-            for (INT k = 0; k <= nstep; k++) {
-                const INT lwork = lwmin + (INT)(((int64_t)(lwopt - lwmin) * k) / nstep);
+            for (INT k = 0; k <= NSTEP; k++) {
+                const INT lwork = lwmin + (INT)(((int64_t)(lwopt - lwmin) * k) / NSTEP);
                 f64 resid, serr;
 
                 memcpy(A, A0, (size_t)lda * n * sizeof(f64));
