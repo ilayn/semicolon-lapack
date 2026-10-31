@@ -138,7 +138,7 @@ void dlalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
      * the problem with another solver.
      */
     if (n <= smlsiz) {
-        nwork = 1 + n * n;
+        nwork = n * n;
         dlaset("A", n, n, ZERO, ONE, work, n);
         dlasdq("U", 0, n, n, 0, nrhs, D, E, work, n, NULL, n, B, ldb, &work[nwork], info);
         if (*info != 0) {
@@ -203,8 +203,7 @@ void dlalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
 
     for (i = 0; i < nm1; i++) {
         if (fabs(E[i]) < eps || i == nm1 - 1) {
-            nsub = nsub + 1;
-            iwork[nsub - 1] = st;
+            iwork[nsub] = st;
 
             /* Subproblem found. First determine its size and then
              * apply divide and conquer on it.
@@ -212,22 +211,23 @@ void dlalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             if (i < nm1 - 1) {
                 /* A subproblem with E[i] small for i < nm1-1. */
                 nsize = i - st + 1;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
             } else if (fabs(E[i]) >= eps) {
                 /* A subproblem with E[nm1-1] not too small but i = nm1-1. */
                 nsize = n - st;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
             } else {
                 /* A subproblem with E[nm1-1] small. This implies an
                  * 1-by-1 subproblem at D[n-1], which is not solved explicitly.
                  */
                 nsize = i - st + 1;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
                 nsub = nsub + 1;
-                iwork[nsub - 1] = n - 1;
-                iwork[sizei + nsub - 1] = 1;
+                iwork[nsub] = n - 1;
+                iwork[sizei + nsub] = 1;
                 cblas_dcopy(nrhs, &B[n - 1], ldb, &work[bx + n - 1], n);
             }
+            nsub = nsub + 1;
             st1 = st;
             if (nsize == 1) {
                 /* This is a 1-by-1 subproblem and is not solved explicitly. */
