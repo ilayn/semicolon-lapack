@@ -10,9 +10,7 @@
 
 #include "test_harness.h"
 #include "test_rng.h"
-#include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 static f32* random_orthogonal(const INT m, uint64_t seed)
 {
