@@ -316,7 +316,7 @@ void stgsna(
                            &work[n * n1 + n1], n, work, n, &work[n1], n,
                            &work[n * n1 + n1 + i], n, &work[i], n,
                            &work[n1 + i], n, &scale, &dif[ks],
-                           &work[iz], lwork - 2 * n * n, iwork, &ierr);
+                           &work[iz + 1], lwork - 2 * n * n, iwork, &ierr);
 
                     if (pair) {
                         f32 tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks];
