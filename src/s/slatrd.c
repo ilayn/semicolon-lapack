@@ -49,7 +49,7 @@ void slatrd(const char* uplo, const INT n, const INT nb,
     const f32 ONE  = 1.0f;
     const f32 HALF = 0.5f;
 
-    INT ii, iw;
+    INT i, iw;
     f32 alpha;
 
     /* Quick return if possible */
@@ -59,137 +59,137 @@ void slatrd(const char* uplo, const INT n, const INT nb,
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         /* Reduce last NB columns of upper triangle. */
-        for (ii = n; ii >= n - nb + 1; ii--) {
-            iw = ii - n + nb;
+        for (i = n - 1; i >= n - nb; i--) {
+            iw = i - n + nb;
 
-            if (ii < n) {
-                /* Update A(1:ii, ii). */
+            if (i < n - 1) {
+                /* Update A(0:i, i). */
                 cblas_sgemv(CblasColMajor, CblasNoTrans,
-                            ii, n - ii, -ONE,
-                            &A[ii * lda], lda,
-                            &W[(ii - 1) + iw * ldw], ldw,
-                            ONE, &A[(ii - 1) * lda], 1);
+                            i + 1, n - i - 1, -ONE,
+                            &A[(i + 1) * lda], lda,
+                            &W[i + (iw + 1) * ldw], ldw,
+                            ONE, &A[i * lda], 1);
                 cblas_sgemv(CblasColMajor, CblasNoTrans,
-                            ii, n - ii, -ONE,
-                            &W[iw * ldw], ldw,
-                            &A[(ii - 1) + ii * lda], lda,
-                            ONE, &A[(ii - 1) * lda], 1);
+                            i + 1, n - i - 1, -ONE,
+                            &W[(iw + 1) * ldw], ldw,
+                            &A[i + (i + 1) * lda], lda,
+                            ONE, &A[i * lda], 1);
             }
 
-            if (ii > 1) {
-                /* Generate elementary reflector H(ii) to annihilate A(1:ii-2, ii). */
-                slarfg(ii - 1,
-                       &A[(ii - 2) + (ii - 1) * lda],
-                       &A[(ii - 1) * lda],
+            if (i > 0) {
+                /* Generate elementary reflector H(i) to annihilate A(0:i-2, i). */
+                slarfg(i,
+                       &A[(i - 1) + i * lda],
+                       &A[i * lda],
                        1,
-                       &tau[ii - 2]);
+                       &tau[i - 1]);
 
-                E[ii - 2] = A[(ii - 2) + (ii - 1) * lda];
-                A[(ii - 2) + (ii - 1) * lda] = ONE;
+                E[i - 1] = A[(i - 1) + i * lda];
+                A[(i - 1) + i * lda] = ONE;
 
-                /* Compute W(1:ii-1, iw). */
+                /* Compute W(0:i-1, iw). */
                 cblas_ssymv(CblasColMajor, CblasUpper,
-                            ii - 1, ONE,
+                            i, ONE,
                             A, lda,
-                            &A[(ii - 1) * lda], 1,
-                            ZERO, &W[(iw - 1) * ldw], 1);
+                            &A[i * lda], 1,
+                            ZERO, &W[iw * ldw], 1);
 
-                if (ii < n) {
+                if (i < n - 1) {
                     cblas_sgemv(CblasColMajor, CblasTrans,
-                                ii - 1, n - ii, ONE,
-                                &W[iw * ldw], ldw,
-                                &A[(ii - 1) * lda], 1,
-                                ZERO, &W[ii + (iw - 1) * ldw], 1);
+                                i, n - i - 1, ONE,
+                                &W[(iw + 1) * ldw], ldw,
+                                &A[i * lda], 1,
+                                ZERO, &W[(i + 1) + iw * ldw], 1);
                     cblas_sgemv(CblasColMajor, CblasNoTrans,
-                                ii - 1, n - ii, -ONE,
-                                &A[ii * lda], lda,
-                                &W[ii + (iw - 1) * ldw], 1,
-                                ONE, &W[(iw - 1) * ldw], 1);
+                                i, n - i - 1, -ONE,
+                                &A[(i + 1) * lda], lda,
+                                &W[(i + 1) + iw * ldw], 1,
+                                ONE, &W[iw * ldw], 1);
                     cblas_sgemv(CblasColMajor, CblasTrans,
-                                ii - 1, n - ii, ONE,
-                                &A[ii * lda], lda,
-                                &A[(ii - 1) * lda], 1,
-                                ZERO, &W[ii + (iw - 1) * ldw], 1);
+                                i, n - i - 1, ONE,
+                                &A[(i + 1) * lda], lda,
+                                &A[i * lda], 1,
+                                ZERO, &W[(i + 1) + iw * ldw], 1);
                     cblas_sgemv(CblasColMajor, CblasNoTrans,
-                                ii - 1, n - ii, -ONE,
-                                &W[iw * ldw], ldw,
-                                &W[ii + (iw - 1) * ldw], 1,
-                                ONE, &W[(iw - 1) * ldw], 1);
+                                i, n - i - 1, -ONE,
+                                &W[(iw + 1) * ldw], ldw,
+                                &W[(i + 1) + iw * ldw], 1,
+                                ONE, &W[iw * ldw], 1);
                 }
 
-                cblas_sscal(ii - 1, tau[ii - 2], &W[(iw - 1) * ldw], 1);
-                alpha = -HALF * tau[ii - 2] *
-                        cblas_sdot(ii - 1,
-                                   &W[(iw - 1) * ldw], 1,
-                                   &A[(ii - 1) * lda], 1);
-                cblas_saxpy(ii - 1, alpha,
-                            &A[(ii - 1) * lda], 1,
-                            &W[(iw - 1) * ldw], 1);
+                cblas_sscal(i, tau[i - 1], &W[iw * ldw], 1);
+                alpha = -HALF * tau[i - 1] *
+                        cblas_sdot(i,
+                                   &W[iw * ldw], 1,
+                                   &A[i * lda], 1);
+                cblas_saxpy(i, alpha,
+                            &A[i * lda], 1,
+                            &W[iw * ldw], 1);
             }
         }
 
     } else {
         /* Reduce first NB columns of lower triangle. */
-        for (ii = 1; ii <= nb; ii++) {
-            /* Update A(ii:n, ii). */
+        for (i = 0; i < nb; i++) {
+            /* Update A(i:n-1, i). */
             cblas_sgemv(CblasColMajor, CblasNoTrans,
-                        n - ii + 1, ii - 1, -ONE,
-                        &A[ii - 1], lda,
-                        &W[ii - 1], ldw,
-                        ONE, &A[(ii - 1) + (ii - 1) * lda], 1);
+                        n - i, i, -ONE,
+                        &A[i], lda,
+                        &W[i], ldw,
+                        ONE, &A[i + i * lda], 1);
             cblas_sgemv(CblasColMajor, CblasNoTrans,
-                        n - ii + 1, ii - 1, -ONE,
-                        &W[ii - 1], ldw,
-                        &A[ii - 1], lda,
-                        ONE, &A[(ii - 1) + (ii - 1) * lda], 1);
+                        n - i, i, -ONE,
+                        &W[i], ldw,
+                        &A[i], lda,
+                        ONE, &A[i + i * lda], 1);
 
-            if (ii < n) {
-                /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
-                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
-                slarfg(n - ii,
-                       &A[ii + (ii - 1) * lda],
-                       &A[min_row + (ii - 1) * lda],
+            if (i < n - 1) {
+                /* Generate elementary reflector H(i) to annihilate A(i+2:n-1, i). */
+                INT min_row = (i + 2 < n - 1) ? (i + 2) : (n - 1);
+                slarfg(n - i - 1,
+                       &A[(i + 1) + i * lda],
+                       &A[min_row + i * lda],
                        1,
-                       &tau[ii - 1]);
+                       &tau[i]);
 
-                E[ii - 1] = A[ii + (ii - 1) * lda];
-                A[ii + (ii - 1) * lda] = ONE;
+                E[i] = A[(i + 1) + i * lda];
+                A[(i + 1) + i * lda] = ONE;
 
-                /* Compute W(ii+1:n, ii). */
+                /* Compute W(i+1:n-1, i). */
                 cblas_ssymv(CblasColMajor, CblasLower,
-                            n - ii, ONE,
-                            &A[ii + ii * lda], lda,
-                            &A[ii + (ii - 1) * lda], 1,
-                            ZERO, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, ONE,
+                            &A[(i + 1) + (i + 1) * lda], lda,
+                            &A[(i + 1) + i * lda], 1,
+                            ZERO, &W[(i + 1) + i * ldw], 1);
                 cblas_sgemv(CblasColMajor, CblasTrans,
-                            n - ii, ii - 1, ONE,
-                            &W[ii], ldw,
-                            &A[ii + (ii - 1) * lda], 1,
-                            ZERO, &W[(ii - 1) * ldw], 1);
+                            n - i - 1, i, ONE,
+                            &W[i + 1], ldw,
+                            &A[(i + 1) + i * lda], 1,
+                            ZERO, &W[i * ldw], 1);
                 cblas_sgemv(CblasColMajor, CblasNoTrans,
-                            n - ii, ii - 1, -ONE,
-                            &A[ii], lda,
-                            &W[(ii - 1) * ldw], 1,
-                            ONE, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, i, -ONE,
+                            &A[i + 1], lda,
+                            &W[i * ldw], 1,
+                            ONE, &W[(i + 1) + i * ldw], 1);
                 cblas_sgemv(CblasColMajor, CblasTrans,
-                            n - ii, ii - 1, ONE,
-                            &A[ii], lda,
-                            &A[ii + (ii - 1) * lda], 1,
-                            ZERO, &W[(ii - 1) * ldw], 1);
+                            n - i - 1, i, ONE,
+                            &A[i + 1], lda,
+                            &A[(i + 1) + i * lda], 1,
+                            ZERO, &W[i * ldw], 1);
                 cblas_sgemv(CblasColMajor, CblasNoTrans,
-                            n - ii, ii - 1, -ONE,
-                            &W[ii], ldw,
-                            &W[(ii - 1) * ldw], 1,
-                            ONE, &W[ii + (ii - 1) * ldw], 1);
+                            n - i - 1, i, -ONE,
+                            &W[i + 1], ldw,
+                            &W[i * ldw], 1,
+                            ONE, &W[(i + 1) + i * ldw], 1);
 
-                cblas_sscal(n - ii, tau[ii - 1], &W[ii + (ii - 1) * ldw], 1);
-                alpha = -HALF * tau[ii - 1] *
-                        cblas_sdot(n - ii,
-                                   &W[ii + (ii - 1) * ldw], 1,
-                                   &A[ii + (ii - 1) * lda], 1);
-                cblas_saxpy(n - ii, alpha,
-                            &A[ii + (ii - 1) * lda], 1,
-                            &W[ii + (ii - 1) * ldw], 1);
+                cblas_sscal(n - i - 1, tau[i], &W[(i + 1) + i * ldw], 1);
+                alpha = -HALF * tau[i] *
+                        cblas_sdot(n - i - 1,
+                                   &W[(i + 1) + i * ldw], 1,
+                                   &A[(i + 1) + i * lda], 1);
+                cblas_saxpy(n - i - 1, alpha,
+                            &A[(i + 1) + i * lda], 1,
+                            &W[(i + 1) + i * ldw], 1);
             }
         }
     }

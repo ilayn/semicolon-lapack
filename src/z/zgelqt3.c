@@ -84,8 +84,8 @@ void zgelqt3(const INT m, const INT n,
         /* Otherwise, split A into blocks... */
         m1 = m / 2;
         m2 = m - m1;
-        i1 = m1;
-        j1 = m;
+        i1 = (m1 < m - 1) ? m1 : m - 1;
+        j1 = (m < n - 1) ? m : n - 1;
 
         /* Compute A(0:m1-1, 0:n-1) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H */
         zgelqt3(m1, n, A, lda, T, ldt, &iinfo);
@@ -137,12 +137,10 @@ void zgelqt3(const INT m, const INT n,
         cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper, CblasConjTrans, CblasUnit,
                     m1, m2, &ONE, &A[i1 + i1 * lda], lda, &T[0 + i1 * ldt], ldt);
 
-        if (n > m) {
-            cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
-                        m1, m2, n - m, &ONE,
-                        &A[0 + j1 * lda], lda, &A[i1 + j1 * lda], lda,
-                        &ONE, &T[0 + i1 * ldt], ldt);
-        }
+        cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
+                    m1, m2, n - m, &ONE,
+                    &A[0 + j1 * lda], lda, &A[i1 + j1 * lda], lda,
+                    &ONE, &T[0 + i1 * ldt], ldt);
 
         cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
                     m1, m2, &NEGONE, T, ldt, &T[0 + i1 * ldt], ldt);

@@ -18,7 +18,7 @@
  * scaling factor, usually less than or equal to 1, chosen so that the
  * components of x will be less than the overflow threshold. If the
  * unscaled problem will not cause overflow, the Level 2 BLAS routine
- * ZTRSV is called. If the matrix A is singular (A(j,j) = 0 for some j),
+ * CTRSV is called. If the matrix A is singular (A(j,j) = 0 for some j),
  * then s is set to 0 and a non-trivial solution to A*x = 0 is returned.
  *
  * @param[in]     uplo    'U': A is upper triangular; 'L': A is lower triangular.
@@ -189,7 +189,7 @@ void clatrs(
     }
 
     // Compute a bound on the computed solution vector to see if the
-    // Level 2 BLAS routine ZTRSV can be used
+    // Level 2 BLAS routine CTRSV can be used
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f32 temp = cabs2f(X[j]);

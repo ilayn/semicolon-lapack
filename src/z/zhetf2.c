@@ -122,10 +122,6 @@ void zhetf2(
         return;
     }
 
-    if (n == 0) {
-        return;
-    }
-
     if (upper) {
         /*
          * Factorize A as U*D*U**H using the upper triangle of A

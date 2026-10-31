@@ -56,7 +56,7 @@
  *                        SLAED3 to form the secular equation.
  * @param[out]    Q2      Complex array, dimension (LDQ2, N).
  *                        A copy of the first K eigenvectors which will be used by
- *                        SLAED7 in a matrix multiply (DGEMM) to update the new
+ *                        SLAED7 in a matrix multiply (SGEMM) to update the new
  *                        eigenvectors.
  * @param[in]     ldq2    The leading dimension of the array Q2. LDQ2 >= max(1,N).
  * @param[out]    W       Single precision array, dimension (N).

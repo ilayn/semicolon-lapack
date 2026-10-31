@@ -256,18 +256,18 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     zlacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     zlaset("A", kd, n, zero, zero, &work[awpos], lda);
 
-    for (thgrid = 1; thgrid <= thgrnb; thgrid++) {
-        stt = (thgrid - 1) * thgrsiz + 1;
-        thed = ((stt + thgrsiz - 1) < (n - 1)) ? (stt + thgrsiz - 1) : (n - 1);
-        for (i = stt; i <= n - 1; i++) {
+    for (thgrid = 0; thgrid < thgrnb; thgrid++) {
+        stt = thgrid * thgrsiz;
+        thed = ((stt + thgrsiz - 1) < (n - 2)) ? (stt + thgrsiz - 1) : (n - 2);
+        for (i = stt; i <= n - 2; i++) {
             ed = (i < thed) ? i : thed;
             if (stt > ed) break;
-            for (m = 1; m <= stepercol; m++) {
+            for (m = 0; m < stepercol; m++) {
                 st = stt;
                 for (sweepid = st; sweepid <= ed; sweepid++) {
-                    for (k = 1; k <= grsiz; k++) {
+                    for (k = 0; k < grsiz; k++) {
                         myid = (i - sweepid) * (stepercol * grsiz)
-                               + (m - 1) * grsiz + k;
+                               + m * grsiz + k + 1;
                         if (myid == 1) {
                             ttype = 1;
                         } else {
@@ -277,26 +277,26 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
                         if (ttype == 2) {
                             colpt = (myid / 2) * kd + sweepid;
                             stind = colpt - kd + 1;
-                            edind = (colpt < n) ? colpt : n;
+                            edind = (colpt < n - 1) ? colpt : (n - 1);
                             blklastind = colpt;
                         } else {
                             colpt = ((myid + 1) / 2) * kd + sweepid;
                             stind = colpt - kd + 1;
-                            edind = (colpt < n) ? colpt : n;
-                            if ((stind >= edind - 1) && (edind == n)) {
-                                blklastind = n;
+                            edind = (colpt < n - 1) ? colpt : (n - 1);
+                            if ((stind >= edind - 1) && (edind == n - 1)) {
+                                blklastind = n - 1;
                             } else {
-                                blklastind = 0;
+                                blklastind = -1;
                             }
                         }
 
                         zhb2st_kernels(uplo, wantq, ttype,
-                                       stind - 1, edind - 1, sweepid - 1, n, kd, ib,
+                                       stind, edind, sweepid, n, kd, ib,
                                        &work[inda], lda,
                                        &hous[indv], &hous[indtau], ldv,
                                        &work[indw]);
 
-                        if (blklastind >= (n - 1)) {
+                        if (blklastind >= (n - 2)) {
                             stt = stt + 1;
                             break;
                         }

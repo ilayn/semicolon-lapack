@@ -623,11 +623,11 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                 zlaset("G", m, n, CZERO, CONE, U, ldu);
             }
             for (p = 0; p < n; p++) {
-                iwork[p] = p + 1;
+                iwork[p] = p;
             }
             if (rowprm) {
                 for (p = n; p < n + m - 1; p++) {
-                    iwork[p] = p - n + 1;
+                    iwork[p] = p - n;
                 }
             }
             if (conda) rwork[0] = -ONE;
@@ -669,20 +669,20 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
         nr = 1;
         rtmp = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
-            if (cabs1(A[p + p * lda]) < (rtmp * cabs1(A[0]))) break;
+            if (cabs(A[p + p * lda]) < (rtmp * cabs(A[0]))) break;
             nr++;
         }
     } else if (acclm) {
         nr = 1;
         for (p = 1; p < n; p++) {
-            if ((cabs1(A[p + p * lda]) < (epsln * cabs1(A[(p-1) + (p-1) * lda]))) ||
-                (cabs1(A[p + p * lda]) < sfmin)) break;
+            if ((cabs(A[p + p * lda]) < (epsln * cabs(A[(p-1) + (p-1) * lda]))) ||
+                (cabs(A[p + p * lda]) < sfmin)) break;
             nr++;
         }
     } else {
         nr = 1;
         for (p = 1; p < n; p++) {
-            if (cabs1(A[p + p * lda]) == ZERO) break;
+            if (cabs(A[p + p * lda]) == ZERO) break;
             nr++;
         }
 

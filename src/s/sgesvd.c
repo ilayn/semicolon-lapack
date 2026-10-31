@@ -106,7 +106,7 @@ void sgesvd(const char* jobu, const char* jobvt,
     INT lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m;
     INT lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q;
     INT lwork_dgelqf, lwork_dorglq_n, lwork_dorglq_m;
-    INT ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
+    INT ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk, blk;
     INT i, ierr, iscl, ncu, ncvt, nru, nrvt;
     INT ldwrkr, ldwrku;
     f32 anrm, bignum, eps, smlnum;
@@ -521,7 +521,19 @@ void sgesvd(const char* jobu, const char* jobvt,
                 if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                     /* Sufficient workspace for a fast algorithm */
                     ir = 0;
-                    ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
+                    if (lwork >= ((wrkbl > lda*n + n) ? wrkbl : lda*n + n) + lda*n) {
+                        /* WORK(IU) is LDA by N, WORK(IR) is LDA by N */
+                        ldwrku = lda;
+                        ldwrkr = lda;
+                    } else if (lwork >= ((wrkbl > lda*n + n) ? wrkbl : lda*n + n) + n*n) {
+                        /* WORK(IU) is LDA by N, WORK(IR) is N by N */
+                        ldwrku = lda;
+                        ldwrkr = n;
+                    } else {
+                        /* WORK(IU) is LDWRKU by N, WORK(IR) is N by N */
+                        ldwrku = (lwork - n*n - n) / n;
+                        ldwrkr = n;
+                    }
                     itau = ir + ldwrkr * n;
                     iwork = itau + n;
 
@@ -545,7 +557,6 @@ void sgesvd(const char* jobu, const char* jobvt,
                            &work[ir], ldwrkr, NULL, 1, &work[iwork], info);
 
                     iu = ie + n;
-                    ldwrku = n;
 
                     for (i = 0; i < m; i += ldwrku) {
                         chunk = ((m - i) < ldwrku) ? (m - i) : ldwrku;
@@ -578,7 +589,19 @@ void sgesvd(const char* jobu, const char* jobvt,
                  */
                 if (lwork >= n*n + ((4*n > bdspac) ? 4*n : bdspac)) {
                     ir = 0;
-                    ldwrkr = (lwork >= wrkbl + lda*n) ? lda : n;
+                    if (lwork >= ((wrkbl > lda*n + n) ? wrkbl : lda*n + n) + lda*n) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is LDA by N */
+                        ldwrku = lda;
+                        ldwrkr = lda;
+                    } else if (lwork >= ((wrkbl > lda*n + n) ? wrkbl : lda*n + n) + n*n) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is N by N */
+                        ldwrku = lda;
+                        ldwrkr = n;
+                    } else {
+                        /* WORK(IU) is LDWRKU by N and WORK(IR) is N by N */
+                        ldwrku = (lwork - n*n - n) / n;
+                        ldwrkr = n;
+                    }
                     itau = ir + ldwrkr * n;
                     iwork = itau + n;
 
@@ -607,7 +630,6 @@ void sgesvd(const char* jobu, const char* jobvt,
                            &work[ir], ldwrkr, dum, 1, &work[iwork], info);
 
                     iu = ie + n;
-                    ldwrku = n;
 
                     for (i = 0; i < m; i += ldwrku) {
                         chunk = ((m - i) < ldwrku) ? (m - i) : ldwrku;
@@ -1237,7 +1259,22 @@ void sgesvd(const char* jobu, const char* jobvt,
                  */
                 if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                     ir = 0;
-                    ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
+                    if (lwork >= ((wrkbl > lda*n + m) ? wrkbl : lda*n + m) + lda*m) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is LDA by M */
+                        ldwrku = lda;
+                        chunk = n;
+                        ldwrkr = lda;
+                    } else if (lwork >= ((wrkbl > lda*n + m) ? wrkbl : lda*n + m) + m*m) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is M by M */
+                        ldwrku = lda;
+                        chunk = n;
+                        ldwrkr = m;
+                    } else {
+                        /* WORK(IU) is M by CHUNK and WORK(IR) is M by M */
+                        ldwrku = m;
+                        chunk = (lwork - m*m - m) / m;
+                        ldwrkr = m;
+                    }
                     itau = ir + ldwrkr * m;
                     iwork = itau + m;
 
@@ -1261,14 +1298,13 @@ void sgesvd(const char* jobu, const char* jobvt,
                            NULL, 1, NULL, 1, &work[iwork], info);
 
                     iu = ie + m;
-                    ldwrku = m;
 
-                    for (i = 0; i < n; i += ldwrku) {
-                        chunk = ((n - i) < ldwrku) ? (n - i) : ldwrku;
+                    for (i = 0; i < n; i += chunk) {
+                        blk = ((n - i) < chunk) ? (n - i) : chunk;
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    m, chunk, m, ONE, &work[ir], ldwrkr,
-                                    &A[i * lda], lda, ZERO, &work[iu], m);
-                        slacpy("F", m, chunk, &work[iu], m, &A[i * lda], lda);
+                                    m, blk, m, ONE, &work[ir], ldwrkr,
+                                    &A[i * lda], lda, ZERO, &work[iu], ldwrku);
+                        slacpy("F", m, blk, &work[iu], ldwrku, &A[i * lda], lda);
                     }
                 } else {
                     ie = 0;
@@ -1293,7 +1329,22 @@ void sgesvd(const char* jobu, const char* jobvt,
                  */
                 if (lwork >= m*m + ((4*m > bdspac) ? 4*m : bdspac)) {
                     ir = 0;
-                    ldwrkr = (lwork >= wrkbl + lda*m) ? lda : m;
+                    if (lwork >= ((wrkbl > lda*n + m) ? wrkbl : lda*n + m) + lda*m) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is LDA by M */
+                        ldwrku = lda;
+                        chunk = n;
+                        ldwrkr = lda;
+                    } else if (lwork >= ((wrkbl > lda*n + m) ? wrkbl : lda*n + m) + m*m) {
+                        /* WORK(IU) is LDA by N and WORK(IR) is M by M */
+                        ldwrku = lda;
+                        chunk = n;
+                        ldwrkr = m;
+                    } else {
+                        /* WORK(IU) is M by CHUNK and WORK(IR) is M by M */
+                        ldwrku = m;
+                        chunk = (lwork - m*m - m) / m;
+                        ldwrkr = m;
+                    }
                     itau = ir + ldwrkr * m;
                     iwork = itau + m;
 
@@ -1322,14 +1373,13 @@ void sgesvd(const char* jobu, const char* jobvt,
                            U, ldu, dum, 1, &work[iwork], info);
 
                     iu = ie + m;
-                    ldwrku = m;
 
-                    for (i = 0; i < n; i += ldwrku) {
-                        chunk = ((n - i) < ldwrku) ? (n - i) : ldwrku;
+                    for (i = 0; i < n; i += chunk) {
+                        blk = ((n - i) < chunk) ? (n - i) : chunk;
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    m, chunk, m, ONE, &work[ir], ldwrkr,
-                                    &A[i * lda], lda, ZERO, &work[iu], m);
-                        slacpy("F", m, chunk, &work[iu], m, &A[i * lda], lda);
+                                    m, blk, m, ONE, &work[ir], ldwrkr,
+                                    &A[i * lda], lda, ZERO, &work[iu], ldwrku);
+                        slacpy("F", m, blk, &work[iu], ldwrku, &A[i * lda], lda);
                     }
                 } else {
                     itau = 0;

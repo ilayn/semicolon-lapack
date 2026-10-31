@@ -177,7 +177,7 @@ void shseqr(const char* job, const char* compz, const INT n,
                      * tiny matrices must be copied into a larger
                      * array before calling SLAQR0. */
                     slacpy("A", n, n, H, ldh, hl, nl);
-                    hl[n + n * nl] = zero;
+                    hl[n + (n - 1) * nl] = zero;
                     slaset("A", nl, nl - n, zero, zero, &hl[n * nl], nl);
                     slaqr0(wantt, wantz, nl, ilo, kbot, hl, nl, wr,
                            wi, ilo, ihi, Z, ldz, workl, nl, info);

@@ -120,7 +120,6 @@ void slaqz3(
 
     /* Get machine constants */
     safmin = slamch("S");
-    (void)(ONE / safmin);
     ulp = slamch("P");
     smlnum = safmin * ((f32)n / ulp);
 

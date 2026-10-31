@@ -120,10 +120,6 @@ void ssytf2(
         return;
     }
 
-    if (n == 0) {
-        return;
-    }
-
     if (upper) {
         /* Factorize A as U*D*U**T using the upper triangle of A
          *

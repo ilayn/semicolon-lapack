@@ -5,7 +5,8 @@
 # lives at this level. Each precision gets its own subdirectory with
 # test drivers, verification utilities, and smoke tests.
 
-test_env = environment({'OPENBLAS_NUM_THREADS': '1', 'CMOCKA_MESSAGE_OUTPUT': 'TAP'})
+test_env = environment({'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1',
+                        'CMOCKA_MESSAGE_OUTPUT': 'TAP'})
 
 # Double precision tests
 subdir('d')
@@ -34,6 +35,30 @@ test('rng_validation',
   ),
   suite: 'rng',
   timeout: 120,
+  is_parallel: true,
+  protocol: 'tap',
+  env: test_env,
+)
+
+test('iparmq_case',
+  executable('test_iparmq_case', 'test_iparmq_case.c',
+    include_directories: include_directories('.'),
+    dependencies: [semilapack_dep, cmocka_dep],
+  ),
+  suite: 'auxiliary',
+  timeout: 60,
+  is_parallel: true,
+  protocol: 'tap',
+  env: test_env,
+)
+
+test('iparam2stage_case',
+  executable('test_iparam2stage_case', 'test_iparam2stage_case.c',
+    include_directories: include_directories('.'),
+    dependencies: [semilapack_dep, cmocka_dep],
+  ),
+  suite: 'auxiliary',
+  timeout: 60,
   is_parallel: true,
   protocol: 'tap',
   env: test_env,

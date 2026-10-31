@@ -59,12 +59,48 @@ REVIEW_KEYWORDS = ["ldexp"]
 EMBEDDED_PRECISION = {
     "ilazlc": "ilaclc",
     "ilazlr": "ilaclr",
+    "zdrscl": "csrscl",
 }
 
 # Explicit filename renames for files where the precision marker is embedded
 FILENAME_RENAMES = {
     "ilazlc.c": "ilaclc.c",
     "ilazlr.c": "ilaclr.c",
+    "zdrscl.c": "csrscl.c",
+}
+
+# Reference BLAS routines (BLAS/SRC) are not declared in the LAPACK headers,
+# so comments that name them need their own table. Mixed-precision names do
+# not follow the plain z -> c / d -> s prefix rule.
+BLAS_COMMENT_NAMES = {
+    "dcabs1": "scabs1",
+    "dzasum": "scasum",
+    "dznrm2": "scnrm2",
+    "izamax": "icamax",
+    "zdrot": "csrot",
+    "zdscal": "csscal",
+    "idamax": "isamax",
+}
+for _n in ("zaxpby", "zaxpy", "zcopy", "zdotc", "zdotu", "zgbmv", "zgemm",
+           "zgemmtr", "zgemv", "zgerc", "zgeru", "zhbmv", "zhemm", "zhemv",
+           "zher", "zher2", "zher2k", "zherk", "zhpmv", "zhpr", "zhpr2",
+           "zrotg", "zscal", "zswap", "zsymm", "zsyr2k", "zsyrk", "ztbmv",
+           "ztbsv", "ztpmv", "ztpsv", "ztrmm", "ztrmv", "ztrsm", "ztrsv"):
+    BLAS_COMMENT_NAMES[_n] = "c" + _n[1:]
+for _n in ("dasum", "daxpby", "daxpy", "dcopy", "ddot", "dgbmv", "dgemm",
+           "dgemmtr", "dgemv", "dger", "dnrm2", "drot", "drotg", "drotm",
+           "drotmg", "dsbmv", "dscal", "dspmv", "dspr", "dspr2", "dswap",
+           "dsymm", "dsymv", "dsyr", "dsyr2", "dsyr2k", "dsyrk", "dtbmv",
+           "dtbsv", "dtpmv", "dtpsv", "dtrmm", "dtrmv", "dtrsm", "dtrsv"):
+    BLAS_COMMENT_NAMES[_n] = "s" + _n[1:]
+
+# LAPACK names that comments mention but no header declares (retired
+# routines, variants named only in the documentation)
+EXTRA_COMMENT_NAMES = {
+    "zggsvp": "cggsvp",
+    "zsytrf_bk": "csytrf_bk",
+    "zhetrf_bk": "chetrf_bk",
+    "zaxpyc": "caxpyc",
 }
 
 # Special cross-precision prefix renames (z-files that have non-z prefixes)
@@ -251,14 +287,15 @@ def build_string_subs(z_lapack_names, d_lapack_names):
 def build_comment_subs(z_lapack_names, d_lapack_names):
     """Substitutions for comment segments (@file tags, routine names)."""
     subs = []
+    # @file renames for embedded-precision files (before the z-prefix rule,
+    # which would otherwise rename zdrscl.c to cdrscl.c first)
+    for old_f, new_f in FILENAME_RENAMES.items():
+        subs.append((re.compile(r"(@file\s+)" + re.escape(old_f)),
+                     r"\1" + new_f))
     # @file renames: z-prefix files
     subs.append((re.compile(r"(@file\s+)z(\w+\.c)"), r"\1c\2"))
     # @file renames for cross-prefix files
     for old_f, new_f in CROSS_PREFIX_FILENAMES.items():
-        subs.append((re.compile(r"(@file\s+)" + re.escape(old_f)),
-                     r"\1" + new_f))
-    # @file renames for embedded-precision files
-    for old_f, new_f in FILENAME_RENAMES.items():
         subs.append((re.compile(r"(@file\s+)" + re.escape(old_f)),
                      r"\1" + new_f))
     # float.h constants in comments
@@ -291,6 +328,14 @@ def build_comment_subs(z_lapack_names, d_lapack_names):
         subs.append((re.compile(r"\b" + re.escape(name.upper()) + r"\b"),
                      sname.upper()))
         subs.append((re.compile(r"\b" + re.escape(name) + r"\b"), sname))
+    # BLAS names and undeclared LAPACK names in both cases
+    extra = dict(BLAS_COMMENT_NAMES)
+    extra.update(EXTRA_COMMENT_NAMES)
+    for name in sorted(extra, key=len, reverse=True):
+        new = extra[name]
+        subs.append((re.compile(r"\b" + re.escape(name.upper()) + r"\b"),
+                     new.upper()))
+        subs.append((re.compile(r"\b" + re.escape(name) + r"\b"), new))
     return subs
 
 

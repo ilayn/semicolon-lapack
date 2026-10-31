@@ -270,7 +270,9 @@ void dstebz(const char* range, const char* order, const INT n,
         }
 
         if (abstol <= 0.0) {
+            atoli = ulp * tnorm;
         } else {
+            atoli = abstol;
         }
 
         if (irange == 2) {

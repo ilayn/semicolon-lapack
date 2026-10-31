@@ -48,7 +48,7 @@ void cgesc2(
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    f32 eps, smlnum, bignum;
+    f32 eps, smlnum;
     c64 temp;
     INT i, j, imax;
 
@@ -61,8 +61,6 @@ void cgesc2(
 
     eps = slamch("P");
     smlnum = slamch("S") / eps;
-    bignum = ONE / smlnum;
-    (void)bignum;
 
     /* Apply permutations IPIV to RHS */
 

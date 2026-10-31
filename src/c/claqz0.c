@@ -76,7 +76,6 @@ void claqz0(
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
-    const f32 ONE = 1.0f;
 
     f32 smlnum, ulp, safmin, c1, tempr;
     f32 bnorm, btol;
@@ -232,7 +231,6 @@ void claqz0(
 
     /* Get machine constants */
     safmin = slamch("S");
-    (void)(ONE / safmin);
     ulp = slamch("P");
     smlnum = safmin * ((f32)n / ulp);
 

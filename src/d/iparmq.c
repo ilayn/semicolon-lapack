@@ -133,18 +133,22 @@ INT iparmq(
         char subnam[7];
         INT i;
         for (i = 0; i < 6 && name[i] != '\0'; i++) {
-            char c = name[i];
-            /* ASCII character set */
-            if (c >= 'a' && c <= 'z') {
-                subnam[i] = c - 32;
-            } else {
-                subnam[i] = c;
-            }
+            subnam[i] = name[i];
         }
         for (; i < 6; i++) {
             subnam[i] = ' ';
         }
         subnam[6] = '\0';
+
+        /* ASCII character set */
+        if (subnam[0] >= 'a' && subnam[0] <= 'z') {
+            subnam[0] = subnam[0] - 32;
+            for (i = 1; i < 6; i++) {
+                if (subnam[i] >= 'a' && subnam[i] <= 'z') {
+                    subnam[i] = subnam[i] - 32;
+                }
+            }
+        }
 
         if ((subnam[1] == 'G' && subnam[2] == 'G' && subnam[3] == 'H' &&
              subnam[4] == 'R' && subnam[5] == 'D') ||

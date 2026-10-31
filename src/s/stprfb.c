@@ -108,8 +108,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
          * B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
          */
-        mp = (m - l + 1) < m ? (m - l + 1) : m;
-        kp = (l + 1) < k ? (l + 1) : k;
+        mp = (m - l) < (m - 1) ? (m - l) : (m - 1);
+        kp = l < (k - 1) ? l : (k - 1);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -117,12 +117,12 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
-                    CblasNonUnit, l, n, ONE, &V[(mp - 1)], ldv, work, ldwork);
+                    CblasNonUnit, l, n, ONE, &V[mp], ldv, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                     l, n, m - l, ONE, V, ldv, B, ldb, ONE, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                    k - l, n, m, ONE, &V[(kp - 1) * ldv], ldv,
-                    B, ldb, ZERO, &work[(kp - 1)], ldwork);
+                    k - l, n, m, ONE, &V[kp * ldv], ldv,
+                    B, ldb, ZERO, &work[kp], ldwork);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < k; i++) {
@@ -143,10 +143,10 @@ void stprfb(const char* side, const char* trans, const char* direct,
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m - l, n, k, -ONE, V, ldv, work, ldwork, ONE, B, ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    l, n, k - l, -ONE, &V[(mp - 1) + (kp - 1) * ldv], ldv,
-                    &work[(kp - 1)], ldwork, ONE, &B[(mp - 1)], ldb);
+                    l, n, k - l, -ONE, &V[mp + kp * ldv], ldv,
+                    &work[kp], ldwork, ONE, &B[mp], ldb);
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
-                    CblasNonUnit, l, n, ONE, &V[(mp - 1)], ldv, work, ldwork);
+                    CblasNonUnit, l, n, ONE, &V[mp], ldv, work, ldwork);
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
                 B[(m - l + i) + j * ldb] = B[(m - l + i) + j * ldb] - work[i + j * ldwork];
@@ -165,8 +165,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V) T      or  A = A - (A + B V) T**T
          * B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
          */
-        np = (n - l + 1) < n ? (n - l + 1) : n;
-        kp = (l + 1) < k ? (l + 1) : k;
+        np = (n - l) < (n - 1) ? (n - l) : (n - 1);
+        kp = l < (k - 1) ? l : (k - 1);
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -174,12 +174,12 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans,
-                    CblasNonUnit, m, l, ONE, &V[(np - 1)], ldv, work, ldwork);
+                    CblasNonUnit, m, l, ONE, &V[np], ldv, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m, l, n - l, ONE, B, ldb, V, ldv, ONE, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    m, k - l, n, ONE, B, ldb, &V[(kp - 1) * ldv], ldv,
-                    ZERO, &work[(kp - 1) * ldwork], ldwork);
+                    m, k - l, n, ONE, B, ldb, &V[kp * ldv], ldv,
+                    ZERO, &work[kp * ldwork], ldwork);
 
         for (j = 0; j < k; j++) {
             for (i = 0; i < m; i++) {
@@ -200,10 +200,10 @@ void stprfb(const char* side, const char* trans, const char* direct,
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     m, n - l, k, -ONE, work, ldwork, V, ldv, ONE, B, ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                    m, l, k - l, -ONE, &work[(kp - 1) * ldwork], ldwork,
-                    &V[(np - 1) + (kp - 1) * ldv], ldv, ONE, &B[(np - 1) * ldb], ldb);
+                    m, l, k - l, -ONE, &work[kp * ldwork], ldwork,
+                    &V[np + kp * ldv], ldv, ONE, &B[np * ldb], ldb);
         cblas_strmm(CblasColMajor, CblasRight, CblasUpper, CblasTrans,
-                    CblasNonUnit, m, l, ONE, &V[(np - 1)], ldv, work, ldwork);
+                    CblasNonUnit, m, l, ONE, &V[np], ldv, work, ldwork);
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
                 B[i + (n - l + j) * ldb] = B[i + (n - l + j) * ldb] - work[i + j * ldwork];
@@ -223,8 +223,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A -   T (A + V**T B)  or  A = A -   T**T (A + V**T B)
          * B = B - V T (A + V**T B)  or  B = B - V T**T (A + V**T B)
          */
-        mp = (l + 1) < m ? (l + 1) : m;
-        kp = (k - l + 1) < k ? (k - l + 1) : k;
+        mp = l < (m - 1) ? l : (m - 1);
+        kp = (k - l) < (k - 1) ? (k - l) : (k - 1);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -233,11 +233,11 @@ void stprfb(const char* side, const char* trans, const char* direct,
         }
 
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasTrans,
-                    CblasNonUnit, l, n, ONE, &V[(kp - 1) * ldv], ldv,
-                    &work[(kp - 1)], ldwork);
+                    CblasNonUnit, l, n, ONE, &V[kp * ldv], ldv,
+                    &work[kp], ldwork);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                    l, n, m - l, ONE, &V[(mp - 1) + (kp - 1) * ldv], ldv,
-                    &B[(mp - 1)], ldb, ONE, &work[(kp - 1)], ldwork);
+                    l, n, m - l, ONE, &V[mp + kp * ldv], ldv,
+                    &B[mp], ldb, ONE, &work[kp], ldwork);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                     k - l, n, m, ONE, V, ldv, B, ldb, ZERO, work, ldwork);
 
@@ -258,13 +258,13 @@ void stprfb(const char* side, const char* trans, const char* direct,
         }
 
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    m - l, n, k, -ONE, &V[(mp - 1)], ldv, work, ldwork,
-                    ONE, &B[(mp - 1)], ldb);
+                    m - l, n, k, -ONE, &V[mp], ldv, work, ldwork,
+                    ONE, &B[mp], ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     l, n, k - l, -ONE, V, ldv, work, ldwork, ONE, B, ldb);
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
-                    CblasNonUnit, l, n, ONE, &V[(kp - 1) * ldv], ldv,
-                    &work[(kp - 1)], ldwork);
+                    CblasNonUnit, l, n, ONE, &V[kp * ldv], ldv,
+                    &work[kp], ldwork);
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
                 B[i + j * ldb] = B[i + j * ldb] - work[(k - l + i) + j * ldwork];
@@ -283,8 +283,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V) T      or  A = A - (A + B V) T**T
          * B = B - (A + B V) T V**T  or  B = B - (A + B V) T**T V**T
          */
-        np = (l + 1) < n ? (l + 1) : n;
-        kp = (k - l + 1) < k ? (k - l + 1) : k;
+        np = l < (n - 1) ? l : (n - 1);
+        kp = (k - l) < (k - 1) ? (k - l) : (k - 1);
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -292,11 +292,11 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans,
-                    CblasNonUnit, m, l, ONE, &V[(kp - 1) * ldv], ldv,
-                    &work[(kp - 1) * ldwork], ldwork);
+                    CblasNonUnit, m, l, ONE, &V[kp * ldv], ldv,
+                    &work[kp * ldwork], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    m, l, n - l, ONE, &B[(np - 1) * ldb], ldb,
-                    &V[(np - 1) + (kp - 1) * ldv], ldv, ONE, &work[(kp - 1) * ldwork], ldwork);
+                    m, l, n - l, ONE, &B[np * ldb], ldb,
+                    &V[np + kp * ldv], ldv, ONE, &work[kp * ldwork], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m, k - l, n, ONE, B, ldb, V, ldv, ZERO, work, ldwork);
 
@@ -317,13 +317,13 @@ void stprfb(const char* side, const char* trans, const char* direct,
         }
 
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                    m, n - l, k, -ONE, work, ldwork, &V[(np - 1)], ldv,
-                    ONE, &B[(np - 1) * ldb], ldb);
+                    m, n - l, k, -ONE, work, ldwork, &V[np], ldv,
+                    ONE, &B[np * ldb], ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     m, l, k - l, -ONE, work, ldwork, V, ldv, ONE, B, ldb);
         cblas_strmm(CblasColMajor, CblasRight, CblasLower, CblasTrans,
-                    CblasNonUnit, m, l, ONE, &V[(kp - 1) * ldv], ldv,
-                    &work[(kp - 1) * ldwork], ldwork);
+                    CblasNonUnit, m, l, ONE, &V[kp * ldv], ldv,
+                    &work[kp * ldwork], ldwork);
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
                 B[i + j * ldb] = B[i + j * ldb] - work[i + (k - l + j) * ldwork];
@@ -342,8 +342,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
          * B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
          */
-        mp = (m - l + 1) < m ? (m - l + 1) : m;
-        kp = (l + 1) < k ? (l + 1) : k;
+        mp = (m - l) < (m - 1) ? (m - l) : (m - 1);
+        kp = l < (k - 1) ? l : (k - 1);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -351,12 +351,12 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
-                    CblasNonUnit, l, n, ONE, &V[(mp - 1) * ldv], ldv, work, ldwork);
+                    CblasNonUnit, l, n, ONE, &V[mp * ldv], ldv, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     l, n, m - l, ONE, V, ldv, B, ldb, ONE, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    k - l, n, m, ONE, &V[(kp - 1)], ldv, B, ldb,
-                    ZERO, &work[(kp - 1)], ldwork);
+                    k - l, n, m, ONE, &V[kp], ldv, B, ldb,
+                    ZERO, &work[kp], ldwork);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < k; i++) {
@@ -377,10 +377,10 @@ void stprfb(const char* side, const char* trans, const char* direct,
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                     m - l, n, k, -ONE, V, ldv, work, ldwork, ONE, B, ldb);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                    l, n, k - l, -ONE, &V[(kp - 1) + (mp - 1) * ldv], ldv,
-                    &work[(kp - 1)], ldwork, ONE, &B[(mp - 1)], ldb);
+                    l, n, k - l, -ONE, &V[kp + mp * ldv], ldv,
+                    &work[kp], ldwork, ONE, &B[mp], ldb);
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasTrans,
-                    CblasNonUnit, l, n, ONE, &V[(mp - 1) * ldv], ldv, work, ldwork);
+                    CblasNonUnit, l, n, ONE, &V[mp * ldv], ldv, work, ldwork);
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
                 B[(m - l + i) + j * ldb] = B[(m - l + i) + j * ldb] - work[i + j * ldwork];
@@ -398,8 +398,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
          * B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
          */
-        np = (n - l + 1) < n ? (n - l + 1) : n;
-        kp = (l + 1) < k ? (l + 1) : k;
+        np = (n - l) < (n - 1) ? (n - l) : (n - 1);
+        kp = l < (k - 1) ? l : (k - 1);
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -407,12 +407,12 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasRight, CblasLower, CblasTrans,
-                    CblasNonUnit, m, l, ONE, &V[(np - 1) * ldv], ldv, work, ldwork);
+                    CblasNonUnit, m, l, ONE, &V[np * ldv], ldv, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     m, l, n - l, ONE, B, ldb, V, ldv, ONE, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                    m, k - l, n, ONE, B, ldb, &V[(kp - 1)], ldv,
-                    ZERO, &work[(kp - 1) * ldwork], ldwork);
+                    m, k - l, n, ONE, B, ldb, &V[kp], ldv,
+                    ZERO, &work[kp * ldwork], ldwork);
 
         for (j = 0; j < k; j++) {
             for (i = 0; i < m; i++) {
@@ -433,10 +433,10 @@ void stprfb(const char* side, const char* trans, const char* direct,
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m, n - l, k, -ONE, work, ldwork, V, ldv, ONE, B, ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    m, l, k - l, -ONE, &work[(kp - 1) * ldwork], ldwork,
-                    &V[(kp - 1) + (np - 1) * ldv], ldv, ONE, &B[(np - 1) * ldb], ldb);
+                    m, l, k - l, -ONE, &work[kp * ldwork], ldwork,
+                    &V[kp + np * ldv], ldv, ONE, &B[np * ldb], ldb);
         cblas_strmm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans,
-                    CblasNonUnit, m, l, ONE, &V[(np - 1) * ldv], ldv, work, ldwork);
+                    CblasNonUnit, m, l, ONE, &V[np * ldv], ldv, work, ldwork);
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
                 B[i + (n - l + j) * ldb] = B[i + (n - l + j) * ldb] - work[i + j * ldwork];
@@ -455,8 +455,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A -     T (A + V B)  or  A = A -     T**T (A + V B)
          * B = B - V**T T (A + V B)  or  B = B - V**T T**T (A + V B)
          */
-        mp = (l + 1) < m ? (l + 1) : m;
-        kp = (k - l + 1) < k ? (k - l + 1) : k;
+        mp = l < (m - 1) ? l : (m - 1);
+        kp = (k - l) < (k - 1) ? (k - l) : (k - 1);
 
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
@@ -464,11 +464,11 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
-                    CblasNonUnit, l, n, ONE, &V[(kp - 1)], ldv,
-                    &work[(kp - 1)], ldwork);
+                    CblasNonUnit, l, n, ONE, &V[kp], ldv,
+                    &work[kp], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    l, n, m - l, ONE, &V[(kp - 1) + (mp - 1) * ldv], ldv,
-                    &B[(mp - 1)], ldb, ONE, &work[(kp - 1)], ldwork);
+                    l, n, m - l, ONE, &V[kp + mp * ldv], ldv,
+                    &B[mp], ldb, ONE, &work[kp], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     k - l, n, m, ONE, V, ldv, B, ldb, ZERO, work, ldwork);
 
@@ -489,13 +489,13 @@ void stprfb(const char* side, const char* trans, const char* direct,
         }
 
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                    m - l, n, k, -ONE, &V[(mp - 1) * ldv], ldv, work, ldwork,
-                    ONE, &B[(mp - 1)], ldb);
+                    m - l, n, k, -ONE, &V[mp * ldv], ldv, work, ldwork,
+                    ONE, &B[mp], ldb);
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                     l, n, k - l, -ONE, V, ldv, work, ldwork, ONE, B, ldb);
         cblas_strmm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
-                    CblasNonUnit, l, n, ONE, &V[(kp - 1)], ldv,
-                    &work[(kp - 1)], ldwork);
+                    CblasNonUnit, l, n, ONE, &V[kp], ldv,
+                    &work[kp], ldwork);
         for (j = 0; j < n; j++) {
             for (i = 0; i < l; i++) {
                 B[i + j * ldb] = B[i + j * ldb] - work[(k - l + i) + j * ldwork];
@@ -513,8 +513,8 @@ void stprfb(const char* side, const char* trans, const char* direct,
          * A = A - (A + B V**T) T      or  A = A - (A + B V**T) T**T
          * B = B - (A + B V**T) T V    or  B = B - (A + B V**T) T**T V
          */
-        np = (l + 1) < n ? (l + 1) : n;
-        kp = (k - l + 1) < k ? (k - l + 1) : k;
+        np = l < (n - 1) ? l : (n - 1);
+        kp = (k - l) < (k - 1) ? (k - l) : (k - 1);
 
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
@@ -522,11 +522,11 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasRight, CblasUpper, CblasTrans,
-                    CblasNonUnit, m, l, ONE, &V[(kp - 1)], ldv,
-                    &work[(kp - 1) * ldwork], ldwork);
+                    CblasNonUnit, m, l, ONE, &V[kp], ldv,
+                    &work[kp * ldwork], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                    m, l, n - l, ONE, &B[(np - 1) * ldb], ldb,
-                    &V[(kp - 1) + (np - 1) * ldv], ldv, ONE, &work[(kp - 1) * ldwork], ldwork);
+                    m, l, n - l, ONE, &B[np * ldb], ldb,
+                    &V[kp + np * ldv], ldv, ONE, &work[kp * ldwork], ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     m, k - l, n, ONE, B, ldb, V, ldv, ZERO, work, ldwork);
 
@@ -547,13 +547,13 @@ void stprfb(const char* side, const char* trans, const char* direct,
         }
 
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                    m, n - l, k, -ONE, work, ldwork, &V[(np - 1) * ldv], ldv,
-                    ONE, &B[(np - 1) * ldb], ldb);
+                    m, n - l, k, -ONE, work, ldwork, &V[np * ldv], ldv,
+                    ONE, &B[np * ldb], ldb);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m, l, k - l, -ONE, work, ldwork, V, ldv, ONE, B, ldb);
         cblas_strmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans,
-                    CblasNonUnit, m, l, ONE, &V[(kp - 1)], ldv,
-                    &work[(kp - 1) * ldwork], ldwork);
+                    CblasNonUnit, m, l, ONE, &V[kp], ldv,
+                    &work[kp * ldwork], ldwork);
         for (j = 0; j < l; j++) {
             for (i = 0; i < m; i++) {
                 B[i + j * ldb] = B[i + j * ldb] - work[i + (k - l + j) * ldwork];

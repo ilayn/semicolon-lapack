@@ -133,6 +133,7 @@ void zgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
+        pskipped = 0;
 
         /* Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
          * 1 <= p < q <= N. This is the first step toward a blocked implementation
@@ -343,11 +344,11 @@ L2011:
         }
 
         /* Additional steering devices */
-        if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
-            swband = i;
+        if (i + 1 < swband && (mxaapq <= roottol || iswrot <= n)) {
+            swband = i + 1;
         }
 
-        if (i > swband + 1 && mxaapq < sqrt((f64)n) * tol && (f64)n * mxaapq * mxsinj < tol) {
+        if (i > swband && mxaapq < sqrt((f64)n) * tol && (f64)n * mxaapq * mxsinj < tol) {
             goto L1994;
         }
 

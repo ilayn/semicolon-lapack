@@ -113,10 +113,7 @@ L30:
             for (ii = 0; ii < n; ii++) {
                 i = ii;
                 if (i >= ilo && i <= ihi) continue;
-                if (i < ilo) {
-                    i = ilo - 1 - ii;
-                    if (i < 0) continue;
-                }
+                if (i < ilo) i = ilo - 1 - ii;
                 k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_sswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);
@@ -127,10 +124,7 @@ L30:
             for (ii = 0; ii < n; ii++) {
                 i = ii;
                 if (i >= ilo && i <= ihi) continue;
-                if (i < ilo) {
-                    i = ilo - 1 - ii;
-                    if (i < 0) continue;
-                }
+                if (i < ilo) i = ilo - 1 - ii;
                 k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_sswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);

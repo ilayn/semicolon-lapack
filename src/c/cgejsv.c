@@ -711,8 +711,10 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             temp1  = aapp;
             aapp   = aatmax;
+            aatmax = temp1;
             temp1  = aaqq;
             aaqq   = aatmin;
+            aatmin = temp1;
             kill   = lsvec;
             lsvec  = rsvec;
             rsvec  = kill;
@@ -893,7 +895,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    l2pert = l2pert && (cabsf(A[0]) / cabsf(A[(nr - 1) + (nr - 1) * lda]) > sqrtf(big1));
+    l2pert = l2pert && (cabsf(A[0] / A[(nr - 1) + (nr - 1) * lda]) > sqrtf(big1));
 
     /* Phase 3: */
 

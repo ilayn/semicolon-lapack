@@ -129,7 +129,7 @@ void zlaqp3rk(
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
+    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i, iF;
     f64 hugeval, taunan, temp, temp2, tol3z;
     c128 aik;
     c128 neg_tau;
@@ -149,16 +149,15 @@ void zlaqp3rk(
     *done = 0;
 
     while (k < nb_val && lsticc == -1) {
-        k++;
         i = ioffset + k;
 
-        if (i == 1) {
+        if (i == 0) {
 
             kp = kp1;
 
         } else {
 
-            kp = (k - 1) + cblas_idamax(n - k + 1, &vn1[k - 1], 1);
+            kp = k + cblas_idamax(n - k, &vn1[k], 1);
 
             *maxc2nrmk = vn1[kp];
 
@@ -166,8 +165,8 @@ void zlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
                 *info = *KB + kp + 1;
 
                 *relmaxc2nrmk = *maxc2nrmk;
@@ -185,8 +184,8 @@ void zlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
                 *relmaxc2nrmk = 0.0;
 
                 if (nrhs > 0 && *KB < (m - ioffset)) {
@@ -195,7 +194,7 @@ void zlaqp3rk(
                                 &F[n + 0 * ldf], ldf, &CONE, &A[iF + n * lda], lda);
                 }
 
-                for (j = k - 1; j < minmnfact; j++) {
+                for (j = k; j < minmnfact; j++) {
                     tau[j] = CZERO;
                 }
 
@@ -204,7 +203,7 @@ void zlaqp3rk(
             }
 
             if (*info == 0 && *maxc2nrmk > hugeval) {
-                *info = n + k - 1 + kp + 1;
+                *info = n + k + kp + 1;
             }
 
             *relmaxc2nrmk = *maxc2nrmk / maxc2nrm;
@@ -213,8 +212,8 @@ void zlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
 
                 if (*KB < minmnupdt) {
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
@@ -222,7 +221,7 @@ void zlaqp3rk(
                                 &F[*KB + 0 * ldf], ldf, &CONE, &A[iF + (*KB) * lda], lda);
                 }
 
-                for (j = k - 1; j < minmnfact; j++) {
+                for (j = k; j < minmnfact; j++) {
                     tau[j] = CZERO;
                 }
 
@@ -232,38 +231,38 @@ void zlaqp3rk(
 
         }
 
-        if (kp != k - 1) {
-            cblas_zswap(m, &A[0 + kp * lda], 1, &A[0 + (k - 1) * lda], 1);
-            cblas_zswap(k - 1, &F[kp + 0 * ldf], ldf, &F[(k - 1) + 0 * ldf], ldf);
-            vn1[kp] = vn1[k - 1];
-            vn2[kp] = vn2[k - 1];
+        if (kp != k) {
+            cblas_zswap(m, &A[0 + kp * lda], 1, &A[0 + k * lda], 1);
+            cblas_zswap(k, &F[kp + 0 * ldf], ldf, &F[k + 0 * ldf], ldf);
+            vn1[kp] = vn1[k];
+            vn2[kp] = vn2[k];
             itemp = jpiv[kp];
-            jpiv[kp] = jpiv[k - 1];
-            jpiv[k - 1] = itemp;
+            jpiv[kp] = jpiv[k];
+            jpiv[k] = itemp;
         }
 
-        if (k > 1) {
-            for (j = 0; j < k - 1; j++) {
-                F[(k - 1) + j * ldf] = conj(F[(k - 1) + j * ldf]);
+        if (k > 0) {
+            for (j = 0; j < k; j++) {
+                F[k + j * ldf] = conj(F[k + j * ldf]);
             }
-            cblas_zgemv(CblasColMajor, CblasNoTrans, m - i + 1, k - 1, &NEG_CONE,
-                        &A[(i - 1) + 0 * lda], lda, &F[(k - 1) + 0 * ldf], ldf,
-                        &CONE, &A[(i - 1) + (k - 1) * lda], 1);
-            for (j = 0; j < k - 1; j++) {
-                F[(k - 1) + j * ldf] = conj(F[(k - 1) + j * ldf]);
+            cblas_zgemv(CblasColMajor, CblasNoTrans, m - i, k, &NEG_CONE,
+                        &A[i + 0 * lda], lda, &F[k + 0 * ldf], ldf,
+                        &CONE, &A[i + k * lda], 1);
+            for (j = 0; j < k; j++) {
+                F[k + j * ldf] = conj(F[k + j * ldf]);
             }
         }
 
-        if (i < m) {
-            zlarfg(m - i + 1, &A[(i - 1) + (k - 1) * lda], &A[i + (k - 1) * lda], 1, &tau[k - 1]);
+        if (i < m - 1) {
+            zlarfg(m - i, &A[i + k * lda], &A[i + 1 + k * lda], 1, &tau[k]);
         } else {
-            tau[k - 1] = CZERO;
+            tau[k] = CZERO;
         }
 
-        if (disnan(creal(tau[k - 1]))) {
-            taunan = creal(tau[k - 1]);
-        } else if (disnan(cimag(tau[k - 1]))) {
-            taunan = cimag(tau[k - 1]);
+        if (disnan(creal(tau[k]))) {
+            taunan = creal(tau[k]);
+        } else if (disnan(cimag(tau[k]))) {
+            taunan = cimag(tau[k]);
         } else {
             taunan = 0.0;
         }
@@ -272,9 +271,9 @@ void zlaqp3rk(
 
             *done = 1;
 
-            *KB = k - 1;
-            iF = i - 1;
-            *info = k;
+            *KB = k;
+            iF = i;
+            *info = k + 1;
 
             *maxc2nrmk = taunan;
             *relmaxc2nrmk = taunan;
@@ -288,45 +287,45 @@ void zlaqp3rk(
             return;
         }
 
-        aik = A[(i - 1) + (k - 1) * lda];
-        A[(i - 1) + (k - 1) * lda] = CONE;
+        aik = A[i + k * lda];
+        A[i + k * lda] = CONE;
 
-        if (k < n + nrhs) {
-            cblas_zgemv(CblasColMajor, CblasConjTrans, m - i + 1, n + nrhs - k,
-                        &tau[k - 1], &A[(i - 1) + k * lda], lda,
-                        &A[(i - 1) + (k - 1) * lda], 1, &CZERO, &F[k + (k - 1) * ldf], 1);
+        if (k < n + nrhs - 1) {
+            cblas_zgemv(CblasColMajor, CblasConjTrans, m - i, n + nrhs - k - 1,
+                        &tau[k], &A[i + (k + 1) * lda], lda,
+                        &A[i + k * lda], 1, &CZERO, &F[k + 1 + k * ldf], 1);
         }
 
-        for (j = 0; j < k; j++) {
-            F[j + (k - 1) * ldf] = CZERO;
+        for (j = 0; j <= k; j++) {
+            F[j + k * ldf] = CZERO;
         }
 
-        if (k > 1) {
-            neg_tau = -tau[k - 1];
-            cblas_zgemv(CblasColMajor, CblasConjTrans, m - i + 1, k - 1, &neg_tau,
-                        &A[(i - 1) + 0 * lda], lda, &A[(i - 1) + (k - 1) * lda], 1,
+        if (k > 0) {
+            neg_tau = -tau[k];
+            cblas_zgemv(CblasColMajor, CblasConjTrans, m - i, k, &neg_tau,
+                        &A[i + 0 * lda], lda, &A[i + k * lda], 1,
                         &CZERO, &auxv[0], 1);
 
-            cblas_zgemv(CblasColMajor, CblasNoTrans, n + nrhs, k - 1, &CONE,
-                        &F[0 + 0 * ldf], ldf, &auxv[0], 1, &CONE, &F[0 + (k - 1) * ldf], 1);
+            cblas_zgemv(CblasColMajor, CblasNoTrans, n + nrhs, k, &CONE,
+                        &F[0 + 0 * ldf], ldf, &auxv[0], 1, &CONE, &F[0 + k * ldf], 1);
         }
 
-        if (k < n + nrhs) {
+        if (k < n + nrhs - 1) {
             cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
-                        1, n + nrhs - k, k, &NEG_CONE,
-                        &A[(i - 1) + 0 * lda], lda,
-                        &F[k + 0 * ldf], ldf,
-                        &CONE, &A[(i - 1) + k * lda], lda);
+                        1, n + nrhs - k - 1, k + 1, &NEG_CONE,
+                        &A[i + 0 * lda], lda,
+                        &F[k + 1 + 0 * ldf], ldf,
+                        &CONE, &A[i + (k + 1) * lda], lda);
         }
 
-        A[(i - 1) + (k - 1) * lda] = aik;
+        A[i + k * lda] = aik;
 
-        if (k < minmnfact) {
+        if (k < minmnfact - 1) {
 
-            for (j = k; j < n; j++) {
+            for (j = k + 1; j < n; j++) {
                 if (vn1[j] != 0.0) {
 
-                    temp = cabs(A[(i - 1) + j * lda]) / vn1[j];
+                    temp = cabs(A[i + j * lda]) / vn1[j];
                     temp = (1.0 + temp) * (1.0 - temp);
                     temp = (0.0 > temp) ? 0.0 : temp;
                     temp2 = temp * pow(vn1[j] / vn2[j], 2.0);
@@ -344,10 +343,11 @@ void zlaqp3rk(
 
         }
 
+        k++;
     }
 
     *KB = k;
-    iF = i;
+    iF = ioffset + *KB;
 
     if (*KB < minmnupdt) {
         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,

@@ -75,7 +75,7 @@ void ctgsna(
 
     INT lquery, somcon, wantbh, wantdf, wants;
     INT i, ierr, ilst, k, ks, lwmin, n1, n2;
-    f32 cond, eps, lnrm, rnrm, scale, smlnum;
+    f32 cond, lnrm, rnrm, scale;
     c64 yhax, yhbx;
     c64 dummy[1], dummy1[1];
 
@@ -145,10 +145,6 @@ void ctgsna(
         return;
     }
 
-    /* Get machine constants */
-    eps = slamch("P");
-    smlnum = slamch("S") / eps;
-    (void)smlnum;
     ks = 0;
 
     for (k = 0; k < n; k++) {

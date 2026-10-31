@@ -1,6 +1,6 @@
 /**
  * @file csytrs_3.c
- * @brief CSYTRS_3 solves a system of linear equations A*X = B with a complex symmetric matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
+ * @brief CSYTRS_3 solves a system of linear equations A*X = B with a complex symmetric matrix using the factorization computed by CSYTRF_RK or CSYTRF_BK.
  */
 
 #include <math.h>
@@ -12,7 +12,7 @@
 /**
  * CSYTRS_3 solves a system of linear equations A * X = B with a complex
  * symmetric matrix A using the factorization computed
- * by CSYTRF_RK or ZSYTRF_BK:
+ * by CSYTRF_RK or CSYTRF_BK:
  *
  *    A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
  *

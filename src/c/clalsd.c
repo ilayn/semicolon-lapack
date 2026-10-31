@@ -212,7 +212,7 @@ void clalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             }
         }
 
-        /* Since B is complex, the following call to DGEMM is performed
+        /* Since B is complex, the following call to SGEMM is performed
          * in two steps (real and imaginary parts). That is for V * B
          * (in the real version of the code V**H is stored in WORK). */
 
@@ -419,7 +419,7 @@ void clalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             cblas_ccopy(nrhs, &work[bxst], n, &B[st], ldb);
         } else if (nsize <= smlsiz) {
 
-            /* Since B and BX are complex, the following call to DGEMM
+            /* Since B and BX are complex, the following call to SGEMM
              * is performed in two steps (real and imaginary parts). */
 
             j = bxst - n;

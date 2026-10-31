@@ -106,10 +106,17 @@ lapack_tests_d = {
   'dlaexc_bounds': ['test_dlaexc_bounds.c', 'eigen'],
   'dtrsyl3_swork': ['test_dtrsyl3_swork.c', 'eigen'],
   'dgesvj_emptsw': ['test_dgesvj_emptsw.c', 'eigen'],
+  'dbdsvdx_split': ['test_dbdsvdx_split.c', 'svd'],
+  'dgejsv_l2pert': ['test_dgejsv_l2pert.c', 'svd'],
+  'dgsvj0_sweeps': ['test_dgsvj0_sweeps.c', 'svd'],
+  'dgesvdq_query': ['test_dgesvdq_query.c', 'svd'],
+  'dgesvd_lwork': ['test_dgesvd_lwork.c', 'svd'],
+  'dgelsy_nan': ['test_dgelsy_nan.c', 'ls'],
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
   'dgeqp3_fixed': ['test_dgeqp3_fixed.c', 'qr'],
+  'dgeqp3rk_lwork': ['test_dgeqp3rk_lwork.c', 'qr'],
   'dtgsen_lwork': ['test_dtgsen_lwork.c', 'eigen'],
   'dsytrf_bounds': ['test_dsytrf_bounds.c', 'symmetric'],
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],
@@ -118,6 +125,8 @@ lapack_tests_d = {
   'dlaed4_overshoot': ['test_dlaed4_overshoot.c', 'eigen'],
   'dgeev_nan': ['test_dgeev_nan.c', 'eigen'],
   'dbbcsd_restart': ['test_dbbcsd_restart.c', 'eigen'],
+  'dsgesv_nrhs0': ['test_dsgesv_nrhs0.c', 'solve'],
+  'dgeqrf_work': ['test_dgeqrf_work.c', 'qr'],
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
   'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
   'ddrvsg2stg': ['test_ddrvsg2stg.c', 'eigen'],  # 2-stage generalized symmetric eigenvalue (DSYGV_2STAGE)

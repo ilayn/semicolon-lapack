@@ -123,11 +123,14 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
+        pskipped = 0;
 
         for (ibr = 0; ibr < nbl; ibr++) {
 
+            igl = ibr * kbl;
+
             for (ir1 = 0; ir1 <= (lkahead < nbl - ibr - 1 ? lkahead : nbl - ibr - 1); ir1++) {
-                igl = ibr * kbl + ir1 * kbl;
+                igl = igl + ir1 * kbl;
 
                 for (p = igl; p < ((igl + kbl < n - 1) ? (igl + kbl) : (n - 1)); p++) {
                     /* de Rijk's pivoting */
@@ -605,11 +608,11 @@ L2011:
         }
 
         /* Additional steering devices */
-        if (i < swband && (mxaapq <= roottol || iswrot <= n)) {
-            swband = i;
+        if (i + 1 < swband && (mxaapq <= roottol || iswrot <= n)) {
+            swband = i + 1;
         }
 
-        if (i > swband + 1 && mxaapq < (f64)n * tol && (f64)n * mxaapq * mxsinj < tol) {
+        if (i > swband && mxaapq < (f64)n * tol && (f64)n * mxaapq * mxsinj < tol) {
             goto L1994;
         }
 

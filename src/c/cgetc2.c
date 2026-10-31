@@ -51,7 +51,7 @@ void cgetc2(
 {
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    f32 eps, smlnum, bignum, smin, xmax;
+    f32 eps, smlnum, smin, xmax;
     INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
@@ -64,8 +64,6 @@ void cgetc2(
     // Set constants to control overflow
     eps = slamch("P");
     smlnum = slamch("S") / eps;
-    bignum = 1.0f / smlnum;
-    (void)bignum;
 
     // Handle the case n=1 by itself
     if (n == 1) {

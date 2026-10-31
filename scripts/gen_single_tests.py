@@ -40,6 +40,7 @@ EXCLUDE_FILES = {
     "test_ddrvab.c",   # DSGESV mixed-precision solver
     "test_ddrvac.c",   # DSPOSV mixed-precision solver
     "test_dsgesv.c",   # DSGESV smoke test (mixed-precision)
+    "test_dsgesv_nrhs0.c",  # DSGESV/DSPOSV NRHS = 0 (mixed-precision)
     "dpot06.c",        # Mixed-precision residual verification
     "dget08.c",        # Mixed-precision residual verification
 }
@@ -53,6 +54,14 @@ LITERAL_OVERRIDES = {
         ("1.0e-18f", "1.0e-8f"),
         ("(float)aerr, (float)berr, (float)lower, (float)tol",
          "(double)aerr, (double)berr, (double)lower, (double)tol"),
+    ],
+    "test_dgejsv_l2pert.c": [    # grading that stays above underflow in single
+        ("-20.0f * (f32)j", "-2.0f * (f32)j"),
+        ("-5.0f * (f32)i", "-3.0f * (f32)i"),
+    ],
+    "test_dgeqrf_work.c": [
+        ("(float)work[0]", "(double)work[0]"),
+        ("(float)lwkopt", "(double)lwkopt"),
     ],
 }
 

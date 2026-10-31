@@ -623,11 +623,11 @@ void cgesvdq(const char* joba, const char* jobp, const char* jobr,
                 claset("G", m, n, CZERO, CONE, U, ldu);
             }
             for (p = 0; p < n; p++) {
-                iwork[p] = p + 1;
+                iwork[p] = p;
             }
             if (rowprm) {
                 for (p = n; p < n + m - 1; p++) {
-                    iwork[p] = p - n + 1;
+                    iwork[p] = p - n;
                 }
             }
             if (conda) rwork[0] = -ONE;
@@ -669,20 +669,20 @@ void cgesvdq(const char* joba, const char* jobp, const char* jobr,
         nr = 1;
         rtmp = sqrtf((f32)n) * epsln;
         for (p = 1; p < n; p++) {
-            if (cabs1f(A[p + p * lda]) < (rtmp * cabs1f(A[0]))) break;
+            if (cabsf(A[p + p * lda]) < (rtmp * cabsf(A[0]))) break;
             nr++;
         }
     } else if (acclm) {
         nr = 1;
         for (p = 1; p < n; p++) {
-            if ((cabs1f(A[p + p * lda]) < (epsln * cabs1f(A[(p-1) + (p-1) * lda]))) ||
-                (cabs1f(A[p + p * lda]) < sfmin)) break;
+            if ((cabsf(A[p + p * lda]) < (epsln * cabsf(A[(p-1) + (p-1) * lda]))) ||
+                (cabsf(A[p + p * lda]) < sfmin)) break;
             nr++;
         }
     } else {
         nr = 1;
         for (p = 1; p < n; p++) {
-            if (cabs1f(A[p + p * lda]) == ZERO) break;
+            if (cabsf(A[p + p * lda]) == ZERO) break;
             nr++;
         }
 

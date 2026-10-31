@@ -82,8 +82,6 @@ void dgemlq(const char* side, const char* trans,
         lwmin = lw > 1 ? lw : 1;
     }
 
-    (void)((nb > k) && (mn > k));
-
     *info = 0;
     if (!left && !right) {
         *info = -1;

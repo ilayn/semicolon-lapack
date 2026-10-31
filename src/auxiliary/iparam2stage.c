@@ -93,10 +93,14 @@ INT iparam2stage(const INT ispec, const char* name, const char* opts,
         strncpy(subnam, name, 12);
         subnam[12] = '\0';
 
-        for (i = 0; i < 12 && subnam[i] != '\0'; i++) {
-            ic = (unsigned char)subnam[i];
-            if (ic >= 97 && ic <= 122) {
-                subnam[i] = (char)(ic - 32);
+        ic = (unsigned char)subnam[0];
+        if (ic >= 97 && ic <= 122) {
+            subnam[0] = (char)(ic - 32);
+            for (i = 1; i < 12 && subnam[i] != '\0'; i++) {
+                ic = (unsigned char)subnam[i];
+                if (ic >= 97 && ic <= 122) {
+                    subnam[i] = (char)(ic - 32);
+                }
             }
         }
 

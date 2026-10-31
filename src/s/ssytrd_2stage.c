@@ -117,7 +117,6 @@ void ssytrd_2stage(const char* vect, const char* uplo, const INT n,
     INT kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
 
     *info = 0;
-    (void)(vect[0] == 'V' || vect[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     lquery = (lwork == -1) || (lhous2 == -1);
 

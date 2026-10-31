@@ -63,7 +63,7 @@ void ssbtrd(
     kd1 = kd + 1;
     kdm1 = kd - 1;
     incx = ldab - 1;
-    iqend = 1;
+    iqend = 0;
 
     *info = 0;
     if (!wantq && !(vect[0] == 'N' || vect[0] == 'n')) {
@@ -97,10 +97,10 @@ void ssbtrd(
         if (kd > 1) {
             // Reduce to tridiagonal form, working with upper triangle
             nr = 0;
-            j1 = kdn + 2;
-            j2 = 1;
+            j1 = kdn + 1;
+            j2 = 0;
 
-            for (i = 1; i <= n - 2; i++) {
+            for (i = 0; i < n - 2; i++) {
                 // Reduce i-th row of matrix to tridiagonal form
                 for (k = kdn + 1; k >= 2; k--) {
                     j1 = j1 + kdn;
@@ -109,38 +109,38 @@ void ssbtrd(
                     if (nr > 0) {
                         // Generate plane rotations to annihilate nonzero elements
                         // which have been created outside the band
-                        slargv(nr, &AB[0 + (j1 - 2) * ldab], inca, &work[j1 - 1], kd1, &D[j1 - 1], kd1);
+                        slargv(nr, &AB[0 + (j1 - 1) * ldab], inca, &work[j1], kd1, &D[j1], kd1);
 
                         // Apply rotations from the right
                         if (nr >= 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                slartv(nr, &AB[l + (j1 - 2) * ldab], inca,
-                                       &AB[l - 1 + (j1 - 1) * ldab], inca, &D[j1 - 1],
-                                       &work[j1 - 1], kd1);
+                                slartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                                       &AB[l - 1 + j1 * ldab], inca, &D[j1],
+                                       &work[j1], kd1);
                             }
                         } else {
                             jend = j1 + (nr - 1) * kd1;
                             for (jinc = j1; jinc <= jend; jinc += kd1) {
-                                cblas_srot(kdm1, &AB[1 + (jinc - 2) * ldab], 1,
-                                           &AB[0 + (jinc - 1) * ldab], 1, D[jinc - 1],
-                                           work[jinc - 1]);
+                                cblas_srot(kdm1, &AB[1 + (jinc - 1) * ldab], 1,
+                                           &AB[0 + jinc * ldab], 1, D[jinc],
+                                           work[jinc]);
                             }
                         }
                     }
 
                     if (k > 2) {
-                        if (k <= n - i + 1) {
+                        if (k <= n - i) {
                             // Generate plane rotation to annihilate a(i,i+k-1)
                             // within the band
-                            slartg(AB[kd - k + 2 + (i + k - 3) * ldab],
-                                   AB[kd - k + 1 + (i + k - 2) * ldab], &D[i + k - 2],
-                                   &work[i + k - 2], &temp);
-                            AB[kd - k + 2 + (i + k - 3) * ldab] = temp;
+                            slartg(AB[kd - k + 2 + (i + k - 2) * ldab],
+                                   AB[kd - k + 1 + (i + k - 1) * ldab], &D[i + k - 1],
+                                   &work[i + k - 1], &temp);
+                            AB[kd - k + 2 + (i + k - 2) * ldab] = temp;
 
                             // Apply rotation from the right
-                            cblas_srot(k - 3, &AB[kd - k + 3 + (i + k - 3) * ldab], 1,
-                                       &AB[kd - k + 2 + (i + k - 2) * ldab], 1, D[i + k - 2],
-                                       work[i + k - 2]);
+                            cblas_srot(k - 3, &AB[kd - k + 3 + (i + k - 2) * ldab], 1,
+                                       &AB[kd - k + 2 + (i + k - 1) * ldab], 1, D[i + k - 1],
+                                       work[i + k - 1]);
                         }
                         nr = nr + 1;
                         j1 = j1 - kdn - 1;
@@ -148,39 +148,39 @@ void ssbtrd(
 
                     // Apply plane rotations from both sides to diagonal blocks
                     if (nr > 0)
-                        slar2v(nr, &AB[kd + (j1 - 2) * ldab], &AB[kd + (j1 - 1) * ldab],
-                               &AB[kd - 1 + (j1 - 1) * ldab], inca, &D[j1 - 1],
-                               &work[j1 - 1], kd1);
+                        slar2v(nr, &AB[kd + (j1 - 1) * ldab], &AB[kd + j1 * ldab],
+                               &AB[kd - 1 + j1 * ldab], inca, &D[j1],
+                               &work[j1], kd1);
 
                     // Apply plane rotations from the left
                     if (nr > 0) {
                         if (2 * kd - 1 < nr) {
                             for (l = 1; l <= kd - 1; l++) {
-                                if (j2 + l > n) {
+                                if (j2 + l > n - 1) {
                                     nrt = nr - 1;
                                 } else {
                                     nrt = nr;
                                 }
                                 if (nrt > 0)
-                                    slartv(nrt, &AB[kd - l - 1 + (j1 + l - 1) * ldab], inca,
-                                           &AB[kd - l + (j1 + l - 1) * ldab], inca,
-                                           &D[j1 - 1], &work[j1 - 1], kd1);
+                                    slartv(nrt, &AB[kd - l - 1 + (j1 + l) * ldab], inca,
+                                           &AB[kd - l + (j1 + l) * ldab], inca,
+                                           &D[j1], &work[j1], kd1);
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (jin = j1; jin <= j1end; jin += kd1) {
-                                    cblas_srot(kd - 1, &AB[kd - 2 + jin * ldab], incx,
-                                               &AB[kd - 1 + jin * ldab], incx,
-                                               D[jin - 1], work[jin - 1]);
+                                    cblas_srot(kd - 1, &AB[kd - 2 + (jin + 1) * ldab], incx,
+                                               &AB[kd - 1 + (jin + 1) * ldab], incx,
+                                               D[jin], work[jin]);
                                 }
                             }
-                            lend = (kdm1 < n - j2) ? kdm1 : (n - j2);
+                            lend = (kdm1 < n - j2 - 1) ? kdm1 : (n - j2 - 1);
                             last = j1end + kd1;
                             if (lend > 0)
-                                cblas_srot(lend, &AB[kd - 2 + last * ldab], incx,
-                                           &AB[kd - 1 + last * ldab], incx,
-                                           D[last - 1], work[last - 1]);
+                                cblas_srot(lend, &AB[kd - 2 + (last + 1) * ldab], incx,
+                                           &AB[kd - 1 + (last + 1) * ldab], incx,
+                                           D[last], work[last]);
                         }
                     }
 
@@ -190,30 +190,30 @@ void ssbtrd(
                             // Take advantage of the fact that Q was initially identity
                             iqend = (iqend > j2) ? iqend : j2;
                             i2 = (0 > k - 3) ? 0 : (k - 3);
-                            iqaend = 1 + i * kd;
+                            iqaend = (i + 1) * kd;
                             if (k == 2)
                                 iqaend = iqaend + kd;
                             iqaend = (iqaend < iqend) ? iqaend : iqend;
                             for (j = j1; j <= j2; j += kd1) {
                                 ibl = i - i2 / kdm1;
                                 i2 = i2 + 1;
-                                iqb = (1 > j - ibl) ? 1 : (j - ibl);
+                                iqb = (0 > j - ibl - 1) ? 0 : (j - ibl - 1);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = (iqaend + kd < iqend) ? (iqaend + kd) : iqend;
-                                cblas_srot(nq, &Q[(iqb - 1) + (j - 2) * ldq], 1,
-                                           &Q[(iqb - 1) + (j - 1) * ldq], 1,
-                                           D[j - 1], work[j - 1]);
+                                cblas_srot(nq, &Q[iqb + (j - 1) * ldq], 1,
+                                           &Q[iqb + j * ldq], 1,
+                                           D[j], work[j]);
                             }
                         } else {
                             for (j = j1; j <= j2; j += kd1) {
-                                cblas_srot(n, &Q[0 + (j - 2) * ldq], 1,
-                                           &Q[0 + (j - 1) * ldq], 1,
-                                           D[j - 1], work[j - 1]);
+                                cblas_srot(n, &Q[0 + (j - 1) * ldq], 1,
+                                           &Q[0 + j * ldq], 1,
+                                           D[j], work[j]);
                             }
                         }
                     }
 
-                    if (j2 + kdn > n) {
+                    if (j2 + kdn > n - 1) {
                         // Adjust J2 to keep within the bounds of the matrix
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -222,8 +222,8 @@ void ssbtrd(
                     for (j = j1; j <= j2; j += kd1) {
                         // Create nonzero element a(j-1,j+kd) outside the band
                         // and store it in WORK
-                        work[j + kd - 1] = work[j - 1] * AB[0 + (j + kd - 1) * ldab];
-                        AB[0 + (j + kd - 1) * ldab] = D[j - 1] * AB[0 + (j + kd - 1) * ldab];
+                        work[j + kd] = work[j] * AB[0 + (j + kd) * ldab];
+                        AB[0 + (j + kd) * ldab] = D[j] * AB[0 + (j + kd) * ldab];
                     }
                 }
             }
@@ -231,29 +231,29 @@ void ssbtrd(
 
         if (kd > 0) {
             // Copy off-diagonal elements to E
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = AB[kd - 1 + i * ldab];
+            for (i = 0; i < n - 1; i++) {
+                E[i] = AB[kd - 1 + (i + 1) * ldab];
             }
         } else {
             // Set E to zero if original matrix was diagonal
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = ZERO;
+            for (i = 0; i < n - 1; i++) {
+                E[i] = ZERO;
             }
         }
 
         // Copy diagonal elements to D
-        for (i = 1; i <= n; i++) {
-            D[i - 1] = AB[kd + (i - 1) * ldab];
+        for (i = 0; i < n; i++) {
+            D[i] = AB[kd + i * ldab];
         }
 
     } else {
         if (kd > 1) {
             // Reduce to tridiagonal form, working with lower triangle
             nr = 0;
-            j1 = kdn + 2;
-            j2 = 1;
+            j1 = kdn + 1;
+            j2 = 0;
 
-            for (i = 1; i <= n - 2; i++) {
+            for (i = 0; i < n - 2; i++) {
                 // Reduce i-th column of matrix to tridiagonal form
                 for (k = kdn + 1; k >= 2; k--) {
                     j1 = j1 + kdn;
@@ -262,37 +262,37 @@ void ssbtrd(
                     if (nr > 0) {
                         // Generate plane rotations to annihilate nonzero elements
                         // which have been created outside the band
-                        slargv(nr, &AB[kd + (j1 - kd1 - 1) * ldab], inca, &work[j1 - 1], kd1, &D[j1 - 1], kd1);
+                        slargv(nr, &AB[kd + (j1 - kd1) * ldab], inca, &work[j1], kd1, &D[j1], kd1);
 
                         // Apply plane rotations from one side
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                slartv(nr, &AB[kd - l + (j1 - kd1 + l - 1) * ldab], inca,
-                                       &AB[kd - l + 1 + (j1 - kd1 + l - 1) * ldab], inca,
-                                       &D[j1 - 1], &work[j1 - 1], kd1);
+                                slartv(nr, &AB[kd - l + (j1 - kd1 + l) * ldab], inca,
+                                       &AB[kd - l + 1 + (j1 - kd1 + l) * ldab], inca,
+                                       &D[j1], &work[j1], kd1);
                             }
                         } else {
                             jend = j1 + kd1 * (nr - 1);
                             for (jinc = j1; jinc <= jend; jinc += kd1) {
-                                cblas_srot(kdm1, &AB[kd - 1 + (jinc - kd - 1) * ldab], incx,
-                                           &AB[kd + (jinc - kd - 1) * ldab], incx,
-                                           D[jinc - 1], work[jinc - 1]);
+                                cblas_srot(kdm1, &AB[kd - 1 + (jinc - kd) * ldab], incx,
+                                           &AB[kd + (jinc - kd) * ldab], incx,
+                                           D[jinc], work[jinc]);
                             }
                         }
                     }
 
                     if (k > 2) {
-                        if (k <= n - i + 1) {
+                        if (k <= n - i) {
                             // Generate plane rotation to annihilate a(i+k-1,i)
                             // within the band
-                            slartg(AB[k - 2 + (i - 1) * ldab], AB[k - 1 + (i - 1) * ldab],
-                                   &D[i + k - 2], &work[i + k - 2], &temp);
-                            AB[k - 2 + (i - 1) * ldab] = temp;
+                            slartg(AB[k - 2 + i * ldab], AB[k - 1 + i * ldab],
+                                   &D[i + k - 1], &work[i + k - 1], &temp);
+                            AB[k - 2 + i * ldab] = temp;
 
                             // Apply rotation from the left
-                            cblas_srot(k - 3, &AB[k - 3 + i * ldab], ldab - 1,
-                                       &AB[k - 2 + i * ldab], ldab - 1, D[i + k - 2],
-                                       work[i + k - 2]);
+                            cblas_srot(k - 3, &AB[k - 3 + (i + 1) * ldab], ldab - 1,
+                                       &AB[k - 2 + (i + 1) * ldab], ldab - 1, D[i + k - 1],
+                                       work[i + k - 1]);
                         }
                         nr = nr + 1;
                         j1 = j1 - kdn - 1;
@@ -300,39 +300,39 @@ void ssbtrd(
 
                     // Apply plane rotations from both sides to diagonal blocks
                     if (nr > 0)
-                        slar2v(nr, &AB[0 + (j1 - 2) * ldab], &AB[0 + (j1 - 1) * ldab],
-                               &AB[1 + (j1 - 2) * ldab], inca, &D[j1 - 1],
-                               &work[j1 - 1], kd1);
+                        slar2v(nr, &AB[0 + (j1 - 1) * ldab], &AB[0 + j1 * ldab],
+                               &AB[1 + (j1 - 1) * ldab], inca, &D[j1],
+                               &work[j1], kd1);
 
                     // Apply plane rotations from the right
                     if (nr > 0) {
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l++) {
-                                if (j2 + l > n) {
+                                if (j2 + l > n - 1) {
                                     nrt = nr - 1;
                                 } else {
                                     nrt = nr;
                                 }
                                 if (nrt > 0)
-                                    slartv(nrt, &AB[l + 1 + (j1 - 2) * ldab], inca,
-                                           &AB[l + (j1 - 1) * ldab], inca, &D[j1 - 1],
-                                           &work[j1 - 1], kd1);
+                                    slartv(nrt, &AB[l + 1 + (j1 - 1) * ldab], inca,
+                                           &AB[l + j1 * ldab], inca, &D[j1],
+                                           &work[j1], kd1);
                             }
                         } else {
                             j1end = j1 + kd1 * (nr - 2);
                             if (j1end >= j1) {
                                 for (j1inc = j1; j1inc <= j1end; j1inc += kd1) {
-                                    cblas_srot(kdm1, &AB[2 + (j1inc - 2) * ldab], 1,
-                                               &AB[1 + (j1inc - 1) * ldab], 1, D[j1inc - 1],
-                                               work[j1inc - 1]);
+                                    cblas_srot(kdm1, &AB[2 + (j1inc - 1) * ldab], 1,
+                                               &AB[1 + j1inc * ldab], 1, D[j1inc],
+                                               work[j1inc]);
                                 }
                             }
-                            lend = (kdm1 < n - j2) ? kdm1 : (n - j2);
+                            lend = (kdm1 < n - j2 - 1) ? kdm1 : (n - j2 - 1);
                             last = j1end + kd1;
                             if (lend > 0)
-                                cblas_srot(lend, &AB[2 + (last - 2) * ldab], 1,
-                                           &AB[1 + (last - 1) * ldab], 1, D[last - 1],
-                                           work[last - 1]);
+                                cblas_srot(lend, &AB[2 + (last - 1) * ldab], 1,
+                                           &AB[1 + last * ldab], 1, D[last],
+                                           work[last]);
                         }
                     }
 
@@ -342,30 +342,30 @@ void ssbtrd(
                             // Take advantage of the fact that Q was initially identity
                             iqend = (iqend > j2) ? iqend : j2;
                             i2 = (0 > k - 3) ? 0 : (k - 3);
-                            iqaend = 1 + i * kd;
+                            iqaend = (i + 1) * kd;
                             if (k == 2)
                                 iqaend = iqaend + kd;
                             iqaend = (iqaend < iqend) ? iqaend : iqend;
                             for (j = j1; j <= j2; j += kd1) {
                                 ibl = i - i2 / kdm1;
                                 i2 = i2 + 1;
-                                iqb = (1 > j - ibl) ? 1 : (j - ibl);
+                                iqb = (0 > j - ibl - 1) ? 0 : (j - ibl - 1);
                                 nq = 1 + iqaend - iqb;
                                 iqaend = (iqaend + kd < iqend) ? (iqaend + kd) : iqend;
-                                cblas_srot(nq, &Q[(iqb - 1) + (j - 2) * ldq], 1,
-                                           &Q[(iqb - 1) + (j - 1) * ldq], 1,
-                                           D[j - 1], work[j - 1]);
+                                cblas_srot(nq, &Q[iqb + (j - 1) * ldq], 1,
+                                           &Q[iqb + j * ldq], 1,
+                                           D[j], work[j]);
                             }
                         } else {
                             for (j = j1; j <= j2; j += kd1) {
-                                cblas_srot(n, &Q[0 + (j - 2) * ldq], 1,
-                                           &Q[0 + (j - 1) * ldq], 1,
-                                           D[j - 1], work[j - 1]);
+                                cblas_srot(n, &Q[0 + (j - 1) * ldq], 1,
+                                           &Q[0 + j * ldq], 1,
+                                           D[j], work[j]);
                             }
                         }
                     }
 
-                    if (j2 + kdn > n) {
+                    if (j2 + kdn > n - 1) {
                         // Adjust J2 to keep within the bounds of the matrix
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -374,8 +374,8 @@ void ssbtrd(
                     for (j = j1; j <= j2; j += kd1) {
                         // Create nonzero element a(j+kd,j-1) outside the band
                         // and store it in WORK
-                        work[j + kd - 1] = work[j - 1] * AB[kd + (j - 1) * ldab];
-                        AB[kd + (j - 1) * ldab] = D[j - 1] * AB[kd + (j - 1) * ldab];
+                        work[j + kd] = work[j] * AB[kd + j * ldab];
+                        AB[kd + j * ldab] = D[j] * AB[kd + j * ldab];
                     }
                 }
             }
@@ -383,19 +383,19 @@ void ssbtrd(
 
         if (kd > 0) {
             // Copy off-diagonal elements to E
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = AB[1 + (i - 1) * ldab];
+            for (i = 0; i < n - 1; i++) {
+                E[i] = AB[1 + i * ldab];
             }
         } else {
             // Set E to zero if original matrix was diagonal
-            for (i = 1; i <= n - 1; i++) {
-                E[i - 1] = ZERO;
+            for (i = 0; i < n - 1; i++) {
+                E[i] = ZERO;
             }
         }
 
         // Copy diagonal elements to D
-        for (i = 1; i <= n; i++) {
-            D[i - 1] = AB[0 + (i - 1) * ldab];
+        for (i = 0; i < n; i++) {
+            D[i] = AB[0 + i * ldab];
         }
     }
 }

@@ -107,15 +107,15 @@ void zupmtr(const char* side, const char* uplo, const char* trans,
         forwrd = (left && notran) || (!left && !notran);
 
         if (forwrd) {
-            i1 = 1;
-            i2 = nq - 1;
+            i1 = 0;
+            i2 = nq - 2;
             i3 = 1;
-            ii = 2;
+            ii = 1;
         } else {
-            i1 = nq - 1;
-            i2 = 1;
+            i1 = nq - 2;
+            i2 = 0;
             i3 = -1;
-            ii = nq * (nq + 1) / 2 - 1;
+            ii = nq * (nq + 1) / 2 - 2;
         }
 
         if (left) {
@@ -127,30 +127,30 @@ void zupmtr(const char* side, const char* uplo, const char* trans,
         for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i += i3) {
             if (left) {
 
-                /* H(i) or H(i)**H is applied to C(1:i,1:n) */
+                /* H(i) or H(i)**H is applied to C(0:i,0:n-1) */
 
-                mi = i;
+                mi = i + 1;
             } else {
 
-                /* H(i) or H(i)**H is applied to C(1:m,1:i) */
+                /* H(i) or H(i)**H is applied to C(0:m-1,0:i) */
 
-                ni = i;
+                ni = i + 1;
             }
 
             /* Apply H(i) or H(i)**H */
 
             if (notran) {
-                taui = tau[i - 1];
+                taui = tau[i];
             } else {
-                taui = conj(tau[i - 1]);
+                taui = conj(tau[i]);
             }
-            zlarf1l(side, mi, ni, &AP[(ii - i + 1) - 1], 1, taui, C,
+            zlarf1l(side, mi, ni, &AP[ii - i], 1, taui, C,
                     ldc, work);
 
             if (forwrd) {
-                ii = ii + i + 2;
+                ii = ii + i + 3;
             } else {
-                ii = ii - i - 1;
+                ii = ii - i - 2;
             }
         }
     } else {
@@ -160,54 +160,54 @@ void zupmtr(const char* side, const char* uplo, const char* trans,
         forwrd = (left && !notran) || (!left && notran);
 
         if (forwrd) {
-            i1 = 1;
-            i2 = nq - 1;
+            i1 = 0;
+            i2 = nq - 2;
             i3 = 1;
-            ii = 2;
+            ii = 1;
         } else {
-            i1 = nq - 1;
-            i2 = 1;
+            i1 = nq - 2;
+            i2 = 0;
             i3 = -1;
-            ii = nq * (nq + 1) / 2 - 1;
+            ii = nq * (nq + 1) / 2 - 2;
         }
 
         if (left) {
             ni = n;
-            jc = 1;
+            jc = 0;
         } else {
             mi = m;
-            ic = 1;
+            ic = 0;
         }
 
         for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i += i3) {
             if (left) {
 
-                /* H(i) or H(i)**H is applied to C(i+1:m,1:n) */
+                /* H(i) or H(i)**H is applied to C(i+1:m-1,0:n-1) */
 
-                mi = m - i;
+                mi = m - i - 1;
                 ic = i + 1;
             } else {
 
-                /* H(i) or H(i)**H is applied to C(1:m,i+1:n) */
+                /* H(i) or H(i)**H is applied to C(0:m-1,i+1:n-1) */
 
-                ni = n - i;
+                ni = n - i - 1;
                 jc = i + 1;
             }
 
             /* Apply H(i) or H(i)**H */
 
             if (notran) {
-                taui = tau[i - 1];
+                taui = tau[i];
             } else {
-                taui = conj(tau[i - 1]);
+                taui = conj(tau[i]);
             }
-            zlarf1f(side, mi, ni, &AP[ii - 1], 1, taui,
-                    &C[(ic - 1) + (jc - 1) * ldc], ldc, work);
+            zlarf1f(side, mi, ni, &AP[ii], 1, taui,
+                    &C[ic + jc * ldc], ldc, work);
 
             if (forwrd) {
-                ii = ii + nq - i + 1;
+                ii = ii + nq - i;
             } else {
-                ii = ii - nq + i - 2;
+                ii = ii - nq + i - 1;
             }
         }
     }

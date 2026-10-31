@@ -75,7 +75,7 @@ void ztgsna(
 
     INT lquery, somcon, wantbh, wantdf, wants;
     INT i, ierr, ilst, k, ks, lwmin, n1, n2;
-    f64 cond, eps, lnrm, rnrm, scale, smlnum;
+    f64 cond, lnrm, rnrm, scale;
     c128 yhax, yhbx;
     c128 dummy[1], dummy1[1];
 
@@ -145,10 +145,6 @@ void ztgsna(
         return;
     }
 
-    /* Get machine constants */
-    eps = dlamch("P");
-    smlnum = dlamch("S") / eps;
-    (void)smlnum;
     ks = 0;
 
     for (k = 0; k < n; k++) {

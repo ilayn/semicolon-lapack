@@ -49,10 +49,9 @@ void dgetc2(
     INT* info)
 {
     const f64 ZERO = 0.0;
-    const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
-    f64 eps, smlnum, bignum, smin, xmax;
+    f64 eps, smlnum, smin, xmax;
     INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
@@ -65,8 +64,6 @@ void dgetc2(
     // Set constants to control overflow
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    bignum = ONE / smlnum;
-    (void)bignum;
 
     // Handle the case n=1 by itself
     if (n == 1) {

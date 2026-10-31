@@ -49,7 +49,8 @@ static const f64 ONE = 1.0;
  * @param[in]     il      If range='I', index of smallest singular value (0-based).
  * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found.
- * @param[out]    S       Array (min(m,n)). Singular values in descending order.
+ * @param[out]    S       Array (min(m,n)+1). Singular values in descending order.
+ *                        S[min(m,n)] may be used as workspace by DBDSVDX.
  * @param[out]    U       Array (ldu, *). Left singular vectors if jobu='V'.
  * @param[in]     ldu     Leading dimension of U. ldu >= 1; ldu >= m if jobu='V'.
  * @param[out]    VT      Array (ldvt, n). Right singular vectors if jobvt='V'.

@@ -46,7 +46,7 @@ void sgesc2(
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    f32 eps, smlnum, bignum, temp;
+    f32 eps, smlnum, temp;
     INT i, j, imax;
 
     if (n == 0) {
@@ -57,8 +57,6 @@ void sgesc2(
     // Set constant to control overflow
     eps = slamch("P");
     smlnum = slamch("S") / eps;
-    bignum = ONE / smlnum;
-    (void)bignum;
 
     // Apply permutations IPIV to RHS
     for (i = 0; i < n - 1; i++) {

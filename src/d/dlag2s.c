@@ -49,7 +49,7 @@ void dlag2s(
     for (INT j = 0; j < n; j++) {
         for (INT i = 0; i < m; i++) {
             f64 val = A[i + j * lda];
-            if (fabs(val) > rmax) {
+            if ((val < -rmax) || (val > rmax)) {
                 *info = 1;
                 return;
             }

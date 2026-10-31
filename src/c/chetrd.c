@@ -107,10 +107,7 @@ void chetrd(const char* uplo, const INT n, c64* A, const INT lda,
     nx = n;
     if (nb > 1 && nb < n) {
         nx = lapack_get_nx("HETRD");
-        if (nx > nb) {
-        } else {
-            nx = nb;
-        }
+        nx = (nb > nx) ? nb : nx;
         if (nx < n) {
             ldwork = n;
             iws = ldwork * nb;

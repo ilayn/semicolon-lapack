@@ -213,19 +213,19 @@ void dgelsy(const INT m, const INT n, const INT nrhs,
                &A[0 + i * lda], A[i + i * lda],
                &smaxpr, &s2, &c2);
 
-        if (smaxpr * rcond > sminpr) {
+        if (smaxpr * rcond <= sminpr) {
+            for (INT ii = 0; ii < *rank; ii++) {
+                work[ismin + ii] = s1 * work[ismin + ii];
+                work[ismax + ii] = s2 * work[ismax + ii];
+            }
+            work[ismin + *rank] = c1;
+            work[ismax + *rank] = c2;
+            smin = sminpr;
+            smax = smaxpr;
+            (*rank)++;
+        } else {
             break;
         }
-
-        for (INT ii = 0; ii < *rank; ii++) {
-            work[ismin + ii] = s1 * work[ismin + ii];
-            work[ismax + ii] = s2 * work[ismax + ii];
-        }
-        work[ismin + *rank] = c1;
-        work[ismax + *rank] = c2;
-        smin = sminpr;
-        smax = smaxpr;
-        (*rank)++;
     }
 
     /* workspace: 3*MN.

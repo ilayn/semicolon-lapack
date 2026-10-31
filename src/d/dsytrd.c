@@ -110,10 +110,7 @@ void dsytrd(const char* uplo, const INT n, f64* A, const INT lda,
         /* Determine when to cross over from blocked to unblocked code
            (last block is always handled by unblocked code). */
         nx = lapack_get_nx("SYTRD");
-        if (nx > nb) {
-        } else {
-            nx = nb;
-        }
+        nx = (nb > nx) ? nb : nx;
         if (nx < n) {
             /* Determine if workspace is large enough for blocked code. */
             ldwork = n;

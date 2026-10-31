@@ -50,7 +50,8 @@ static const f64 FUDGE = 2.0;
  * @param[in]     il      If range='I', index of smallest singular value (0-based).
  * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found. 0 <= ns <= n.
- * @param[out]    S       Array (n). First ns elements contain selected singular values.
+ * @param[out]    S       Array (n+1). First ns elements contain selected singular values.
+ *                        S[n] may be used as workspace.
  * @param[out]    Z       Array (ldz, K). If jobz='V', singular vectors stored as
  *                        Z = [U; V] with U in rows 1..n and V in rows n+1..2*n.
  * @param[in]     ldz     Leading dimension of Z. ldz >= 1, ldz >= 2*n if jobz='V'.
@@ -399,6 +400,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
 
 
                     if (*info != 0) {
+                        *ns = ns_local;
                         return;
                     }
 
@@ -444,6 +446,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             nrmu = cblas_dnrm2(nru, &Z[irowu + (icolz + i) * ldz], 2);
                             if (nrmu == ZERO) {
                                 *info = 2 * n + 1;
+                                *ns = ns_local;
                                 return;
                             }
                             cblas_dscal(nru, ONE / nrmu, &Z[irowu + (icolz + i) * ldz], 2);
@@ -463,6 +466,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                             nrmv = cblas_dnrm2(nrv, &Z[irowv + (icolz + i) * ldz], 2);
                             if (nrmv == ZERO) {
                                 *info = 2 * n + 1;
+                                *ns = ns_local;
                                 return;
                             }
                             cblas_dscal(nrv, -ONE / nrmv, &Z[irowv + (icolz + i) * ldz], 2);
@@ -506,13 +510,13 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                     icolz = icolz + nsl;
                     irowu = irowz;
                     irowv = irowz + 1;
-                    isplt = idptr + 2;
+                    isplt = idptr + 1;
                     ns_local = ns_local + nsl;
                     nru = 0;
                     nrv = 0;
                 } /* NTGK.GT.0 */
 
-                if (irowz < 2 * n && wantz) {
+                if (irowz < 2 * n - 1 && wantz) {
                     for (i = 0; i < irowz; i++) {
                         Z[i + icolz * ldz] = ZERO;
                     }

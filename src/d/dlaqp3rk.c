@@ -124,7 +124,7 @@ void dlaqp3rk(
     INT* restrict iwork,
     INT* info)
 {
-    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
+    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i, iF;
     f64 aik, hugeval, temp, temp2, tol3z;
     INT nb_val;
 
@@ -142,16 +142,15 @@ void dlaqp3rk(
     *done = 0;
 
     while (k < nb_val && lsticc == -1) {
-        k++;
         i = ioffset + k;
 
-        if (i == 1) {
+        if (i == 0) {
 
             kp = kp1;
 
         } else {
 
-            kp = (k - 1) + cblas_idamax(n - k + 1, &vn1[k - 1], 1);
+            kp = k + cblas_idamax(n - k, &vn1[k], 1);
 
             *maxc2nrmk = vn1[kp];
 
@@ -159,8 +158,8 @@ void dlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
                 *info = *KB + kp + 1;
 
                 *relmaxc2nrmk = *maxc2nrmk;
@@ -178,8 +177,8 @@ void dlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
                 *relmaxc2nrmk = 0.0;
 
                 if (nrhs > 0 && *KB < (m - ioffset)) {
@@ -188,7 +187,7 @@ void dlaqp3rk(
                                 &F[n + 0 * ldf], ldf, 1.0, &A[iF + n * lda], lda);
                 }
 
-                for (j = k - 1; j < minmnfact; j++) {
+                for (j = k; j < minmnfact; j++) {
                     tau[j] = 0.0;
                 }
 
@@ -197,7 +196,7 @@ void dlaqp3rk(
             }
 
             if (*info == 0 && *maxc2nrmk > hugeval) {
-                *info = n + k - 1 + kp + 1;
+                *info = n + k + kp + 1;
             }
 
             *relmaxc2nrmk = *maxc2nrmk / maxc2nrm;
@@ -206,8 +205,8 @@ void dlaqp3rk(
 
                 *done = 1;
 
-                *KB = k - 1;
-                iF = i - 1;
+                *KB = k;
+                iF = i;
 
                 if (*KB < minmnupdt) {
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
@@ -215,7 +214,7 @@ void dlaqp3rk(
                                 &F[*KB + 0 * ldf], ldf, 1.0, &A[iF + (*KB) * lda], lda);
                 }
 
-                for (j = k - 1; j < minmnfact; j++) {
+                for (j = k; j < minmnfact; j++) {
                     tau[j] = 0.0;
                 }
 
@@ -225,38 +224,38 @@ void dlaqp3rk(
 
         }
 
-        if (kp != k - 1) {
-            cblas_dswap(m, &A[0 + kp * lda], 1, &A[0 + (k - 1) * lda], 1);
-            cblas_dswap(k - 1, &F[kp + 0 * ldf], ldf, &F[(k - 1) + 0 * ldf], ldf);
-            vn1[kp] = vn1[k - 1];
-            vn2[kp] = vn2[k - 1];
+        if (kp != k) {
+            cblas_dswap(m, &A[0 + kp * lda], 1, &A[0 + k * lda], 1);
+            cblas_dswap(k, &F[kp + 0 * ldf], ldf, &F[k + 0 * ldf], ldf);
+            vn1[kp] = vn1[k];
+            vn2[kp] = vn2[k];
             itemp = jpiv[kp];
-            jpiv[kp] = jpiv[k - 1];
-            jpiv[k - 1] = itemp;
+            jpiv[kp] = jpiv[k];
+            jpiv[k] = itemp;
         }
 
-        if (k > 1) {
-            cblas_dgemv(CblasColMajor, CblasNoTrans, m - i + 1, k - 1, -1.0,
-                        &A[(i - 1) + 0 * lda], lda, &F[(k - 1) + 0 * ldf], ldf,
-                        1.0, &A[(i - 1) + (k - 1) * lda], 1);
+        if (k > 0) {
+            cblas_dgemv(CblasColMajor, CblasNoTrans, m - i, k, -1.0,
+                        &A[i + 0 * lda], lda, &F[k + 0 * ldf], ldf,
+                        1.0, &A[i + k * lda], 1);
         }
 
-        if (i < m) {
-            dlarfg(m - i + 1, &A[(i - 1) + (k - 1) * lda], &A[i + (k - 1) * lda], 1, &tau[k - 1]);
+        if (i < m - 1) {
+            dlarfg(m - i, &A[i + k * lda], &A[i + 1 + k * lda], 1, &tau[k]);
         } else {
-            tau[k - 1] = 0.0;
+            tau[k] = 0.0;
         }
 
-        if (disnan(tau[k - 1])) {
+        if (disnan(tau[k])) {
 
             *done = 1;
 
-            *KB = k - 1;
-            iF = i - 1;
-            *info = k;
+            *KB = k;
+            iF = i;
+            *info = k + 1;
 
-            *maxc2nrmk = tau[k - 1];
-            *relmaxc2nrmk = tau[k - 1];
+            *maxc2nrmk = tau[k];
+            *relmaxc2nrmk = tau[k];
 
             if (nrhs > 0 && *KB < (m - ioffset)) {
                 cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
@@ -267,42 +266,42 @@ void dlaqp3rk(
             return;
         }
 
-        aik = A[(i - 1) + (k - 1) * lda];
-        A[(i - 1) + (k - 1) * lda] = 1.0;
+        aik = A[i + k * lda];
+        A[i + k * lda] = 1.0;
 
-        if (k < n + nrhs) {
-            cblas_dgemv(CblasColMajor, CblasTrans, m - i + 1, n + nrhs - k,
-                        tau[k - 1], &A[(i - 1) + k * lda], lda,
-                        &A[(i - 1) + (k - 1) * lda], 1, 0.0, &F[k + (k - 1) * ldf], 1);
+        if (k < n + nrhs - 1) {
+            cblas_dgemv(CblasColMajor, CblasTrans, m - i, n + nrhs - k - 1,
+                        tau[k], &A[i + (k + 1) * lda], lda,
+                        &A[i + k * lda], 1, 0.0, &F[k + 1 + k * ldf], 1);
         }
 
-        for (j = 0; j < k; j++) {
-            F[j + (k - 1) * ldf] = 0.0;
+        for (j = 0; j <= k; j++) {
+            F[j + k * ldf] = 0.0;
         }
 
-        if (k > 1) {
-            cblas_dgemv(CblasColMajor, CblasTrans, m - i + 1, k - 1, -tau[k - 1],
-                        &A[(i - 1) + 0 * lda], lda, &A[(i - 1) + (k - 1) * lda], 1,
+        if (k > 0) {
+            cblas_dgemv(CblasColMajor, CblasTrans, m - i, k, -tau[k],
+                        &A[i + 0 * lda], lda, &A[i + k * lda], 1,
                         0.0, &auxv[0], 1);
 
-            cblas_dgemv(CblasColMajor, CblasNoTrans, n + nrhs, k - 1, 1.0,
-                        &F[0 + 0 * ldf], ldf, &auxv[0], 1, 1.0, &F[0 + (k - 1) * ldf], 1);
+            cblas_dgemv(CblasColMajor, CblasNoTrans, n + nrhs, k, 1.0,
+                        &F[0 + 0 * ldf], ldf, &auxv[0], 1, 1.0, &F[0 + k * ldf], 1);
         }
 
-        if (k < n + nrhs) {
-            cblas_dgemv(CblasColMajor, CblasNoTrans, n + nrhs - k, k, -1.0,
-                        &F[k + 0 * ldf], ldf, &A[(i - 1) + 0 * lda], lda,
-                        1.0, &A[(i - 1) + k * lda], lda);
+        if (k < n + nrhs - 1) {
+            cblas_dgemv(CblasColMajor, CblasNoTrans, n + nrhs - k - 1, k + 1, -1.0,
+                        &F[k + 1 + 0 * ldf], ldf, &A[i + 0 * lda], lda,
+                        1.0, &A[i + (k + 1) * lda], lda);
         }
 
-        A[(i - 1) + (k - 1) * lda] = aik;
+        A[i + k * lda] = aik;
 
-        if (k < minmnfact) {
+        if (k < minmnfact - 1) {
 
-            for (j = k; j < n; j++) {
+            for (j = k + 1; j < n; j++) {
                 if (vn1[j] != 0.0) {
 
-                    temp = fabs(A[(i - 1) + j * lda]) / vn1[j];
+                    temp = fabs(A[i + j * lda]) / vn1[j];
                     temp = (1.0 + temp) * (1.0 - temp);
                     temp = (0.0 > temp) ? 0.0 : temp;
                     temp2 = temp * pow(vn1[j] / vn2[j], 2.0);
@@ -320,10 +319,11 @@ void dlaqp3rk(
 
         }
 
+        k++;
     }
 
     *KB = k;
-    iF = i;
+    iF = ioffset + *KB;
 
     if (*KB < minmnupdt) {
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,

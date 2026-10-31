@@ -1,6 +1,6 @@
 /**
  * @file csytri_3.c
- * @brief CSYTRI_3 computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
+ * @brief CSYTRI_3 computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or CSYTRF_BK.
  */
 
 #include "../include/lapack_tuning.h"
@@ -9,7 +9,7 @@
 
 /**
  * CSYTRI_3 computes the inverse of a complex symmetric indefinite
- * matrix A using the factorization computed by CSYTRF_RK or ZSYTRF_BK:
+ * matrix A using the factorization computed by CSYTRF_RK or CSYTRF_BK:
  *
  *     A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
  *
