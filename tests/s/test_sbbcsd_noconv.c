@@ -41,9 +41,9 @@ static INT run(const INT q, const INT nanphi, const f32 after)
         phi[i] = 0.2f + 0.1f * (f32)i;
     }
     if (nanphi) {
-        phi[0] = NAN;
+        phi[0] = (f32)NAN;
     } else {
-        theta[0] = NAN;
+        theta[0] = (f32)NAN;
     }
     phi[q - 1] = after;
     for (INT i = 0; i < p; i++) U1[i + i * p] = 1.0f;
