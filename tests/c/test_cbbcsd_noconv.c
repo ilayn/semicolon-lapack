@@ -1,0 +1,86 @@
+/**
+ * @file test_cbbcsd_noconv.c
+ * @brief CBBCSD regression test for INFO when the iteration does not
+ *        converge.
+ *
+ * When CBBCSD does not converge, INFO is the number of nonzero entries
+ * of PHI, which has dimension Q-1. A NaN in THETA or PHI keeps the
+ * bulge chase from converging, so CBBCSD takes this exit. Each case puts
+ * the angles at the start of an allocation with one extra element after
+ * PHI, set first to 0 and then to 1, and checks that INFO is the same in
+ * both calls and lies in 1..Q-1.
+ */
+
+#include "test_harness.h"
+#include <math.h>
+#include <stdlib.h>
+
+static INT run(const INT q, const INT nanphi, const f32 after)
+{
+    const INT p = q;
+    const INT m = 2 * q;
+    const INT lrwork = 8 * q;
+    INT info;
+
+    f32* theta = malloc(q * sizeof(f32));
+    f32* phi = malloc(q * sizeof(f32));
+    c64* U1 = calloc(p * p, sizeof(c64));
+    c64* U2 = calloc((m - p) * (m - p), sizeof(c64));
+    c64* V1T = calloc(q * q, sizeof(c64));
+    c64* V2T = calloc((m - q) * (m - q), sizeof(c64));
+    f32* B = calloc(8 * q, sizeof(f32));
+    f32* rwork = calloc(lrwork, sizeof(f32));
+    assert_non_null(theta); assert_non_null(phi); assert_non_null(U1);
+    assert_non_null(U2); assert_non_null(V1T); assert_non_null(V2T);
+    assert_non_null(B); assert_non_null(rwork);
+
+    for (INT i = 0; i < q; i++) {
+        theta[i] = 0.1f + 0.3f * (f32)i;
+    }
+    for (INT i = 0; i < q - 1; i++) {
+        phi[i] = 0.2f + 0.1f * (f32)i;
+    }
+    if (nanphi) {
+        phi[0] = (f32)NAN;
+    } else {
+        theta[0] = (f32)NAN;
+    }
+    phi[q - 1] = after;
+    for (INT i = 0; i < p; i++) U1[i + i * p] = 1.0f;
+    for (INT i = 0; i < m - p; i++) U2[i + i * (m - p)] = 1.0f;
+    for (INT i = 0; i < q; i++) V1T[i + i * q] = 1.0f;
+    for (INT i = 0; i < m - q; i++) V2T[i + i * (m - q)] = 1.0f;
+
+    cbbcsd("Y", "Y", "Y", "Y", "N", m, p, q, theta, phi,
+           U1, p, U2, m - p, V1T, q, V2T, m - q,
+           B, B + q, B + 2 * q, B + 3 * q, B + 4 * q, B + 5 * q, B + 6 * q,
+           B + 7 * q, rwork, lrwork, &info);
+
+    free(theta); free(phi); free(U1); free(U2); free(V1T); free(V2T);
+    free(B); free(rwork);
+    return info;
+}
+
+static void test_noconv_info(void** state)
+{
+    (void)state;
+    for (INT nanphi = 0; nanphi < 2; nanphi++) {
+        for (INT q = 2; q <= 6; q++) {
+            INT info0 = run(q, nanphi, 0.0f);
+            INT info1 = run(q, nanphi, 1.0f);
+            if (info0 != info1 || info0 < 1 || info0 > q - 1) {
+                fail_msg("Q = %d, NaN in %s: INFO = %d with 0 after PHI(Q-1), %d with 1",
+                         (int)q, nanphi ? "PHI" : "THETA", (int)info0, (int)info1);
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_noconv_info),
+    };
+    (void)cmocka_run_group_tests_name("cbbcsd_noconv", tests, NULL, NULL);
+    return 0;
+}

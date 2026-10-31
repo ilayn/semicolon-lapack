@@ -251,7 +251,7 @@ void dtgevc(
 
     /* Left eigenvectors */
     if (compl) {
-        ieig = 0;
+        ieig = -1;
 
         ilcplx = 0;
         for (je = 0; je < n; je++) {
@@ -279,10 +279,10 @@ void dtgevc(
             if (!ilcplx) {
                 if (fabs(S[je + je * lds]) <= safmin &&
                     fabs(P[je + je * ldp]) <= safmin) {
+                    ieig++;
                     for (jr = 0; jr < n; jr++)
                         VL[jr + ieig * ldvl] = ZERO;
                     VL[ieig + ieig * ldvl] = ONE;
-                    ieig++;
                     continue;
                 }
             }
@@ -471,26 +471,26 @@ void dtgevc(
                 dlacpy(" ", n, nw, &work[4 * n + 0], n, &VL[0 + (je) * ldvl], ldvl);
                 ibeg = 0;
             } else {
-                dlacpy(" ", n, nw, &work[2 * n + 0], n, &VL[0 + (ieig - 1) * ldvl], ldvl);
+                dlacpy(" ", n, nw, &work[2 * n + 0], n, &VL[0 + ieig * ldvl], ldvl);
                 ibeg = je;
             }
 
             xmax = ZERO;
             if (ilcplx) {
                 for (j = ibeg; j < n; j++)
-                    xmax = (xmax > fabs(VL[j + (ieig - 1) * ldvl]) + fabs(VL[j + ieig * ldvl]))
-                        ? xmax : fabs(VL[j + (ieig - 1) * ldvl]) + fabs(VL[j + ieig * ldvl]);
+                    xmax = (xmax > fabs(VL[j + ieig * ldvl]) + fabs(VL[j + (ieig + 1) * ldvl]))
+                        ? xmax : fabs(VL[j + ieig * ldvl]) + fabs(VL[j + (ieig + 1) * ldvl]);
             } else {
                 for (j = ibeg; j < n; j++)
-                    xmax = (xmax > fabs(VL[j + (ieig - 1) * ldvl]))
-                        ? xmax : fabs(VL[j + (ieig - 1) * ldvl]);
+                    xmax = (xmax > fabs(VL[j + ieig * ldvl]))
+                        ? xmax : fabs(VL[j + ieig * ldvl]);
             }
 
             if (xmax > safmin) {
                 xscale = ONE / xmax;
                 for (jw = 0; jw < nw; jw++) {
                     for (jr = ibeg; jr < n; jr++)
-                        VL[jr + (ieig - 1 + jw) * ldvl] = xscale * VL[jr + (ieig - 1 + jw) * ldvl];
+                        VL[jr + (ieig + jw) * ldvl] = xscale * VL[jr + (ieig + jw) * ldvl];
                 }
             }
             ieig = ieig + nw - 1;

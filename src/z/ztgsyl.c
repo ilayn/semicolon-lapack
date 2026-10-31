@@ -269,33 +269,33 @@ void ztgsyl(
     }
 
     p = 0;
-    i = 1;
-    while (i <= m) {
+    i = 0;
+    while (i < m) {
+        iwork[p] = i;
         p = p + 1;
-        iwork[p - 1] = i;
         i = i + mb;
-        if (i >= m) {
+        if (i >= m - 1) {
             break;
         }
     }
 
-    iwork[p] = m + 1;
+    iwork[p] = m;
     if (iwork[p - 1] == iwork[p]) {
         p = p - 1;
     }
 
     q = p + 1;
-    j = 1;
-    while (j <= n) {
+    j = 0;
+    while (j < n) {
+        iwork[q] = j;
         q = q + 1;
-        iwork[q - 1] = j;
         j = j + nb;
-        if (j >= n) {
+        if (j >= n - 1) {
             break;
         }
     }
 
-    iwork[q] = n + 1;
+    iwork[q] = n;
     if (iwork[q - 1] == iwork[q]) {
         q = q - 1;
     }
@@ -308,21 +308,21 @@ void ztgsyl(
             *scale = ONE;
             dscale = ZERO;
             dsum = ONE;
-            for (j = p + 2; j <= q; j++) {
-                js = iwork[j - 1];
-                je = iwork[j] - 1;
+            for (j = p + 1; j < q; j++) {
+                js = iwork[j];
+                je = iwork[j + 1] - 1;
                 nb = je - js + 1;
-                for (i = p; i >= 1; i--) {
-                    is = iwork[i - 1];
-                    ie = iwork[i] - 1;
+                for (i = p - 1; i >= 0; i--) {
+                    is = iwork[i];
+                    ie = iwork[i + 1] - 1;
                     mb = ie - is + 1;
                     ztgsy2(trans, ifunc, mb, nb,
-                           &A[(is - 1) + (is - 1) * lda], lda,
-                           &B[(js - 1) + (js - 1) * ldb], ldb,
-                           &C[(is - 1) + (js - 1) * ldc], ldc,
-                           &D[(is - 1) + (is - 1) * ldd], ldd,
-                           &E[(js - 1) + (js - 1) * lde], lde,
-                           &F[(is - 1) + (js - 1) * ldf], ldf,
+                           &A[is + is * lda], lda,
+                           &B[js + js * ldb], ldb,
+                           &C[is + js * ldc], ldc,
+                           &D[is + is * ldd], ldd,
+                           &E[js + js * lde], lde,
+                           &F[is + js * ldf], ldf,
                            &scaloc, &dsum, &dscale,
                            &linfo);
                     if (linfo > 0) {
@@ -331,59 +331,59 @@ void ztgsyl(
                     pq = pq + mb * nb;
                     if (scaloc != ONE) {
                         c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
-                        for (k = 1; k <= js - 1; k++) {
+                        for (k = 0; k < js; k++) {
                             cblas_zscal(m, &scaloc_cmplx,
-                                        &C[0 + (k - 1) * ldc], 1);
+                                        &C[k * ldc], 1);
                             cblas_zscal(m, &scaloc_cmplx,
-                                        &F[0 + (k - 1) * ldf], 1);
+                                        &F[k * ldf], 1);
                         }
                         for (k = js; k <= je; k++) {
-                            cblas_zscal(is - 1, &scaloc_cmplx,
-                                        &C[0 + (k - 1) * ldc], 1);
-                            cblas_zscal(is - 1, &scaloc_cmplx,
-                                        &F[0 + (k - 1) * ldf], 1);
+                            cblas_zscal(is, &scaloc_cmplx,
+                                        &C[k * ldc], 1);
+                            cblas_zscal(is, &scaloc_cmplx,
+                                        &F[k * ldf], 1);
                         }
                         for (k = js; k <= je; k++) {
-                            cblas_zscal(m - ie, &scaloc_cmplx,
-                                        &C[ie + (k - 1) * ldc], 1);
-                            cblas_zscal(m - ie, &scaloc_cmplx,
-                                        &F[ie + (k - 1) * ldf], 1);
+                            cblas_zscal(m - ie - 1, &scaloc_cmplx,
+                                        &C[(ie + 1) + k * ldc], 1);
+                            cblas_zscal(m - ie - 1, &scaloc_cmplx,
+                                        &F[(ie + 1) + k * ldf], 1);
                         }
-                        for (k = je + 1; k <= n; k++) {
+                        for (k = je + 1; k < n; k++) {
                             cblas_zscal(m, &scaloc_cmplx,
-                                        &C[0 + (k - 1) * ldc], 1);
+                                        &C[k * ldc], 1);
                             cblas_zscal(m, &scaloc_cmplx,
-                                        &F[0 + (k - 1) * ldf], 1);
+                                        &F[k * ldf], 1);
                         }
                         *scale = (*scale) * scaloc;
                     }
 
-                    if (i > 1) {
+                    if (i > 0) {
                         const c128 NEG_ONE = CMPLX(-ONE, ZERO);
                         const c128 CONE = CMPLX(ONE, ZERO);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    is - 1, nb, mb, &NEG_ONE,
-                                    &A[0 + (is - 1) * lda], lda,
-                                    &C[(is - 1) + (js - 1) * ldc], ldc,
-                                    &CONE, &C[0 + (js - 1) * ldc], ldc);
+                                    is, nb, mb, &NEG_ONE,
+                                    &A[is * lda], lda,
+                                    &C[is + js * ldc], ldc,
+                                    &CONE, &C[js * ldc], ldc);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    is - 1, nb, mb, &NEG_ONE,
-                                    &D[0 + (is - 1) * ldd], ldd,
-                                    &C[(is - 1) + (js - 1) * ldc], ldc,
-                                    &CONE, &F[0 + (js - 1) * ldf], ldf);
+                                    is, nb, mb, &NEG_ONE,
+                                    &D[is * ldd], ldd,
+                                    &C[is + js * ldc], ldc,
+                                    &CONE, &F[js * ldf], ldf);
                     }
-                    if (j < q) {
+                    if (j < q - 1) {
                         const c128 CONE = CMPLX(ONE, ZERO);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    mb, n - je, nb, &CONE,
-                                    &F[(is - 1) + (js - 1) * ldf], ldf,
-                                    &B[(js - 1) + je * ldb], ldb,
-                                    &CONE, &C[(is - 1) + je * ldc], ldc);
+                                    mb, n - je - 1, nb, &CONE,
+                                    &F[is + js * ldf], ldf,
+                                    &B[js + (je + 1) * ldb], ldb,
+                                    &CONE, &C[is + (je + 1) * ldc], ldc);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    mb, n - je, nb, &CONE,
-                                    &F[(is - 1) + (js - 1) * ldf], ldf,
-                                    &E[(js - 1) + je * lde], lde,
-                                    &CONE, &F[(is - 1) + je * ldf], ldf);
+                                    mb, n - je - 1, nb, &CONE,
+                                    &F[is + js * ldf], ldf,
+                                    &E[js + (je + 1) * lde], lde,
+                                    &CONE, &F[is + (je + 1) * ldf], ldf);
                     }
                 }
             }
@@ -413,21 +413,21 @@ void ztgsyl(
     } else {
 
         *scale = ONE;
-        for (i = 1; i <= p; i++) {
-            is = iwork[i - 1];
-            ie = iwork[i] - 1;
+        for (i = 0; i < p; i++) {
+            is = iwork[i];
+            ie = iwork[i + 1] - 1;
             mb = ie - is + 1;
-            for (j = q; j >= p + 2; j--) {
-                js = iwork[j - 1];
-                je = iwork[j] - 1;
+            for (j = q - 1; j >= p + 1; j--) {
+                js = iwork[j];
+                je = iwork[j + 1] - 1;
                 nb = je - js + 1;
                 ztgsy2(trans, ifunc, mb, nb,
-                       &A[(is - 1) + (is - 1) * lda], lda,
-                       &B[(js - 1) + (js - 1) * ldb], ldb,
-                       &C[(is - 1) + (js - 1) * ldc], ldc,
-                       &D[(is - 1) + (is - 1) * ldd], ldd,
-                       &E[(js - 1) + (js - 1) * lde], lde,
-                       &F[(is - 1) + (js - 1) * ldf], ldf,
+                       &A[is + is * lda], lda,
+                       &B[js + js * ldb], ldb,
+                       &C[is + js * ldc], ldc,
+                       &D[is + is * ldd], ldd,
+                       &E[js + js * lde], lde,
+                       &F[is + js * ldf], ldf,
                        &scaloc, &dsum, &dscale,
                        &linfo);
                 if (linfo > 0) {
@@ -435,59 +435,59 @@ void ztgsyl(
                 }
                 if (scaloc != ONE) {
                     c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
-                    for (k = 1; k <= js - 1; k++) {
+                    for (k = 0; k < js; k++) {
                         cblas_zscal(m, &scaloc_cmplx,
-                                    &C[0 + (k - 1) * ldc], 1);
+                                    &C[k * ldc], 1);
                         cblas_zscal(m, &scaloc_cmplx,
-                                    &F[0 + (k - 1) * ldf], 1);
+                                    &F[k * ldf], 1);
                     }
                     for (k = js; k <= je; k++) {
-                        cblas_zscal(is - 1, &scaloc_cmplx,
-                                    &C[0 + (k - 1) * ldc], 1);
-                        cblas_zscal(is - 1, &scaloc_cmplx,
-                                    &F[0 + (k - 1) * ldf], 1);
+                        cblas_zscal(is, &scaloc_cmplx,
+                                    &C[k * ldc], 1);
+                        cblas_zscal(is, &scaloc_cmplx,
+                                    &F[k * ldf], 1);
                     }
                     for (k = js; k <= je; k++) {
-                        cblas_zscal(m - ie, &scaloc_cmplx,
-                                    &C[ie + (k - 1) * ldc], 1);
-                        cblas_zscal(m - ie, &scaloc_cmplx,
-                                    &F[ie + (k - 1) * ldf], 1);
+                        cblas_zscal(m - ie - 1, &scaloc_cmplx,
+                                    &C[(ie + 1) + k * ldc], 1);
+                        cblas_zscal(m - ie - 1, &scaloc_cmplx,
+                                    &F[(ie + 1) + k * ldf], 1);
                     }
-                    for (k = je + 1; k <= n; k++) {
+                    for (k = je + 1; k < n; k++) {
                         cblas_zscal(m, &scaloc_cmplx,
-                                    &C[0 + (k - 1) * ldc], 1);
+                                    &C[k * ldc], 1);
                         cblas_zscal(m, &scaloc_cmplx,
-                                    &F[0 + (k - 1) * ldf], 1);
+                                    &F[k * ldf], 1);
                     }
                     *scale = (*scale) * scaloc;
                 }
 
-                if (j > p + 2) {
+                if (j > p + 1) {
                     const c128 CONE = CMPLX(ONE, ZERO);
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
-                                mb, js - 1, nb, &CONE,
-                                &C[(is - 1) + (js - 1) * ldc], ldc,
-                                &B[0 + (js - 1) * ldb], ldb,
-                                &CONE, &F[(is - 1) + 0 * ldf], ldf);
+                                mb, js, nb, &CONE,
+                                &C[is + js * ldc], ldc,
+                                &B[js * ldb], ldb,
+                                &CONE, &F[is], ldf);
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
-                                mb, js - 1, nb, &CONE,
-                                &F[(is - 1) + (js - 1) * ldf], ldf,
-                                &E[0 + (js - 1) * lde], lde,
-                                &CONE, &F[(is - 1) + 0 * ldf], ldf);
+                                mb, js, nb, &CONE,
+                                &F[is + js * ldf], ldf,
+                                &E[js * lde], lde,
+                                &CONE, &F[is], ldf);
                 }
-                if (i < p) {
+                if (i < p - 1) {
                     const c128 NEG_ONE = CMPLX(-ONE, ZERO);
                     const c128 CONE = CMPLX(ONE, ZERO);
                     cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
-                                m - ie, nb, mb, &NEG_ONE,
-                                &A[(is - 1) + ie * lda], lda,
-                                &C[(is - 1) + (js - 1) * ldc], ldc,
-                                &CONE, &C[ie + (js - 1) * ldc], ldc);
+                                m - ie - 1, nb, mb, &NEG_ONE,
+                                &A[is + (ie + 1) * lda], lda,
+                                &C[is + js * ldc], ldc,
+                                &CONE, &C[(ie + 1) + js * ldc], ldc);
                     cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
-                                m - ie, nb, mb, &NEG_ONE,
-                                &D[(is - 1) + ie * ldd], ldd,
-                                &F[(is - 1) + (js - 1) * ldf], ldf,
-                                &CONE, &C[ie + (js - 1) * ldc], ldc);
+                                m - ie - 1, nb, mb, &NEG_ONE,
+                                &D[is + (ie + 1) * ldd], ldd,
+                                &F[is + js * ldf], ldf,
+                                &CONE, &C[(ie + 1) + js * ldc], ldc);
                 }
             }
         }

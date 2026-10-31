@@ -257,7 +257,7 @@ void zuncsd(
     if (*info == 0) {
 
         /* Real workspace */
-        iphi = 2;
+        iphi = 1;
         ib11d = iphi + (1 > (q - 1) ? 1 : (q - 1));
         ib11e = ib11d + (1 > q ? 1 : q);
         ib12d = ib11e + (1 > (q - 1) ? 1 : (q - 1));
@@ -274,12 +274,12 @@ void zuncsd(
                NULL, NULL, NULL, rwork, -1, &childinfo);
         lbbcsdworkopt = (INT)rwork[0];
         lbbcsdworkmin = lbbcsdworkopt;
-        lrworkopt = ibbcsd + lbbcsdworkopt - 1;
-        lrworkmin = ibbcsd + lbbcsdworkmin - 1;
+        lrworkopt = ibbcsd + lbbcsdworkopt;
+        lrworkmin = ibbcsd + lbbcsdworkmin;
         rwork[0] = (f64)lrworkopt;
 
         /* Complex workspace */
-        itaup1 = 2;
+        itaup1 = 1;
         itaup2 = itaup1 + (1 > p ? 1 : p);
         itauq1 = itaup2 + (1 > (m - p) ? 1 : (m - p));
         itauq2 = itauq1 + (1 > q ? 1 : q);
@@ -304,12 +304,10 @@ void zuncsd(
         lworkopt = iorgqr + lorgqrworkopt;
         if (iorglq + lorglqworkopt > lworkopt) lworkopt = iorglq + lorglqworkopt;
         if (iorbdb + lorbdbworkopt > lworkopt) lworkopt = iorbdb + lorbdbworkopt;
-        lworkopt = lworkopt - 1;
 
         lworkmin = iorgqr + lorgqrworkmin;
         if (iorglq + lorglqworkmin > lworkmin) lworkmin = iorglq + lorglqworkmin;
         if (iorbdb + lorbdbworkopt > lworkmin) lworkmin = iorbdb + lorbdbworkopt;
-        lworkmin = lworkmin - 1;
 
         work[0] = CMPLX((f64)(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0);
 
@@ -318,10 +316,10 @@ void zuncsd(
         } else if (lrwork < lrworkmin && !(lquery || lrquery)) {
             *info = -30;
         } else {
-            lorgqrwork = lwork - iorgqr + 1;
-            lorglqwork = lwork - iorglq + 1;
-            lorbdbwork = lwork - iorbdb + 1;
-            lbbcsdwork = lrwork - ibbcsd + 1;
+            lorgqrwork = lwork - iorgqr;
+            lorglqwork = lwork - iorglq;
+            lorbdbwork = lwork - iorbdb;
+            lbbcsdwork = lrwork - ibbcsd;
         }
     }
 
@@ -335,21 +333,21 @@ void zuncsd(
 
     /* Transform to bidiagonal block form */
     zunbdb(trans, signs, m, p, q, X11, ldx11, X12, ldx12, X21,
-           ldx21, X22, ldx22, theta, &rwork[iphi - 1], &work[itaup1 - 1],
-           &work[itaup2 - 1], &work[itauq1 - 1], &work[itauq2 - 1],
-           &work[iorbdb - 1], lorbdbwork, &childinfo);
+           ldx21, X22, ldx22, theta, &rwork[iphi], &work[itaup1],
+           &work[itaup2], &work[itauq1], &work[itauq2],
+           &work[iorbdb], lorbdbwork, &childinfo);
 
     /* Accumulate Householder reflectors */
     if (colmajor) {
         if (wantu1 && p > 0) {
             zlacpy("L", p, q, X11, ldx11, U1, ldu1);
-            zungqr(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            zungqr(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorgqr], lorgqrwork, info);
         }
         if (wantu2 && m - p > 0) {
             zlacpy("L", m - p, q, X21, ldx21, U2, ldu2);
-            zungqr(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            zungqr(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorgqr], lorgqrwork, info);
         }
         if (wantv1t && q > 0) {
             zlacpy("U", q - 1, q - 1, &X11[1 * ldx11], ldx11,
@@ -360,7 +358,7 @@ void zuncsd(
                 V1T[j] = zero;
             }
             zunglq(q - 1, q - 1, q - 1, &V1T[1 + 1 * ldv1t], ldv1t,
-                   &work[itauq1 - 1], &work[iorglq - 1], lorglqwork, info);
+                   &work[itauq1], &work[iorglq], lorglqwork, info);
         }
         if (wantv2t && m - q > 0) {
             zlacpy("U", p, m - q, X12, ldx12, V2T, ldv2t);
@@ -369,20 +367,20 @@ void zuncsd(
                        &V2T[p + p * ldv2t], ldv2t);
             }
             if (m > q) {
-                zunglq(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2 - 1],
-                       &work[iorglq - 1], lorglqwork, info);
+                zunglq(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2],
+                       &work[iorglq], lorglqwork, info);
             }
         }
     } else {
         if (wantu1 && p > 0) {
             zlacpy("U", q, p, X11, ldx11, U1, ldu1);
-            zunglq(p, p, q, U1, ldu1, &work[itaup1 - 1],
-                   &work[iorglq - 1], lorglqwork, info);
+            zunglq(p, p, q, U1, ldu1, &work[itaup1],
+                   &work[iorglq], lorglqwork, info);
         }
         if (wantu2 && m - p > 0) {
             zlacpy("U", q, m - p, X21, ldx21, U2, ldu2);
-            zunglq(m - p, m - p, q, U2, ldu2, &work[itaup2 - 1],
-                   &work[iorglq - 1], lorglqwork, info);
+            zunglq(m - p, m - p, q, U2, ldu2, &work[itaup2],
+                   &work[iorglq], lorglqwork, info);
         }
         if (wantv1t && q > 0) {
             zlacpy("L", q - 1, q - 1, &X11[1], ldx11, &V1T[1 + 1 * ldv1t], ldv1t);
@@ -392,7 +390,7 @@ void zuncsd(
                 V1T[j] = zero;
             }
             zungqr(q - 1, q - 1, q - 1, &V1T[1 + 1 * ldv1t], ldv1t,
-                   &work[itauq1 - 1], &work[iorgqr - 1], lorgqrwork, info);
+                   &work[itauq1], &work[iorgqr], lorgqrwork, info);
         }
         if (wantv2t && m - q > 0) {
             zlacpy("L", m - q, p, X12, ldx12, V2T, ldv2t);
@@ -400,17 +398,17 @@ void zuncsd(
                 zlacpy("L", m - p - q, m - p - q, &X22[p + q * ldx22],
                        ldx22, &V2T[p + p * ldv2t], ldv2t);
             }
-            zungqr(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2 - 1],
-                   &work[iorgqr - 1], lorgqrwork, info);
+            zungqr(m - q, m - q, m - q, V2T, ldv2t, &work[itauq2],
+                   &work[iorgqr], lorgqrwork, info);
         }
     }
 
     /* Compute the CSD of the matrix in bidiagonal-block form */
     zbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta,
-           &rwork[iphi - 1], U1, ldu1, U2, ldu2, V1T, ldv1t, V2T, ldv2t,
-           &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1],
-           &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1],
-           &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1],
+           &rwork[iphi], U1, ldu1, U2, ldu2, V1T, ldv1t, V2T, ldv2t,
+           &rwork[ib11d], &rwork[ib11e], &rwork[ib12d],
+           &rwork[ib12e], &rwork[ib21d], &rwork[ib21e],
+           &rwork[ib22d], &rwork[ib22e], &rwork[ibbcsd],
            lbbcsdwork, info);
 
     /* Permute rows and columns to place identity submatrices in

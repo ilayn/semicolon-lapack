@@ -266,39 +266,39 @@ void dtgsyl(
     }
 
     p = 0;
-    i = 1;
-    while (i <= m) {
+    i = 0;
+    while (i < m) {
+        iwork[p] = i;
         p = p + 1;
-        iwork[p - 1] = i;
         i = i + mb;
-        if (i >= m) {
+        if (i >= m - 1) {
             break;
         }
-        if (A[i - 1 + (i - 2) * lda] != ZERO) {
+        if (A[i + (i - 1) * lda] != ZERO) {
             i = i + 1;
         }
     }
 
-    iwork[p] = m + 1;
+    iwork[p] = m;
     if (iwork[p - 1] == iwork[p]) {
         p = p - 1;
     }
 
     q = p + 1;
-    j = 1;
-    while (j <= n) {
+    j = 0;
+    while (j < n) {
+        iwork[q] = j;
         q = q + 1;
-        iwork[q - 1] = j;
         j = j + nb;
-        if (j >= n) {
+        if (j >= n - 1) {
             break;
         }
-        if (B[j - 1 + (j - 2) * ldb] != ZERO) {
+        if (B[j + (j - 1) * ldb] != ZERO) {
             j = j + 1;
         }
     }
 
-    iwork[q] = n + 1;
+    iwork[q] = n;
     if (iwork[q - 1] == iwork[q]) {
         q = q - 1;
     }
@@ -311,20 +311,20 @@ void dtgsyl(
             dsum = ONE;
             pq = 0;
             *scale = ONE;
-            for (j = p + 2; j <= q; j++) {
-                js = iwork[j - 1];
-                je = iwork[j] - 1;
+            for (j = p + 1; j < q; j++) {
+                js = iwork[j];
+                je = iwork[j + 1] - 1;
                 nb = je - js + 1;
-                for (i = p; i >= 1; i--) {
-                    is = iwork[i - 1];
-                    ie = iwork[i] - 1;
+                for (i = p - 1; i >= 0; i--) {
+                    is = iwork[i];
+                    ie = iwork[i + 1] - 1;
                     mb = ie - is + 1;
                     ppqq = 0;
-                    dtgsy2(trans, ifunc, mb, nb, &A[(is - 1) + (is - 1) * lda],
+                    dtgsy2(trans, ifunc, mb, nb, &A[is + is * lda],
                            lda,
-                           &B[(js - 1) + (js - 1) * ldb], ldb, &C[(is - 1) + (js - 1) * ldc], ldc,
-                           &D[(is - 1) + (is - 1) * ldd], ldd, &E[(js - 1) + (js - 1) * lde], lde,
-                           &F[(is - 1) + (js - 1) * ldf], ldf, &scaloc, &dsum, &dscale,
+                           &B[js + js * ldb], ldb, &C[is + js * ldc], ldc,
+                           &D[is + is * ldd], ldd, &E[js + js * lde], lde,
+                           &F[is + js * ldf], ldf, &scaloc, &dsum, &dscale,
                            &iwork[q + 1], &ppqq, &linfo);
                     if (linfo > 0) {
                         *info = linfo;
@@ -332,44 +332,44 @@ void dtgsyl(
 
                     pq = pq + ppqq;
                     if (scaloc != ONE) {
-                        for (k = 1; k <= js - 1; k++) {
-                            cblas_dscal(m, scaloc, &C[0 + (k - 1) * ldc], 1);
-                            cblas_dscal(m, scaloc, &F[0 + (k - 1) * ldf], 1);
+                        for (k = 0; k < js; k++) {
+                            cblas_dscal(m, scaloc, &C[k * ldc], 1);
+                            cblas_dscal(m, scaloc, &F[k * ldf], 1);
                         }
                         for (k = js; k <= je; k++) {
-                            cblas_dscal(is - 1, scaloc, &C[0 + (k - 1) * ldc], 1);
-                            cblas_dscal(is - 1, scaloc, &F[0 + (k - 1) * ldf], 1);
+                            cblas_dscal(is, scaloc, &C[k * ldc], 1);
+                            cblas_dscal(is, scaloc, &F[k * ldf], 1);
                         }
                         for (k = js; k <= je; k++) {
-                            cblas_dscal(m - ie, scaloc, &C[ie + (k - 1) * ldc], 1);
-                            cblas_dscal(m - ie, scaloc, &F[ie + (k - 1) * ldf], 1);
+                            cblas_dscal(m - ie - 1, scaloc, &C[(ie + 1) + k * ldc], 1);
+                            cblas_dscal(m - ie - 1, scaloc, &F[(ie + 1) + k * ldf], 1);
                         }
-                        for (k = je + 1; k <= n; k++) {
-                            cblas_dscal(m, scaloc, &C[0 + (k - 1) * ldc], 1);
-                            cblas_dscal(m, scaloc, &F[0 + (k - 1) * ldf], 1);
+                        for (k = je + 1; k < n; k++) {
+                            cblas_dscal(m, scaloc, &C[k * ldc], 1);
+                            cblas_dscal(m, scaloc, &F[k * ldf], 1);
                         }
                         *scale = (*scale) * scaloc;
                     }
 
-                    if (i > 1) {
+                    if (i > 0) {
                         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    is - 1, nb, mb, -ONE,
-                                    &A[0 + (is - 1) * lda], lda, &C[(is - 1) + (js - 1) * ldc], ldc,
-                                    ONE, &C[0 + (js - 1) * ldc], ldc);
+                                    is, nb, mb, -ONE,
+                                    &A[is * lda], lda, &C[is + js * ldc], ldc,
+                                    ONE, &C[js * ldc], ldc);
                         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    is - 1, nb, mb, -ONE,
-                                    &D[0 + (is - 1) * ldd], ldd, &C[(is - 1) + (js - 1) * ldc], ldc,
-                                    ONE, &F[0 + (js - 1) * ldf], ldf);
+                                    is, nb, mb, -ONE,
+                                    &D[is * ldd], ldd, &C[is + js * ldc], ldc,
+                                    ONE, &F[js * ldf], ldf);
                     }
-                    if (j < q) {
+                    if (j < q - 1) {
                         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    mb, n - je, nb, ONE,
-                                    &F[(is - 1) + (js - 1) * ldf], ldf, &B[(js - 1) + je * ldb], ldb,
-                                    ONE, &C[(is - 1) + je * ldc], ldc);
+                                    mb, n - je - 1, nb, ONE,
+                                    &F[is + js * ldf], ldf, &B[js + (je + 1) * ldb], ldb,
+                                    ONE, &C[is + (je + 1) * ldc], ldc);
                         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                    mb, n - je, nb, ONE,
-                                    &F[(is - 1) + (js - 1) * ldf], ldf, &E[(js - 1) + je * lde], lde,
-                                    ONE, &F[(is - 1) + je * ldf], ldf);
+                                    mb, n - je - 1, nb, ONE,
+                                    &F[is + js * ldf], ldf, &E[js + (je + 1) * lde], lde,
+                                    ONE, &F[is + (je + 1) * ldf], ldf);
                     }
                 }
             }
@@ -399,61 +399,61 @@ void dtgsyl(
     } else {
 
         *scale = ONE;
-        for (i = 1; i <= p; i++) {
-            is = iwork[i - 1];
-            ie = iwork[i] - 1;
+        for (i = 0; i < p; i++) {
+            is = iwork[i];
+            ie = iwork[i + 1] - 1;
             mb = ie - is + 1;
-            for (j = q; j >= p + 2; j--) {
-                js = iwork[j - 1];
-                je = iwork[j] - 1;
+            for (j = q - 1; j >= p + 1; j--) {
+                js = iwork[j];
+                je = iwork[j + 1] - 1;
                 nb = je - js + 1;
-                dtgsy2(trans, ifunc, mb, nb, &A[(is - 1) + (is - 1) * lda], lda,
-                       &B[(js - 1) + (js - 1) * ldb], ldb, &C[(is - 1) + (js - 1) * ldc], ldc,
-                       &D[(is - 1) + (is - 1) * ldd], ldd, &E[(js - 1) + (js - 1) * lde], lde,
-                       &F[(is - 1) + (js - 1) * ldf], ldf, &scaloc, &dsum, &dscale,
+                dtgsy2(trans, ifunc, mb, nb, &A[is + is * lda], lda,
+                       &B[js + js * ldb], ldb, &C[is + js * ldc], ldc,
+                       &D[is + is * ldd], ldd, &E[js + js * lde], lde,
+                       &F[is + js * ldf], ldf, &scaloc, &dsum, &dscale,
                        &iwork[q + 1], &ppqq, &linfo);
                 if (linfo > 0) {
                     *info = linfo;
                 }
                 if (scaloc != ONE) {
-                    for (k = 1; k <= js - 1; k++) {
-                        cblas_dscal(m, scaloc, &C[0 + (k - 1) * ldc], 1);
-                        cblas_dscal(m, scaloc, &F[0 + (k - 1) * ldf], 1);
+                    for (k = 0; k < js; k++) {
+                        cblas_dscal(m, scaloc, &C[k * ldc], 1);
+                        cblas_dscal(m, scaloc, &F[k * ldf], 1);
                     }
                     for (k = js; k <= je; k++) {
-                        cblas_dscal(is - 1, scaloc, &C[0 + (k - 1) * ldc], 1);
-                        cblas_dscal(is - 1, scaloc, &F[0 + (k - 1) * ldf], 1);
+                        cblas_dscal(is, scaloc, &C[k * ldc], 1);
+                        cblas_dscal(is, scaloc, &F[k * ldf], 1);
                     }
                     for (k = js; k <= je; k++) {
-                        cblas_dscal(m - ie, scaloc, &C[ie + (k - 1) * ldc], 1);
-                        cblas_dscal(m - ie, scaloc, &F[ie + (k - 1) * ldf], 1);
+                        cblas_dscal(m - ie - 1, scaloc, &C[(ie + 1) + k * ldc], 1);
+                        cblas_dscal(m - ie - 1, scaloc, &F[(ie + 1) + k * ldf], 1);
                     }
-                    for (k = je + 1; k <= n; k++) {
-                        cblas_dscal(m, scaloc, &C[0 + (k - 1) * ldc], 1);
-                        cblas_dscal(m, scaloc, &F[0 + (k - 1) * ldf], 1);
+                    for (k = je + 1; k < n; k++) {
+                        cblas_dscal(m, scaloc, &C[k * ldc], 1);
+                        cblas_dscal(m, scaloc, &F[k * ldf], 1);
                     }
                     *scale = (*scale) * scaloc;
                 }
 
-                if (j > p + 2) {
+                if (j > p + 1) {
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                mb, js - 1, nb, ONE, &C[(is - 1) + (js - 1) * ldc],
-                                ldc, &B[0 + (js - 1) * ldb], ldb, ONE, &F[(is - 1) + 0 * ldf],
+                                mb, js, nb, ONE, &C[is + js * ldc],
+                                ldc, &B[js * ldb], ldb, ONE, &F[is],
                                 ldf);
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                mb, js - 1, nb, ONE, &F[(is - 1) + (js - 1) * ldf],
-                                ldf, &E[0 + (js - 1) * lde], lde, ONE, &F[(is - 1) + 0 * ldf],
+                                mb, js, nb, ONE, &F[is + js * ldf],
+                                ldf, &E[js * lde], lde, ONE, &F[is],
                                 ldf);
                 }
-                if (i < p) {
+                if (i < p - 1) {
                     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                m - ie, nb, mb, -ONE,
-                                &A[(is - 1) + ie * lda], lda, &C[(is - 1) + (js - 1) * ldc], ldc,
-                                ONE, &C[ie + (js - 1) * ldc], ldc);
+                                m - ie - 1, nb, mb, -ONE,
+                                &A[is + (ie + 1) * lda], lda, &C[is + js * ldc], ldc,
+                                ONE, &C[(ie + 1) + js * ldc], ldc);
                     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                m - ie, nb, mb, -ONE,
-                                &D[(is - 1) + ie * ldd], ldd, &F[(is - 1) + (js - 1) * ldf], ldf,
-                                ONE, &C[ie + (js - 1) * ldc], ldc);
+                                m - ie - 1, nb, mb, -ONE,
+                                &D[is + (ie + 1) * ldd], ldd, &F[is + js * ldf], ldf,
+                                ONE, &C[(ie + 1) + js * ldc], ldc);
                 }
             }
         }

@@ -169,7 +169,7 @@ void dlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
     }
 
     m = n + sqre;
-    nlp1 = nl + 1;
+    nlp1 = nl;
 
     if (icompq == 0) {
         for (i = 0; i < givptr; i++) {
@@ -178,7 +178,7 @@ void dlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                        givnum[i + 1 * ldgnum], givnum[i + 0 * ldgnum]);
         }
 
-        cblas_dcopy(nrhs, &B[nlp1 - 1], ldb, &BX[0], ldbx);
+        cblas_dcopy(nrhs, &B[nlp1], ldb, &BX[0], ldbx);
         for (i = 1; i < n; i++) {
             cblas_dcopy(nrhs, &B[perm[i]], ldb, &BX[i], ldbx);
         }
@@ -275,7 +275,7 @@ void dlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
             dlacpy("A", n - k, nrhs, &B[k], ldb, &BX[k], ldbx);
         }
 
-        cblas_dcopy(nrhs, &BX[0], ldbx, &B[nlp1 - 1], ldb);
+        cblas_dcopy(nrhs, &BX[0], ldbx, &B[nlp1], ldb);
         if (sqre == 1) {
             cblas_dcopy(nrhs, &BX[m - 1], ldbx, &B[m - 1], ldb);
         }

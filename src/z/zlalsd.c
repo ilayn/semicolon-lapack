@@ -298,23 +298,23 @@ void zlalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
 
     for (i = 0; i < nm1; i++) {
         if (fabs(E[i]) < eps || i == nm1 - 1) {
-            nsub = nsub + 1;
-            iwork[nsub - 1] = st;
+            iwork[nsub] = st;
 
             if (i < nm1 - 1) {
                 nsize = i - st + 1;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
             } else if (fabs(E[i]) >= eps) {
                 nsize = n - st;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
             } else {
                 nsize = i - st + 1;
-                iwork[sizei + nsub - 1] = nsize;
+                iwork[sizei + nsub] = nsize;
                 nsub = nsub + 1;
-                iwork[nsub - 1] = n - 1;
-                iwork[sizei + nsub - 1] = 1;
+                iwork[nsub] = n - 1;
+                iwork[sizei + nsub] = 1;
                 cblas_zcopy(nrhs, &B[n - 1], ldb, &work[bx + n - 1], n);
             }
+            nsub = nsub + 1;
             st1 = st;
             if (nsize == 1) {
                 cblas_zcopy(nrhs, &B[st], ldb, &work[bx + st1], n);

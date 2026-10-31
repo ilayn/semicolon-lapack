@@ -81,14 +81,14 @@ void slasd0(const INT n, const INT sqre, f32* restrict D,
 
     slasdt(n, &nlvl, &nd, &IWORK[inode], &IWORK[ndiml], &IWORK[ndimr], smlsiz);
 
-    ndb1 = (nd + 1) / 2;
+    ndb1 = (nd - 1) / 2;
     ncc = 0;
 
-    for (i = ndb1; i <= nd; i++) {
-        ic = IWORK[inode + i - 1];
-        nl = IWORK[ndiml + i - 1];
+    for (i = ndb1; i < nd; i++) {
+        ic = IWORK[inode + i];
+        nl = IWORK[ndiml + i];
         nlp1 = nl + 1;
-        nr = IWORK[ndimr + i - 1];
+        nr = IWORK[ndimr + i];
         nlf = ic - nl;
         nrf = ic + 1;
         sqrei = 1;
@@ -108,7 +108,7 @@ void slasd0(const INT n, const INT sqre, f32* restrict D,
             IWORK[itemp + j] = j;
         }
 
-        if (i == nd) {
+        if (i == nd - 1) {
             sqrei = sqre;
         } else {
             sqrei = 1;
@@ -131,19 +131,19 @@ void slasd0(const INT n, const INT sqre, f32* restrict D,
         }
     }
 
-    for (lvl = nlvl; lvl >= 1; lvl--) {
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+    for (lvl = nlvl - 1; lvl >= 0; lvl--) {
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
 
         for (i = lf; i <= ll; i++) {
-            ic = IWORK[inode + i - 1];
-            nl = IWORK[ndiml + i - 1];
-            nr = IWORK[ndimr + i - 1];
+            ic = IWORK[inode + i];
+            nl = IWORK[ndiml + i];
+            nr = IWORK[ndimr + i];
             nlf = ic - nl;
             if (sqre == 0 && i == ll) {
                 sqrei = sqre;

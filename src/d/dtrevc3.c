@@ -180,12 +180,12 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
     if (rightv) {
         /* IV is index of column in current block.
          * For complex right vector, uses IV-1 for real part and IV for complex part.
-         * Non-blocked version always uses IV=2;
-         * blocked     version starts with IV=NB, goes down to 1 or 2.
+         * Non-blocked version always uses IV=1;
+         * blocked     version starts with IV=NB-1, goes down to 0 or 1.
          * (Note the "0-th" column is used for 1-norms computed above.) */
-        iv = 2;
+        iv = 1;
         if (nb > 2) {
-            iv = nb;
+            iv = nb - 1;
         }
 
         ip = 0;
@@ -232,11 +232,11 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                 /* --------------------------------------------------------
                  * Real right eigenvector
                  */
-                work[ki + iv * n] = one;
+                work[ki + (iv + 1) * n] = one;
 
                 /* Form right-hand side */
                 for (k = 0; k < ki; k++) {
-                    work[k + iv * n] = -T[k + ki * ldt];
+                    work[k + (iv + 1) * n] = -T[k + ki * ldt];
                 }
 
                 /* Solve upper quasi-triangular system:
@@ -258,7 +258,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     if (j1 == j2) {
                         /* 1-by-1 diagonal block */
                         dlaln2(0, 1, 1, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + iv * n], n, wr, zero,
+                               one, one, &work[j + (iv + 1) * n], n, wr, zero,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale X(0,0) to avoid overflow when updating
@@ -272,17 +272,17 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(ki + 1, scale, &work[iv * n], 1);
+                            cblas_dscal(ki + 1, scale, &work[(iv + 1) * n], 1);
                         }
-                        work[j + iv * n] = x[0];
+                        work[j + (iv + 1) * n] = x[0];
 
                         /* Update right-hand side */
-                        cblas_daxpy(j, -x[0], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j, -x[0], &T[j * ldt], 1, &work[(iv + 1) * n], 1);
 
                     } else {
                         /* 2-by-2 diagonal block */
                         dlaln2(0, 2, 1, smin, one, &T[(j - 1) + (j - 1) * ldt], ldt,
-                               one, one, &work[(j - 1) + iv * n], n, wr, zero,
+                               one, one, &work[(j - 1) + (iv + 1) * n], n, wr, zero,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale X(0,0) and X(1,0) to avoid overflow when
@@ -298,21 +298,21 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(ki + 1, scale, &work[iv * n], 1);
+                            cblas_dscal(ki + 1, scale, &work[(iv + 1) * n], 1);
                         }
-                        work[(j - 1) + iv * n] = x[0];
-                        work[j + iv * n] = x[1];
+                        work[(j - 1) + (iv + 1) * n] = x[0];
+                        work[j + (iv + 1) * n] = x[1];
 
                         /* Update right-hand side */
-                        cblas_daxpy(j - 1, -x[0], &T[(j - 1) * ldt], 1, &work[iv * n], 1);
-                        cblas_daxpy(j - 1, -x[1], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j - 1, -x[0], &T[(j - 1) * ldt], 1, &work[(iv + 1) * n], 1);
+                        cblas_daxpy(j - 1, -x[1], &T[j * ldt], 1, &work[(iv + 1) * n], 1);
                     }
                 }
 
                 /* Copy the vector x or Q*x to VR and normalize */
                 if (!over) {
                     /* No back-transform: copy x to VR and normalize */
-                    cblas_dcopy(ki + 1, &work[iv * n], 1, &VR[is * ldvr], 1);
+                    cblas_dcopy(ki + 1, &work[(iv + 1) * n], 1, &VR[is * ldvr], 1);
 
                     ii = cblas_idamax(ki + 1, &VR[is * ldvr], 1);
                     remax = one / fabs(VR[ii + is * ldvr]);
@@ -326,8 +326,8 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 1: back-transform each vector with GEMV, Q*x */
                     if (ki > 0) {
                         cblas_dgemv(CblasColMajor, CblasNoTrans, n, ki,
-                                    one, VR, ldvr, &work[iv * n], 1,
-                                    work[ki + iv * n], &VR[ki * ldvr], 1);
+                                    one, VR, ldvr, &work[(iv + 1) * n], 1,
+                                    work[ki + (iv + 1) * n], &VR[ki * ldvr], 1);
                     }
 
                     ii = cblas_idamax(n, &VR[ki * ldvr], 1);
@@ -338,9 +338,9 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 2: back-transform block of vectors with GEMM
                      * Zero out below vector */
                     for (k = ki + 1; k < n; k++) {
-                        work[k + iv * n] = zero;
+                        work[k + (iv + 1) * n] = zero;
                     }
-                    iscomplex[iv - 1] = ip;
+                    iscomplex[iv] = ip;
                     /* back-transform and normalization is done below */
                 }
 
@@ -353,19 +353,19 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                  * [(T(ki,ki-1)   T(ki,ki)  )              ]
                  */
                 if (fabs(T[(ki - 1) + ki * ldt]) >= fabs(T[ki + (ki - 1) * ldt])) {
-                    work[(ki - 1) + (iv - 1) * n] = one;
-                    work[ki + iv * n] = wi / T[(ki - 1) + ki * ldt];
+                    work[(ki - 1) + iv * n] = one;
+                    work[ki + (iv + 1) * n] = wi / T[(ki - 1) + ki * ldt];
                 } else {
-                    work[(ki - 1) + (iv - 1) * n] = -wi / T[ki + (ki - 1) * ldt];
-                    work[ki + iv * n] = one;
+                    work[(ki - 1) + iv * n] = -wi / T[ki + (ki - 1) * ldt];
+                    work[ki + (iv + 1) * n] = one;
                 }
-                work[ki + (iv - 1) * n] = zero;
-                work[(ki - 1) + iv * n] = zero;
+                work[ki + iv * n] = zero;
+                work[(ki - 1) + (iv + 1) * n] = zero;
 
                 /* Form right-hand side */
                 for (k = 0; k < ki - 1; k++) {
-                    work[k + (iv - 1) * n] = -work[(ki - 1) + (iv - 1) * n] * T[k + (ki - 1) * ldt];
-                    work[k + iv * n] = -work[ki + iv * n] * T[k + ki * ldt];
+                    work[k + iv * n] = -work[(ki - 1) + iv * n] * T[k + (ki - 1) * ldt];
+                    work[k + (iv + 1) * n] = -work[ki + (iv + 1) * n] * T[k + ki * ldt];
                 }
 
                 /* Solve upper quasi-triangular system:
@@ -387,7 +387,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     if (j1 == j2) {
                         /* 1-by-1 diagonal block */
                         dlaln2(0, 1, 2, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + (iv - 1) * n], n, wr, wi,
+                               one, one, &work[j + iv * n], n, wr, wi,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale X(0,0) and X(0,1) to avoid overflow when
@@ -402,20 +402,20 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(ki + 1, scale, &work[(iv - 1) * n], 1);
                             cblas_dscal(ki + 1, scale, &work[iv * n], 1);
+                            cblas_dscal(ki + 1, scale, &work[(iv + 1) * n], 1);
                         }
-                        work[j + (iv - 1) * n] = x[0];
-                        work[j + iv * n] = x[2];
+                        work[j + iv * n] = x[0];
+                        work[j + (iv + 1) * n] = x[2];
 
                         /* Update the right-hand side */
-                        cblas_daxpy(j, -x[0], &T[j * ldt], 1, &work[(iv - 1) * n], 1);
-                        cblas_daxpy(j, -x[2], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j, -x[0], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j, -x[2], &T[j * ldt], 1, &work[(iv + 1) * n], 1);
 
                     } else {
                         /* 2-by-2 diagonal block */
                         dlaln2(0, 2, 2, smin, one, &T[(j - 1) + (j - 1) * ldt], ldt,
-                               one, one, &work[(j - 1) + (iv - 1) * n], n, wr, wi,
+                               one, one, &work[(j - 1) + iv * n], n, wr, wi,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale X to avoid overflow when updating
@@ -434,27 +434,27 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(ki + 1, scale, &work[(iv - 1) * n], 1);
                             cblas_dscal(ki + 1, scale, &work[iv * n], 1);
+                            cblas_dscal(ki + 1, scale, &work[(iv + 1) * n], 1);
                         }
-                        work[(j - 1) + (iv - 1) * n] = x[0];
-                        work[j + (iv - 1) * n] = x[1];
-                        work[(j - 1) + iv * n] = x[2];
-                        work[j + iv * n] = x[3];
+                        work[(j - 1) + iv * n] = x[0];
+                        work[j + iv * n] = x[1];
+                        work[(j - 1) + (iv + 1) * n] = x[2];
+                        work[j + (iv + 1) * n] = x[3];
 
                         /* Update the right-hand side */
-                        cblas_daxpy(j - 1, -x[0], &T[(j - 1) * ldt], 1, &work[(iv - 1) * n], 1);
-                        cblas_daxpy(j - 1, -x[1], &T[j * ldt], 1, &work[(iv - 1) * n], 1);
-                        cblas_daxpy(j - 1, -x[2], &T[(j - 1) * ldt], 1, &work[iv * n], 1);
-                        cblas_daxpy(j - 1, -x[3], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j - 1, -x[0], &T[(j - 1) * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j - 1, -x[1], &T[j * ldt], 1, &work[iv * n], 1);
+                        cblas_daxpy(j - 1, -x[2], &T[(j - 1) * ldt], 1, &work[(iv + 1) * n], 1);
+                        cblas_daxpy(j - 1, -x[3], &T[j * ldt], 1, &work[(iv + 1) * n], 1);
                     }
                 }
 
                 /* Copy the vector x or Q*x to VR and normalize */
                 if (!over) {
                     /* No back-transform: copy x to VR and normalize */
-                    cblas_dcopy(ki + 1, &work[(iv - 1) * n], 1, &VR[(is - 1) * ldvr], 1);
-                    cblas_dcopy(ki + 1, &work[iv * n], 1, &VR[is * ldvr], 1);
+                    cblas_dcopy(ki + 1, &work[iv * n], 1, &VR[(is - 1) * ldvr], 1);
+                    cblas_dcopy(ki + 1, &work[(iv + 1) * n], 1, &VR[is * ldvr], 1);
 
                     emax = zero;
                     for (k = 0; k <= ki; k++) {
@@ -474,14 +474,14 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 1: back-transform each vector with GEMV, Q*x */
                     if (ki > 1) {
                         cblas_dgemv(CblasColMajor, CblasNoTrans, n, ki - 1,
-                                    one, VR, ldvr, &work[(iv - 1) * n], 1,
-                                    work[(ki - 1) + (iv - 1) * n], &VR[(ki - 1) * ldvr], 1);
-                        cblas_dgemv(CblasColMajor, CblasNoTrans, n, ki - 1,
                                     one, VR, ldvr, &work[iv * n], 1,
-                                    work[ki + iv * n], &VR[ki * ldvr], 1);
+                                    work[(ki - 1) + iv * n], &VR[(ki - 1) * ldvr], 1);
+                        cblas_dgemv(CblasColMajor, CblasNoTrans, n, ki - 1,
+                                    one, VR, ldvr, &work[(iv + 1) * n], 1,
+                                    work[ki + (iv + 1) * n], &VR[ki * ldvr], 1);
                     } else {
-                        cblas_dscal(n, work[(ki - 1) + (iv - 1) * n], &VR[(ki - 1) * ldvr], 1);
-                        cblas_dscal(n, work[ki + iv * n], &VR[ki * ldvr], 1);
+                        cblas_dscal(n, work[(ki - 1) + iv * n], &VR[(ki - 1) * ldvr], 1);
+                        cblas_dscal(n, work[ki + (iv + 1) * n], &VR[ki * ldvr], 1);
                     }
 
                     emax = zero;
@@ -497,11 +497,11 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 2: back-transform block of vectors with GEMM
                      * Zero out below vector */
                     for (k = ki + 1; k < n; k++) {
-                        work[k + (iv - 1) * n] = zero;
                         work[k + iv * n] = zero;
+                        work[k + (iv + 1) * n] = zero;
                     }
-                    iscomplex[iv - 2] = -ip;
-                    iscomplex[iv - 1] = ip;
+                    iscomplex[iv - 1] = -ip;
+                    iscomplex[iv] = ip;
                     iv = iv - 1;
                     /* back-transform and normalization is done below */
                 }
@@ -518,41 +518,41 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     ki2 = ki - 1;
                 }
 
-                /* Columns IV:NB of work are valid vectors.
+                /* Columns IV+1:NB of work are valid vectors.
                  * When the number of vectors stored reaches NB-1 or NB,
                  * or if this was last vector, do the GEMM */
-                if ((iv <= 2) || (ki2 == 0)) {
+                if ((iv <= 1) || (ki2 == 0)) {
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                n, nb - iv + 1, ki2 + 1 + nb - iv,
+                                n, nb - iv, ki2 + nb - iv,
                                 one, VR, ldvr,
-                                &work[iv * n], n,
-                                zero, &work[(nb + iv) * n], n);
+                                &work[(iv + 1) * n], n,
+                                zero, &work[(nb + 1 + iv) * n], n);
 
                     /* Normalize vectors */
                     remax = one;
-                    for (k = iv; k <= nb; k++) {
-                        if (iscomplex[k - 1] == 0) {
+                    for (k = iv; k < nb; k++) {
+                        if (iscomplex[k] == 0) {
                             /* Real eigenvector */
-                            ii = cblas_idamax(n, &work[(nb + k) * n], 1);
-                            remax = one / fabs(work[ii + (nb + k) * n]);
-                        } else if (iscomplex[k - 1] == 1) {
+                            ii = cblas_idamax(n, &work[(nb + 1 + k) * n], 1);
+                            remax = one / fabs(work[ii + (nb + 1 + k) * n]);
+                        } else if (iscomplex[k] == 1) {
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                f64 val = fabs(work[ii + (nb + k) * n]) +
-                                             fabs(work[ii + (nb + k + 1) * n]);
+                                f64 val = fabs(work[ii + (nb + 1 + k) * n]) +
+                                             fabs(work[ii + (nb + 2 + k) * n]);
                                 emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
-                            /* else if iscomplex[k - 1] == -1:
+                            /* else if iscomplex[k] == -1:
                              * second eigenvector of conjugate pair
                              * reuse same remax as previous k */
                         }
-                        cblas_dscal(n, remax, &work[(nb + k) * n], 1);
+                        cblas_dscal(n, remax, &work[(nb + 1 + k) * n], 1);
                     }
-                    dlacpy("F", n, nb - iv + 1, &work[(nb + iv) * n], n,
+                    dlacpy("F", n, nb - iv, &work[(nb + 1 + iv) * n], n,
                            &VR[ki2 * ldvr], ldvr);
-                    iv = nb;
+                    iv = nb - 1;
                 } else {
                     iv = iv - 1;
                 }
@@ -570,10 +570,10 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
     if (leftv) {
         /* IV is index of column in current block.
          * For complex left vector, uses IV for real part and IV+1 for complex part.
-         * Non-blocked version always uses IV=1;
-         * blocked version starts with IV=1, goes up to nb-1 or nb.
+         * Non-blocked version always uses IV=0;
+         * blocked version starts with IV=0, goes up to nb-2 or nb-1.
          * (Note the "0-th" column is used for 1-norms computed above.) */
-        iv = 1;
+        iv = 0;
         ip = 0;
         is = 0;
 
@@ -613,11 +613,11 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                 /* --------------------------------------------------------
                  * Real left eigenvector
                  */
-                work[ki + iv * n] = one;
+                work[ki + (iv + 1) * n] = one;
 
                 /* Form right-hand side */
                 for (k = ki + 1; k < n; k++) {
-                    work[k + iv * n] = -T[ki + k * ldt];
+                    work[k + (iv + 1) * n] = -T[ki + k * ldt];
                 }
 
                 /* Solve transposed quasi-triangular system:
@@ -646,26 +646,26 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                          * the right-hand side. */
                         if (work[j] > vcrit) {
                             rec = one / vmax;
-                            cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
+                            cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
                             vmax = one;
                             vcrit = bignum;
                         }
 
-                        work[j + iv * n] = work[j + iv * n] -
+                        work[j + (iv + 1) * n] = work[j + (iv + 1) * n] -
                             cblas_ddot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
-                                       &work[(ki + 1) + iv * n], 1);
+                                       &work[(ki + 1) + (iv + 1) * n], 1);
 
                         /* Solve [T(j,j) - wr]^T * X = work */
                         dlaln2(0, 1, 1, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + iv * n], n, wr, zero,
+                               one, one, &work[j + (iv + 1) * n], n, wr, zero,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(n - ki, scale, &work[ki + iv * n], 1);
+                            cblas_dscal(n - ki, scale, &work[ki + (iv + 1) * n], 1);
                         }
-                        work[j + iv * n] = x[0];
-                        vmax = (fabs(work[j + iv * n]) > vmax) ? fabs(work[j + iv * n]) : vmax;
+                        work[j + (iv + 1) * n] = x[0];
+                        vmax = (fabs(work[j + (iv + 1) * n]) > vmax) ? fabs(work[j + (iv + 1) * n]) : vmax;
                         vcrit = bignum / vmax;
 
                     } else {
@@ -676,35 +676,35 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                         beta = work[j] > work[j + 1] ? work[j] : work[j + 1];
                         if (beta > vcrit) {
                             rec = one / vmax;
-                            cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
+                            cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
                             vmax = one;
                             vcrit = bignum;
                         }
 
-                        work[j + iv * n] = work[j + iv * n] -
+                        work[j + (iv + 1) * n] = work[j + (iv + 1) * n] -
                             cblas_ddot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
-                                       &work[(ki + 1) + iv * n], 1);
+                                       &work[(ki + 1) + (iv + 1) * n], 1);
 
-                        work[(j + 1) + iv * n] = work[(j + 1) + iv * n] -
+                        work[(j + 1) + (iv + 1) * n] = work[(j + 1) + (iv + 1) * n] -
                             cblas_ddot(j - ki - 1, &T[(ki + 1) + (j + 1) * ldt], 1,
-                                       &work[(ki + 1) + iv * n], 1);
+                                       &work[(ki + 1) + (iv + 1) * n], 1);
 
                         /* Solve
                          * [T(j,j)-wr    T(j,j+1)  ]^T * X = scale * (work1)
                          * [T(j+1,j)   T(j+1,j+1)-wr]              (work2) */
                         dlaln2(1, 2, 1, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + iv * n], n, wr, zero,
+                               one, one, &work[j + (iv + 1) * n], n, wr, zero,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(n - ki, scale, &work[ki + iv * n], 1);
+                            cblas_dscal(n - ki, scale, &work[ki + (iv + 1) * n], 1);
                         }
-                        work[j + iv * n] = x[0];
-                        work[(j + 1) + iv * n] = x[1];
+                        work[j + (iv + 1) * n] = x[0];
+                        work[(j + 1) + (iv + 1) * n] = x[1];
 
-                        f64 tmp = fabs(work[j + iv * n]);
-                        tmp = (tmp > fabs(work[(j + 1) + iv * n])) ? tmp : fabs(work[(j + 1) + iv * n]);
+                        f64 tmp = fabs(work[j + (iv + 1) * n]);
+                        tmp = (tmp > fabs(work[(j + 1) + (iv + 1) * n])) ? tmp : fabs(work[(j + 1) + (iv + 1) * n]);
                         if (tmp > vmax) vmax = tmp;
                         vcrit = bignum / vmax;
                     }
@@ -713,7 +713,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                 /* Copy the vector x or Q*x to VL and normalize */
                 if (!over) {
                     /* No back-transform: copy x to VL and normalize */
-                    cblas_dcopy(n - ki, &work[ki + iv * n], 1, &VL[ki + is * ldvl], 1);
+                    cblas_dcopy(n - ki, &work[ki + (iv + 1) * n], 1, &VL[ki + is * ldvl], 1);
 
                     ii = cblas_idamax(n - ki, &VL[ki + is * ldvl], 1) + ki;
                     remax = one / fabs(VL[ii + is * ldvl]);
@@ -728,8 +728,8 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     if (ki < n - 1) {
                         cblas_dgemv(CblasColMajor, CblasNoTrans, n, n - ki - 1,
                                     one, &VL[(ki + 1) * ldvl], ldvl,
-                                    &work[(ki + 1) + iv * n], 1,
-                                    work[ki + iv * n], &VL[ki * ldvl], 1);
+                                    &work[(ki + 1) + (iv + 1) * n], 1,
+                                    work[ki + (iv + 1) * n], &VL[ki * ldvl], 1);
                     }
 
                     ii = cblas_idamax(n, &VL[ki * ldvl], 1);
@@ -740,9 +740,9 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 2: back-transform block of vectors with GEMM
                      * Zero out above vector */
                     for (k = 0; k < ki; k++) {
-                        work[k + iv * n] = zero;
+                        work[k + (iv + 1) * n] = zero;
                     }
-                    iscomplex[iv - 1] = ip;
+                    iscomplex[iv] = ip;
                     /* back-transform and normalization is done below */
                 }
 
@@ -755,19 +755,19 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                  * [(T(ki+1,ki) T(ki+1,ki+1))]
                  */
                 if (fabs(T[ki + (ki + 1) * ldt]) >= fabs(T[(ki + 1) + ki * ldt])) {
-                    work[ki + iv * n] = wi / T[ki + (ki + 1) * ldt];
-                    work[(ki + 1) + (iv + 1) * n] = one;
+                    work[ki + (iv + 1) * n] = wi / T[ki + (ki + 1) * ldt];
+                    work[(ki + 1) + (iv + 2) * n] = one;
                 } else {
-                    work[ki + iv * n] = one;
-                    work[(ki + 1) + (iv + 1) * n] = -wi / T[(ki + 1) + ki * ldt];
+                    work[ki + (iv + 1) * n] = one;
+                    work[(ki + 1) + (iv + 2) * n] = -wi / T[(ki + 1) + ki * ldt];
                 }
-                work[(ki + 1) + iv * n] = zero;
-                work[ki + (iv + 1) * n] = zero;
+                work[(ki + 1) + (iv + 1) * n] = zero;
+                work[ki + (iv + 2) * n] = zero;
 
                 /* Form right-hand side */
                 for (k = ki + 2; k < n; k++) {
-                    work[k + iv * n] = -work[ki + iv * n] * T[ki + k * ldt];
-                    work[k + (iv + 1) * n] = -work[(ki + 1) + (iv + 1) * n] * T[(ki + 1) + k * ldt];
+                    work[k + (iv + 1) * n] = -work[ki + (iv + 1) * n] * T[ki + k * ldt];
+                    work[k + (iv + 2) * n] = -work[(ki + 1) + (iv + 2) * n] * T[(ki + 1) + k * ldt];
                 }
 
                 /* Solve transposed quasi-triangular system:
@@ -796,33 +796,33 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                          * forming the right-hand side elements. */
                         if (work[j] > vcrit) {
                             rec = one / vmax;
-                            cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
+                            cblas_dscal(n - ki, rec, &work[ki + (iv + 2) * n], 1);
                             vmax = one;
                             vcrit = bignum;
                         }
 
-                        work[j + iv * n] = work[j + iv * n] -
-                            cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
-                                       &work[(ki + 2) + iv * n], 1);
                         work[j + (iv + 1) * n] = work[j + (iv + 1) * n] -
                             cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
                                        &work[(ki + 2) + (iv + 1) * n], 1);
+                        work[j + (iv + 2) * n] = work[j + (iv + 2) * n] -
+                            cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
+                                       &work[(ki + 2) + (iv + 2) * n], 1);
 
                         /* Solve [T(j,j) - (wr - i*wi)] * (X11 + i*X12) = wk + i*wk2 */
                         dlaln2(0, 1, 2, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + iv * n], n, wr, -wi,
+                               one, one, &work[j + (iv + 1) * n], n, wr, -wi,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(n - ki, scale, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, scale, &work[ki + (iv + 1) * n], 1);
+                            cblas_dscal(n - ki, scale, &work[ki + (iv + 2) * n], 1);
                         }
-                        work[j + iv * n] = x[0];
-                        work[j + (iv + 1) * n] = x[2];
-                        f64 tmp = (fabs(work[j + iv * n]) > fabs(work[j + (iv + 1) * n]))
-                                  ? fabs(work[j + iv * n]) : fabs(work[j + (iv + 1) * n]);
+                        work[j + (iv + 1) * n] = x[0];
+                        work[j + (iv + 2) * n] = x[2];
+                        f64 tmp = (fabs(work[j + (iv + 1) * n]) > fabs(work[j + (iv + 2) * n]))
+                                  ? fabs(work[j + (iv + 1) * n]) : fabs(work[j + (iv + 2) * n]);
                         vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
 
@@ -834,41 +834,41 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                         beta = work[j] > work[j + 1] ? work[j] : work[j + 1];
                         if (beta > vcrit) {
                             rec = one / vmax;
-                            cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
+                            cblas_dscal(n - ki, rec, &work[ki + (iv + 2) * n], 1);
                             vmax = one;
                             vcrit = bignum;
                         }
 
-                        work[j + iv * n] = work[j + iv * n] -
-                            cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
-                                       &work[(ki + 2) + iv * n], 1);
                         work[j + (iv + 1) * n] = work[j + (iv + 1) * n] -
                             cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
                                        &work[(ki + 2) + (iv + 1) * n], 1);
-                        work[(j + 1) + iv * n] = work[(j + 1) + iv * n] -
-                            cblas_ddot(j - ki - 2, &T[(ki + 2) + (j + 1) * ldt], 1,
-                                       &work[(ki + 2) + iv * n], 1);
+                        work[j + (iv + 2) * n] = work[j + (iv + 2) * n] -
+                            cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
+                                       &work[(ki + 2) + (iv + 2) * n], 1);
                         work[(j + 1) + (iv + 1) * n] = work[(j + 1) + (iv + 1) * n] -
                             cblas_ddot(j - ki - 2, &T[(ki + 2) + (j + 1) * ldt], 1,
                                        &work[(ki + 2) + (iv + 1) * n], 1);
+                        work[(j + 1) + (iv + 2) * n] = work[(j + 1) + (iv + 2) * n] -
+                            cblas_ddot(j - ki - 2, &T[(ki + 2) + (j + 1) * ldt], 1,
+                                       &work[(ki + 2) + (iv + 2) * n], 1);
 
                         /* Solve 2-by-2 complex linear equation
                          * [(T(j,j)   T(j,j+1)  )^T - (wr - i*wi)*I] * X = scale*B
                          * [(T(j+1,j) T(j+1,j+1))]                     */
                         dlaln2(1, 2, 2, smin, one, &T[j + j * ldt], ldt,
-                               one, one, &work[j + iv * n], n, wr, -wi,
+                               one, one, &work[j + (iv + 1) * n], n, wr, -wi,
                                x, 2, &scale, &xnorm, &ierr);
 
                         /* Scale if necessary */
                         if (scale != one) {
-                            cblas_dscal(n - ki, scale, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, scale, &work[ki + (iv + 1) * n], 1);
+                            cblas_dscal(n - ki, scale, &work[ki + (iv + 2) * n], 1);
                         }
-                        work[j + iv * n] = x[0];
-                        work[j + (iv + 1) * n] = x[2];
-                        work[(j + 1) + iv * n] = x[1];
-                        work[(j + 1) + (iv + 1) * n] = x[3];
+                        work[j + (iv + 1) * n] = x[0];
+                        work[j + (iv + 2) * n] = x[2];
+                        work[(j + 1) + (iv + 1) * n] = x[1];
+                        work[(j + 1) + (iv + 2) * n] = x[3];
                         f64 tmp = (fabs(x[0]) > fabs(x[2])) ? fabs(x[0]) : fabs(x[2]);
                         tmp = (tmp > fabs(x[1])) ? tmp : fabs(x[1]);
                         tmp = (tmp > fabs(x[3])) ? tmp : fabs(x[3]);
@@ -880,8 +880,8 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                 /* Copy the vector x or Q*x to VL and normalize */
                 if (!over) {
                     /* No back-transform: copy x to VL and normalize */
-                    cblas_dcopy(n - ki, &work[ki + iv * n], 1, &VL[ki + is * ldvl], 1);
-                    cblas_dcopy(n - ki, &work[ki + (iv + 1) * n], 1, &VL[ki + (is + 1) * ldvl], 1);
+                    cblas_dcopy(n - ki, &work[ki + (iv + 1) * n], 1, &VL[ki + is * ldvl], 1);
+                    cblas_dcopy(n - ki, &work[ki + (iv + 2) * n], 1, &VL[ki + (is + 1) * ldvl], 1);
 
                     emax = zero;
                     for (k = ki; k < n; k++) {
@@ -902,15 +902,15 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     if (ki < n - 2) {
                         cblas_dgemv(CblasColMajor, CblasNoTrans, n, n - ki - 2,
                                     one, &VL[(ki + 2) * ldvl], ldvl,
-                                    &work[(ki + 2) + iv * n], 1,
-                                    work[ki + iv * n], &VL[ki * ldvl], 1);
+                                    &work[(ki + 2) + (iv + 1) * n], 1,
+                                    work[ki + (iv + 1) * n], &VL[ki * ldvl], 1);
                         cblas_dgemv(CblasColMajor, CblasNoTrans, n, n - ki - 2,
                                     one, &VL[(ki + 2) * ldvl], ldvl,
-                                    &work[(ki + 2) + (iv + 1) * n], 1,
-                                    work[(ki + 1) + (iv + 1) * n], &VL[(ki + 1) * ldvl], 1);
+                                    &work[(ki + 2) + (iv + 2) * n], 1,
+                                    work[(ki + 1) + (iv + 2) * n], &VL[(ki + 1) * ldvl], 1);
                     } else {
-                        cblas_dscal(n, work[ki + iv * n], &VL[ki * ldvl], 1);
-                        cblas_dscal(n, work[(ki + 1) + (iv + 1) * n], &VL[(ki + 1) * ldvl], 1);
+                        cblas_dscal(n, work[ki + (iv + 1) * n], &VL[ki * ldvl], 1);
+                        cblas_dscal(n, work[(ki + 1) + (iv + 2) * n], &VL[(ki + 1) * ldvl], 1);
                     }
 
                     emax = zero;
@@ -926,11 +926,11 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     /* Version 2: back-transform block of vectors with GEMM
                      * Zero out above vector */
                     for (k = 0; k < ki; k++) {
-                        work[k + iv * n] = zero;
                         work[k + (iv + 1) * n] = zero;
+                        work[k + (iv + 2) * n] = zero;
                     }
-                    iscomplex[iv - 1] = ip;
-                    iscomplex[iv] = -ip;
+                    iscomplex[iv] = ip;
+                    iscomplex[iv + 1] = -ip;
                     iv = iv + 1;
                     /* back-transform and normalization is done below */
                 }
@@ -947,41 +947,41 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     ki2 = ki + 1;
                 }
 
-                /* Columns 1:iv of work are valid vectors.
+                /* Columns 1:IV+1 of work are valid vectors.
                  * When the number of vectors stored reaches nb-1 or nb,
                  * or if this was last vector, do the GEMM */
-                if ((iv >= nb - 1) || (ki2 == n - 1)) {
+                if ((iv >= nb - 2) || (ki2 == n - 1)) {
                     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                n, iv, n - ki2 + iv - 1,
-                                one, &VL[(ki2 - iv + 1) * ldvl], ldvl,
-                                &work[(ki2 - iv + 1) + 1 * n], n,
+                                n, iv + 1, n - ki2 + iv,
+                                one, &VL[(ki2 - iv) * ldvl], ldvl,
+                                &work[(ki2 - iv) + 1 * n], n,
                                 zero, &work[(nb + 1) * n], n);
 
                     /* Normalize vectors */
                     remax = one;
-                    for (k = 1; k <= iv; k++) {
-                        if (iscomplex[k - 1] == 0) {
+                    for (k = 0; k <= iv; k++) {
+                        if (iscomplex[k] == 0) {
                             /* Real eigenvector */
-                            ii = cblas_idamax(n, &work[(nb + k) * n], 1);
-                            remax = one / fabs(work[ii + (nb + k) * n]);
-                        } else if (iscomplex[k - 1] == 1) {
+                            ii = cblas_idamax(n, &work[(nb + 1 + k) * n], 1);
+                            remax = one / fabs(work[ii + (nb + 1 + k) * n]);
+                        } else if (iscomplex[k] == 1) {
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                f64 val = fabs(work[ii + (nb + k) * n]) +
-                                             fabs(work[ii + (nb + k + 1) * n]);
+                                f64 val = fabs(work[ii + (nb + 1 + k) * n]) +
+                                             fabs(work[ii + (nb + 2 + k) * n]);
                                 emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
-                            /* else if iscomplex[k - 1] == -1:
+                            /* else if iscomplex[k] == -1:
                              * second eigenvector of conjugate pair
                              * reuse same remax as previous k */
                         }
-                        cblas_dscal(n, remax, &work[(nb + k) * n], 1);
+                        cblas_dscal(n, remax, &work[(nb + 1 + k) * n], 1);
                     }
-                    dlacpy("F", n, iv, &work[(nb + 1) * n], n,
-                           &VL[(ki2 - iv + 1) * ldvl], ldvl);
-                    iv = 1;
+                    dlacpy("F", n, iv + 1, &work[(nb + 1) * n], n,
+                           &VL[(ki2 - iv) * ldvl], ldvl);
+                    iv = 0;
                 } else {
                     iv = iv + 1;
                 }

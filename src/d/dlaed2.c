@@ -79,10 +79,10 @@
  * @param[out]    coltyp  Integer array, dimension (N).
  *                        During execution, a label which will indicate which of
  *                        the following types a column in the Q2 matrix is:
- *                        1: non-zero in the upper half only;
- *                        2: dense;
- *                        3: non-zero in the lower half only;
- *                        4: deflated.
+ *                        0: non-zero in the upper half only;
+ *                        1: dense;
+ *                        2: non-zero in the lower half only;
+ *                        3: deflated.
  *                        On exit, COLTYP(i) is the number of columns of type i,
  *                        for i=0 to 3 only.
  * @param[out]    info
@@ -181,10 +181,10 @@ void dlaed2(INT* K, const INT n, const INT n1, f64* D, f64* Q,
        the corresponding eigensubspace so that the corresponding
        components of Z are zero in this new basis. */
     for (i = 0; i < n1; i++) {
-        coltyp[i] = 1;
+        coltyp[i] = 0;
     }
     for (i = n1; i < n; i++) {
-        coltyp[i] = 3;
+        coltyp[i] = 2;
     }
 
     *K = 0;
@@ -194,7 +194,7 @@ void dlaed2(INT* K, const INT n, const INT n1, f64* D, f64* Q,
         if ((*rho) * fabs(Z[nj]) <= tol) {
             /* Deflate due to small z component. */
             k2 = k2 - 1;
-            coltyp[nj] = 4;
+            coltyp[nj] = 3;
             indxp[k2] = nj;
             if (j == n - 1)
                 goto L100;
@@ -212,7 +212,7 @@ L80:
     if ((*rho) * fabs(Z[nj]) <= tol) {
         /* Deflate due to small z component. */
         k2 = k2 - 1;
-        coltyp[nj] = 4;
+        coltyp[nj] = 3;
         indxp[k2] = nj;
     } else {
         /* Check if eigenvalues are close enough to allow deflation. */
@@ -230,8 +230,8 @@ L80:
             Z[nj] = tau;
             Z[pj] = ZERO;
             if (coltyp[nj] != coltyp[pj])
-                coltyp[nj] = 2;
-            coltyp[pj] = 4;
+                coltyp[nj] = 1;
+            coltyp[pj] = 3;
             cblas_drot(n, &Q[0 + pj * ldq], 1, &Q[0 + nj * ldq], 1, c, s);
             t = D[pj] * c * c + D[nj] * s * s;
             D[nj] = D[pj] * s * s + D[nj] * c * c;
@@ -278,7 +278,7 @@ L100:
     }
     for (j = 0; j < n; j++) {
         ct = coltyp[j];
-        ctot[ct - 1] = ctot[ct - 1] + 1;
+        ctot[ct] = ctot[ct] + 1;
     }
 
     /* PSM(*) = Position in SubMatrix (of types 1 through 4) */
@@ -294,9 +294,9 @@ L100:
     for (j = 0; j < n; j++) {
         js = indxp[j];
         ct = coltyp[js];
-        indx[psm[ct - 1]] = js;
-        indxc[psm[ct - 1]] = j;
-        psm[ct - 1] = psm[ct - 1] + 1;
+        indx[psm[ct]] = js;
+        indxc[psm[ct]] = j;
+        psm[ct] = psm[ct] + 1;
     }
 
     /* Sort the eigenvalues and corresponding eigenvectors into DLAMBDA

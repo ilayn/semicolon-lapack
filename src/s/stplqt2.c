@@ -100,19 +100,19 @@ void stplqt2(const INT m, const INT n, const INT l,
             T[i + j * ldt] = ZERO;
         }
         p = (i < l) ? i : l;
-        np = (n - l + 1) < n ? (n - l + 1) : n;
-        mp = (p + 1) < m ? (p + 1) : m;
+        np = (n - l) < (n - 1) ? (n - l) : (n - 1);
+        mp = p < (m - 1) ? p : (m - 1);
 
         for (j = 0; j < p; j++) {
-            T[i + j * ldt] = alpha * B[i + (np - 1 + j) * ldb];
+            T[i + j * ldt] = alpha * B[i + (n - l + j) * ldb];
         }
         cblas_strmv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit,
-                    p, &B[(np - 1) * ldb], ldb, &T[i], ldt);
+                    p, &B[np * ldb], ldb, &T[i], ldt);
 
         if (i - p > 0) {
             cblas_sgemv(CblasColMajor, CblasNoTrans, i - p, l, alpha,
-                        &B[(mp - 1) + (np - 1) * ldb], ldb, &B[i + (np - 1) * ldb], ldb, ZERO,
-                        &T[i + (mp - 1) * ldt], ldt);
+                        &B[mp + np * ldb], ldb, &B[i + np * ldb], ldb, ZERO,
+                        &T[i + mp * ldt], ldt);
         }
 
         if (n - l > 0) {

@@ -336,7 +336,7 @@ L50:
                 } else {
                     /* Solve the transposed variant. */
                     ctgsyl("C", ijb, n2, n1, &A[i + i * lda], lda, A, lda,
-                           work, n2, B, ldb, &B[i + i * ldb], ldb,
+                           work, n2, &B[i + i * ldb], ldb, B, ldb,
                            &work[n1 * n2], n2, &dscale, &dif[1],
                            &work[2 * n1 * n2], lwork - 2 * n1 * n2,
                            iwork, &ierr);

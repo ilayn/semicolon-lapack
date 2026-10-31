@@ -34,7 +34,7 @@ void slasdt(const INT n, INT* lvl, INT* nd,
     INT ir = 0;
     INT llst = 1;
 
-    for (INT nlvl = 1; nlvl <= *lvl - 1; nlvl++) {
+    for (INT nlvl = 0; nlvl < *lvl - 1; nlvl++) {
         for (INT j = 0; j < llst; j++) {
             il += 2;
             ir += 2;

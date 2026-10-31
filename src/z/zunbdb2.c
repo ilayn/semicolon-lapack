@@ -103,15 +103,15 @@ void zunbdb2(const INT m, const INT p, const INT q,
     }
 
     if (*info == 0) {
-        ilarf = 2;
+        ilarf = 1;
         llarf = p - 1;
         if (m - p > llarf) llarf = m - p;
         if (q - 1 > llarf) llarf = q - 1;
-        iorbdb5 = 2;
+        iorbdb5 = 1;
         lorbdb5 = q - 1;
-        lworkopt = ilarf + llarf - 1;
-        if (iorbdb5 + lorbdb5 - 1 > lworkopt)
-            lworkopt = iorbdb5 + lorbdb5 - 1;
+        lworkopt = ilarf + llarf;
+        if (iorbdb5 + lorbdb5 > lworkopt)
+            lworkopt = iorbdb5 + lorbdb5;
         lworkmin = lworkopt;
         work[0] = CMPLX((f64)lworkopt, 0.0);
         if (lwork < lworkmin && !lquery) {
@@ -139,10 +139,10 @@ void zunbdb2(const INT m, const INT p, const INT q,
         c = creal(X11[i + i * ldx11]);
         zlarf1f("R", p - i - 1, q - i, &X11[i + i * ldx11], ldx11,
                 tauq1[i], &X11[(i + 1) + i * ldx11], ldx11,
-                &work[ilarf - 1]);
+                &work[ilarf]);
         zlarf1f("R", m - p - i, q - i, &X11[i + i * ldx11], ldx11,
                 tauq1[i], &X21[i + i * ldx21], ldx21,
-                &work[ilarf - 1]);
+                &work[ilarf]);
         zlacgv(q - i, &X11[i + i * ldx11], ldx11);
         s = sqrt(pow(cblas_dznrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1), 2)
                + pow(cblas_dznrm2(m - p - i, &X21[i + i * ldx21], 1), 2));
@@ -153,7 +153,7 @@ void zunbdb2(const INT m, const INT p, const INT q,
                 &X21[i + i * ldx21], 1,
                 &X11[(i + 1) + (i + 1) * ldx11], ldx11,
                 &X21[i + (i + 1) * ldx21], ldx21,
-                &work[iorbdb5 - 1], lorbdb5, &childinfo);
+                &work[iorbdb5], lorbdb5, &childinfo);
         cblas_zscal(p - i - 1, &NEGONE, &X11[(i + 1) + i * ldx11], 1);
         zlarfgp(m - p - i, &X21[i + i * ldx21],
                 &X21[(i + 1) + i * ldx21], 1, &taup2[i]);
@@ -169,7 +169,7 @@ void zunbdb2(const INT m, const INT p, const INT q,
                 zlarf1f("L", p - i - 1, q - i - 1,
                         &X11[(i + 1) + i * ldx11], 1, conjtaup1,
                         &X11[(i + 1) + (i + 1) * ldx11], ldx11,
-                        &work[ilarf - 1]);
+                        &work[ilarf]);
             }
         }
         {
@@ -177,7 +177,7 @@ void zunbdb2(const INT m, const INT p, const INT q,
             zlarf1f("L", m - p - i, q - i - 1,
                     &X21[i + i * ldx21], 1, conjtaup2,
                     &X21[i + (i + 1) * ldx21], ldx21,
-                    &work[ilarf - 1]);
+                    &work[ilarf]);
         }
 
     }
@@ -192,7 +192,7 @@ void zunbdb2(const INT m, const INT p, const INT q,
             zlarf1f("L", m - p - i, q - i - 1,
                     &X21[i + i * ldx21], 1, conjtaup2,
                     &X21[i + (i + 1) * ldx21], ldx21,
-                    &work[ilarf - 1]);
+                    &work[ilarf]);
         }
     }
 }

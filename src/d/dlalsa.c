@@ -68,7 +68,7 @@ void dlalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
             const f64* restrict C, const f64* restrict S,
             f64* restrict work, INT* restrict iwork, INT* info)
 {
-    INT i, ic, im1, inode, j, lf, ll, lvl, lvl2;
+    INT i, ic, inode, j, lf, ll, lvl, lvl2;
     INT nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;
     INT nr, nrf, nrp1, sqre;
 
@@ -106,11 +106,11 @@ void dlalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
         goto L50;
     }
 
-    ndb1 = (nd + 1) / 2;
-    for (i = ndb1; i <= nd; i++) {
-        ic = iwork[inode + i - 1];
-        nl = iwork[ndiml + i - 1];
-        nr = iwork[ndimr + i - 1];
+    ndb1 = (nd - 1) / 2;
+    for (i = ndb1; i < nd; i++) {
+        ic = iwork[inode + i];
+        nl = iwork[ndiml + i];
+        nr = iwork[ndimr + i];
         nlf = ic - nl;
         nrf = ic + 1;
 
@@ -122,63 +122,61 @@ void dlalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
                     0.0, &BX[nrf], ldbx);
     }
 
-    for (i = 1; i <= nd; i++) {
-        ic = iwork[inode + i - 1];
+    for (i = 0; i < nd; i++) {
+        ic = iwork[inode + i];
         cblas_dcopy(nrhs, &B[ic], ldb, &BX[ic], ldbx);
     }
 
-    j = 1 << nlvl;
+    j = (1 << nlvl) - 1;
     sqre = 0;
 
-    for (lvl = nlvl; lvl >= 1; lvl--) {
-        lvl2 = 2 * lvl - 1;
+    for (lvl = nlvl - 1; lvl >= 0; lvl--) {
+        lvl2 = 2 * lvl;
 
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
         for (i = lf; i <= ll; i++) {
-            im1 = i - 1;
-            ic = iwork[inode + im1];
-            nl = iwork[ndiml + im1];
-            nr = iwork[ndimr + im1];
+            ic = iwork[inode + i];
+            nl = iwork[ndiml + i];
+            nr = iwork[ndimr + i];
             nlf = ic - nl;
             j = j - 1;
             dlals0(icompq, nl, nr, sqre, nrhs,
                    &BX[nlf], ldbx, &B[nlf], ldb,
-                   &perm[nlf + (lvl - 1) * ldgcol],
-                   givptr[j - 1],
-                   &givcol[nlf + (lvl2 - 1) * ldgcol], ldgcol,
-                   &givnum[nlf + (lvl2 - 1) * ldu], ldu,
-                   &poles[nlf + (lvl2 - 1) * ldu],
-                   &difl[nlf + (lvl - 1) * ldu],
-                   &difr[nlf + (lvl2 - 1) * ldu],
-                   &Z[nlf + (lvl - 1) * ldu],
-                   K[j - 1], C[j - 1], S[j - 1], work, info);
+                   &perm[nlf + lvl * ldgcol],
+                   givptr[j],
+                   &givcol[nlf + lvl2 * ldgcol], ldgcol,
+                   &givnum[nlf + lvl2 * ldu], ldu,
+                   &poles[nlf + lvl2 * ldu],
+                   &difl[nlf + lvl * ldu],
+                   &difr[nlf + lvl2 * ldu],
+                   &Z[nlf + lvl * ldu],
+                   K[j], C[j], S[j], work, info);
         }
     }
     goto L90;
 
 L50:
-    j = 0;
-    for (lvl = 1; lvl <= nlvl; lvl++) {
-        lvl2 = 2 * lvl - 1;
+    j = -1;
+    for (lvl = 0; lvl < nlvl; lvl++) {
+        lvl2 = 2 * lvl;
 
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
         for (i = ll; i >= lf; i--) {
-            im1 = i - 1;
-            ic = iwork[inode + im1];
-            nl = iwork[ndiml + im1];
-            nr = iwork[ndimr + im1];
+            ic = iwork[inode + i];
+            nl = iwork[ndiml + i];
+            nr = iwork[ndimr + i];
             nlf = ic - nl;
             if (i == ll) {
                 sqre = 0;
@@ -188,25 +186,25 @@ L50:
             j = j + 1;
             dlals0(icompq, nl, nr, sqre, nrhs,
                    &B[nlf], ldb, &BX[nlf], ldbx,
-                   &perm[nlf + (lvl - 1) * ldgcol],
-                   givptr[j - 1],
-                   &givcol[nlf + (lvl2 - 1) * ldgcol], ldgcol,
-                   &givnum[nlf + (lvl2 - 1) * ldu], ldu,
-                   &poles[nlf + (lvl2 - 1) * ldu],
-                   &difl[nlf + (lvl - 1) * ldu],
-                   &difr[nlf + (lvl2 - 1) * ldu],
-                   &Z[nlf + (lvl - 1) * ldu],
-                   K[j - 1], C[j - 1], S[j - 1], work, info);
+                   &perm[nlf + lvl * ldgcol],
+                   givptr[j],
+                   &givcol[nlf + lvl2 * ldgcol], ldgcol,
+                   &givnum[nlf + lvl2 * ldu], ldu,
+                   &poles[nlf + lvl2 * ldu],
+                   &difl[nlf + lvl * ldu],
+                   &difr[nlf + lvl2 * ldu],
+                   &Z[nlf + lvl * ldu],
+                   K[j], C[j], S[j], work, info);
         }
     }
 
-    ndb1 = (nd + 1) / 2;
-    for (i = ndb1; i <= nd; i++) {
-        ic = iwork[inode + i - 1];
-        nl = iwork[ndiml + i - 1];
-        nr = iwork[ndimr + i - 1];
+    ndb1 = (nd - 1) / 2;
+    for (i = ndb1; i < nd; i++) {
+        ic = iwork[inode + i];
+        nl = iwork[ndiml + i];
+        nr = iwork[ndimr + i];
         nlp1 = nl + 1;
-        if (i == nd) {
+        if (i == nd - 1) {
             nrp1 = nr;
         } else {
             nrp1 = nr + 1;

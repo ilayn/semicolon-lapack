@@ -184,10 +184,10 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
          * Compute right eigenvectors.
          *
          * IV is index of column in current block.
-         * Non-blocked version always uses IV=NB=1;
-         * blocked     version starts with IV=NB, goes down to 1.
+         * Non-blocked version always uses IV=NB-1=0;
+         * blocked     version starts with IV=NB-1, goes down to 0.
          * (Note the "0-th" column is used to store the original diagonal.) */
-        iv = nb;
+        iv = nb - 1;
         is = *m - 1;
         for (ki = n - 1; ki >= 0; ki--) {
             if (somev) {
@@ -197,11 +197,11 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
             smin = ulp * cabs1(T[ki + ki * ldt]);
             smin = (smin > smlnum) ? smin : smlnum;
 
-            work[ki + iv * n] = cone;
+            work[ki + (iv + 1) * n] = cone;
 
             /* Form right-hand side. */
             for (k = 0; k < ki; k++) {
-                work[k + iv * n] = -T[k + ki * ldt];
+                work[k + (iv + 1) * n] = -T[k + ki * ldt];
             }
 
             /* Solve upper triangular system:
@@ -214,14 +214,14 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
 
             if (ki > 0) {
                 zlatrs("Upper", "No transpose", "Non-unit", "Y",
-                       ki, T, ldt, &work[iv * n], &scale,
+                       ki, T, ldt, &work[(iv + 1) * n], &scale,
                        rwork, info);
-                work[ki + iv * n] = scale;
+                work[ki + (iv + 1) * n] = scale;
             }
 
             /* Copy the vector x or Q*x to VR and normalize. */
             if (!over) {
-                cblas_zcopy(ki + 1, &work[iv * n], 1, &VR[is * ldvr], 1);
+                cblas_zcopy(ki + 1, &work[(iv + 1) * n], 1, &VR[is * ldvr], 1);
 
                 ii = cblas_izamax(ki + 1, &VR[is * ldvr], 1);
                 remax = one / cabs1(VR[ii + is * ldvr]);
@@ -236,7 +236,7 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
                     c128 scale_c = (c128)scale;
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, ki,
                                 &cone, VR, ldvr,
-                                &work[iv * n], 1, &scale_c,
+                                &work[(iv + 1) * n], 1, &scale_c,
                                 &VR[ki * ldvr], 1);
                 }
 
@@ -248,28 +248,28 @@ void ztrevc3(const char* side, const char* howmny, INT* select,
                 /* Version 2: back-transform block of vectors with GEMM
                  * zero out below vector */
                 for (k = ki + 1; k < n; k++) {
-                    work[k + iv * n] = czero;
+                    work[k + (iv + 1) * n] = czero;
                 }
 
-                /* Columns IV:NB of work are valid vectors.
+                /* Columns IV+1:NB of work are valid vectors.
                  * When the number of vectors stored reaches NB,
                  * or if this was last vector, do the GEMM */
-                if (iv == 1 || ki == 0) {
+                if (iv == 0 || ki == 0) {
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                n, nb - iv + 1, ki + 1 + nb - iv, &cone,
+                                n, nb - iv, ki + nb - iv, &cone,
                                 VR, ldvr,
-                                &work[iv * n], n,
+                                &work[(iv + 1) * n], n,
                                 &czero,
-                                &work[(nb + iv) * n], n);
-                    for (k = iv; k <= nb; k++) {
-                        ii = cblas_izamax(n, &work[(nb + k) * n], 1);
-                        remax = one / cabs1(work[ii + (nb + k) * n]);
-                        cblas_zdscal(n, remax, &work[(nb + k) * n], 1);
+                                &work[(nb + 1 + iv) * n], n);
+                    for (k = iv; k < nb; k++) {
+                        ii = cblas_izamax(n, &work[(nb + 1 + k) * n], 1);
+                        remax = one / cabs1(work[ii + (nb + 1 + k) * n]);
+                        cblas_zdscal(n, remax, &work[(nb + 1 + k) * n], 1);
                     }
-                    zlacpy("F", n, nb - iv + 1,
-                            &work[(nb + iv) * n], n,
+                    zlacpy("F", n, nb - iv,
+                            &work[(nb + 1 + iv) * n], n,
                             &VR[ki * ldvr], ldvr);
-                    iv = nb;
+                    iv = nb - 1;
                 } else {
                     iv--;
                 }
@@ -290,10 +290,10 @@ R80:        ;
          * Compute left eigenvectors.
          *
          * IV is index of column in current block.
-         * Non-blocked version always uses IV=1;
-         * blocked     version starts with IV=1, goes up to NB.
+         * Non-blocked version always uses IV=0;
+         * blocked     version starts with IV=0, goes up to NB-1.
          * (Note the "0-th" column is used to store the original diagonal.) */
-        iv = 1;
+        iv = 0;
         is = 0;
         for (ki = 0; ki < n; ki++) {
 
@@ -304,11 +304,11 @@ R80:        ;
             smin = ulp * cabs1(T[ki + ki * ldt]);
             smin = (smin > smlnum) ? smin : smlnum;
 
-            work[ki + iv * n] = cone;
+            work[ki + (iv + 1) * n] = cone;
 
             /* Form right-hand side. */
             for (k = ki + 1; k < n; k++) {
-                work[k + iv * n] = -conj(T[ki + k * ldt]);
+                work[k + (iv + 1) * n] = -conj(T[ki + k * ldt]);
             }
 
             /* Solve conjugate-transposed triangular system:
@@ -322,13 +322,13 @@ R80:        ;
             if (ki < n - 1) {
                 zlatrs("Upper", "Conjugate transpose", "Non-unit",
                        "Y", n - ki - 1, &T[(ki + 1) + (ki + 1) * ldt], ldt,
-                       &work[(ki + 1) + iv * n], &scale, rwork, info);
-                work[ki + iv * n] = scale;
+                       &work[(ki + 1) + (iv + 1) * n], &scale, rwork, info);
+                work[ki + (iv + 1) * n] = scale;
             }
 
             /* Copy the vector x or Q*x to VL and normalize. */
             if (!over) {
-                cblas_zcopy(n - ki, &work[ki + iv * n], 1,
+                cblas_zcopy(n - ki, &work[ki + (iv + 1) * n], 1,
                             &VL[ki + is * ldvl], 1);
 
                 ii = cblas_izamax(n - ki, &VL[ki + is * ldvl], 1) + ki;
@@ -344,7 +344,7 @@ R80:        ;
                     c128 scale_c = (c128)scale;
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, n - ki - 1,
                                 &cone, &VL[(ki + 1) * ldvl], ldvl,
-                                &work[(ki + 1) + iv * n], 1, &scale_c,
+                                &work[(ki + 1) + (iv + 1) * n], 1, &scale_c,
                                 &VL[ki * ldvl], 1);
                 }
 
@@ -356,28 +356,28 @@ R80:        ;
                 /* Version 2: back-transform block of vectors with GEMM
                  * zero out above vector */
                 for (k = 0; k < ki; k++) {
-                    work[k + iv * n] = czero;
+                    work[k + (iv + 1) * n] = czero;
                 }
 
-                /* Columns 1:IV of work are valid vectors.
+                /* Columns 1:IV+1 of work are valid vectors.
                  * When the number of vectors stored reaches NB,
                  * or if this was last vector, do the GEMM */
-                if (iv == nb || ki == n - 1) {
+                if (iv == nb - 1 || ki == n - 1) {
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                                n, iv, n - ki - 1 + iv, &cone,
-                                &VL[(ki + 1 - iv) * ldvl], ldvl,
-                                &work[(ki + 1 - iv) + 1 * n], n,
+                                n, iv + 1, n - ki + iv, &cone,
+                                &VL[(ki - iv) * ldvl], ldvl,
+                                &work[(ki - iv) + 1 * n], n,
                                 &czero,
                                 &work[(nb + 1) * n], n);
-                    for (k = 1; k <= iv; k++) {
-                        ii = cblas_izamax(n, &work[(nb + k) * n], 1);
-                        remax = one / cabs1(work[ii + (nb + k) * n]);
-                        cblas_zdscal(n, remax, &work[(nb + k) * n], 1);
+                    for (k = 0; k <= iv; k++) {
+                        ii = cblas_izamax(n, &work[(nb + 1 + k) * n], 1);
+                        remax = one / cabs1(work[ii + (nb + 1 + k) * n]);
+                        cblas_zdscal(n, remax, &work[(nb + 1 + k) * n], 1);
                     }
-                    zlacpy("F", n, iv,
+                    zlacpy("F", n, iv + 1,
                             &work[(nb + 1) * n], n,
-                            &VL[(ki + 1 - iv) * ldvl], ldvl);
-                    iv = 1;
+                            &VL[(ki - iv) * ldvl], ldvl);
+                    iv = 0;
                 } else {
                     iv++;
                 }
