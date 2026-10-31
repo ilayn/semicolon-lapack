@@ -66,6 +66,9 @@ LITERAL_OVERRIDES = {
     "test_dorcsd_work.c": [
         ("(float)work[0], (float)wquery", "(double)work[0], (double)wquery"),
     ],
+    "test_dstedc_deflate.c": [
+        ("(float)result[0], (float)result[1]", "(double)result[0], (double)result[1]"),
+    ],
 }
 
 # Identifiers with embedded precision marker (not a simple d -> s prefix)

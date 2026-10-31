@@ -111,6 +111,7 @@ lapack_tests_c = {
   'ctrsyl3_swork': ['test_ctrsyl3_swork.c', 'eigen'],
   'cgesvj_emptsw': ['test_cgesvj_emptsw.c', 'eigen'],
   'cstein_unconverged': ['test_cstein_unconverged.c', 'eigen'],
+  'cstedc_deflate': ['test_cstedc_deflate.c', 'eigen'],
   'cgeqp3_fixed': ['test_cgeqp3_fixed.c', 'qr'],
   'ctgsen_lwork': ['test_ctgsen_lwork.c', 'eigen'],
   'ctprfb_rowfwd': ['test_ctprfb_rowfwd.c', 'qr'],

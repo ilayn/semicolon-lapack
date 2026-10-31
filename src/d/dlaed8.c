@@ -257,7 +257,7 @@ L80:
             D[j] = D[jlam] * s * s + D[j] * c * c;
             D[jlam] = t;
             k2 = k2 - 1;
-            i = 0;
+            i = 1;
 L90:
             if (k2 + i < n) {
                 if (D[jlam] < D[indxp[k2 + i]]) {

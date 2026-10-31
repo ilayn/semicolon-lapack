@@ -112,6 +112,7 @@ lapack_tests_s = {
   'sgesvj_emptsw': ['test_sgesvj_emptsw.c', 'eigen'],
   'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
   'sstein_unconverged': ['test_sstein_unconverged.c', 'eigen'],
+  'sstedc_deflate': ['test_sstedc_deflate.c', 'eigen'],
   'sstebz_discard': ['test_sstebz_discard.c', 'eigen'],
   'sgeqp3_fixed': ['test_sgeqp3_fixed.c', 'qr'],
   'stgsen_lwork': ['test_stgsen_lwork.c', 'eigen'],

@@ -116,6 +116,7 @@ lapack_tests_d = {
   'dgelsy_nan': ['test_dgelsy_nan.c', 'ls'],
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
+  'dstedc_deflate': ['test_dstedc_deflate.c', 'eigen'],
   'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
   'dgeqp3_fixed': ['test_dgeqp3_fixed.c', 'qr'],
   'dgeqp3rk_lwork': ['test_dgeqp3rk_lwork.c', 'qr'],
