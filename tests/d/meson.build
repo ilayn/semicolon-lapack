@@ -107,6 +107,7 @@ lapack_tests_d = {
   'dtrsyl3_swork': ['test_dtrsyl3_swork.c', 'eigen'],
   'dgesvj_emptsw': ['test_dgesvj_emptsw.c', 'eigen'],
   'dbdsvdx_split': ['test_dbdsvdx_split.c', 'svd'],
+  'dbdsdc_compact': ['test_dbdsdc_compact.c', 'svd'],
   'dgejsv_l2pert': ['test_dgejsv_l2pert.c', 'svd'],
   'dgsvj0_sweeps': ['test_dgsvj0_sweeps.c', 'svd'],
   'dgesvdq_query': ['test_dgesvdq_query.c', 'svd'],

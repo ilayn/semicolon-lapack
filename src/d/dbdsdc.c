@@ -211,9 +211,9 @@ void dbdsdc(const char* uplo, const char* compq, const INT n,
         poles = is + 1;
         givnum = poles + 2 * mlvl;
 
-        k = 0;
-        givptr = 1;
-        perm = 2;
+        k = 1;
+        givptr = 2;
+        perm = 3;
         givcol = perm + mlvl;
     }
 
